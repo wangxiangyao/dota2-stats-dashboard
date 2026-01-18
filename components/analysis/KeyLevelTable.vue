@@ -3,7 +3,7 @@
  * 通用关键等级分析表格
  * 用于分析生命值、护甲、攻击力等各类数值在关键等级的统计
  */
-import type { Hero, PrimaryAttribute } from '~/types/dota'
+const EXCLUDE = ['美杜莎']
 import { ATTRIBUTE_COLORS, ATTRIBUTE_NAMES } from '~/types/dota'
 
 const props = defineProps<{

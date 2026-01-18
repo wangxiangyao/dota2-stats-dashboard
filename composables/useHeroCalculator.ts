@@ -191,6 +191,43 @@ export const useHeroCalculator = () => {
   }
 
   /**
+   * 计算被平均DPS击杀的时间
+   * @param hero 目标英雄
+   * @param level 等级
+   * @param allHeroes 所有英雄（用于计算平均DPS）
+   * @param includeBonus 是否计算黄点
+   */
+  const calculateSurvivalTime = (
+    hero: Hero,
+    level: number,
+    allHeroes: Hero[],
+    includeBonus: boolean = true
+  ): number => {
+    // 计算平均DPS
+    const avgDPS = allHeroes.reduce((sum, h) => sum + calculateDPS(h, level, includeBonus), 0) / allHeroes.length
+    // 生存时间 = 物理EHP / 平均DPS
+    return calculatePhysicalEHP(hero, level, includeBonus) / avgDPS
+  }
+
+  /**
+   * 计算击杀时间
+   * @param attacker 攻击者英雄
+   * @param target 目标英雄
+   * @param level 等级
+   * @param includeBonus 是否计算黄点
+   */
+  const calculateKillTime = (
+    attacker: Hero,
+    target: Hero,
+    level: number,
+    includeBonus: boolean = true
+  ): number => {
+    const attackerDPS = calculateDPS(attacker, level, includeBonus)
+    const targetEHP = calculatePhysicalEHP(target, level, includeBonus)
+    return targetEHP / attackerDPS
+  }
+
+  /**
    * 计算英雄所有战斗属性
    */
   const calculateHeroStats = (hero: Hero, level: number, includeBonus: boolean = true): HeroStats => {
@@ -223,6 +260,8 @@ export const useHeroCalculator = () => {
     calculateDamage,
     calculateAttackSpeed,
     calculateDPS,
+    calculateSurvivalTime,
+    calculateKillTime,
     calculateHeroStats
   }
 }

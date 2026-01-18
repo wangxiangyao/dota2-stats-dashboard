@@ -13,7 +13,9 @@ const {
   calculateMagicalEHP,
   calculateDamage,
   calculateDPS,
-  calculateAttackSpeed
+  calculateAttackSpeed,
+  calculateSurvivalTime,
+  calculateKillTime
 } = useHeroCalculator()
 
 // 数据
@@ -56,6 +58,10 @@ const hpRegenCurveSelected = ref<string[]>([])
 const manaRegenCurveSelected = ref<string[]>([])
 // 攻速选中英雄
 const attackSpeedCurveSelected = ref<string[]>([])
+// 综合分析选中英雄
+const survivalCurveSelected = ref<string[]>([])
+const killOthersSelected = ref<string>('')
+const killedBySelected = ref<string>('')
 
 // 排除的特殊英雄
 const HP_EXCLUDE = ['美杜莎']
@@ -82,6 +88,18 @@ onMounted(async () => {
     manaRegenCurveSelected.value = allNames
     // 攻速默认选中
     attackSpeedCurveSelected.value = allNames
+    // 综合分析默认选中
+    // 被平均DPS击杀时间曲线：选最肉3个+最脆3个
+    const withEHP = data.map(h => ({
+      name: h.name,
+      ehp: calculatePhysicalEHP(h, 25, true)
+    })).sort((a, b) => b.ehp - a.ehp)
+    const top3 = withEHP.slice(0, 3).map(h => h.name)
+    const bottom3 = withEHP.slice(-3).map(h => h.name)
+    survivalCurveSelected.value = [...top3, ...bottom3]
+    // 击杀其他英雄/被击杀：默认选第一个
+    killOthersSelected.value = allNames[0] || ''
+    killedBySelected.value = allNames[0] || ''
   }
 })
 
@@ -106,6 +124,64 @@ const getManaRegen = (hero: Hero, level: number) => calculateManaRegen(hero, lev
 const getBAT = (hero: Hero, _level: number) => hero.attackRate || 1.7
 // 攻速
 const getAttackSpeed = (hero: Hero, level: number) => calculateAttackSpeed(hero, level, includeBonus.value)
+
+// === 综合分析相关计算函数 ===
+// 排除的英雄
+const TTK_EXCLUDE = ['美杜莎']
+
+// 过滤后的英雄列表（用于TTK计算）
+const filteredHeroesForTTK = computed(() => {
+  return heroes.value.filter(h => !TTK_EXCLUDE.includes(h.localizedName || h.name) && !TTK_EXCLUDE.includes(h.name))
+})
+
+// 被平均DPS击杀时间
+const getSurvivalTime = (hero: Hero, level: number) => {
+  return calculateSurvivalTime(hero, level, filteredHeroesForTTK.value, includeBonus.value)
+}
+
+// 击杀其他英雄的时间（选中攻击者后）
+const getKillTimeAsAttacker = computed(() => {
+  const attacker = filteredHeroesForTTK.value.find(h => h.name === killOthersSelected.value)
+  if (!attacker) return (_target: Hero, _level: number) => 0
+  return (target: Hero, level: number) => calculateKillTime(attacker, target, level, includeBonus.value)
+})
+
+// 被其他英雄击杀的时间（选中目标后）
+const getKillTimeAsTarget = computed(() => {
+  const target = filteredHeroesForTTK.value.find(h => h.name === killedBySelected.value)
+  if (!target) return (_attacker: Hero, _level: number) => 0
+  return (attacker: Hero, level: number) => calculateKillTime(attacker, target, level, includeBonus.value)
+})
+
+// 击杀其他英雄的时间分布（箱线图）
+const getKillOthersValues = (hero: Hero, allHeroes: Hero[], level: number) => {
+  return allHeroes.map(target => calculateKillTime(hero, target, level, includeBonus.value))
+}
+
+// 被其他英雄击杀的时间分布（箱线图）
+const getKilledByValues = (hero: Hero, allHeroes: Hero[], level: number) => {
+  return allHeroes.map(attacker => calculateKillTime(attacker, hero, level, includeBonus.value))
+}
+
+// 选中的攻击者信息
+const selectedAttackerInfo = computed(() => {
+  const attacker = filteredHeroesForTTK.value.find(h => h.name === killOthersSelected.value)
+  if (!attacker) return null
+  return {
+    name: attacker.localizedName || attacker.name,
+    dps: calculateDPS(attacker, ttkLevel.value, includeBonus.value)
+  }
+})
+
+// 选中的目标信息
+const selectedTargetInfo = computed(() => {
+  const target = filteredHeroesForTTK.value.find(h => h.name === killedBySelected.value)
+  if (!target) return null
+  return {
+    name: target.localizedName || target.name,
+    ehp: calculatePhysicalEHP(target, ttkLevel.value, includeBonus.value)
+  }
+})
 </script>
 
 <template>
@@ -898,32 +974,149 @@ const getAttackSpeed = (hero: Hero, level: number) => calculateAttackSpeed(hero,
         <h2>⚔️ 第一部分：击杀时间分析（TTK）</h2>
       </div>
 
+      <!-- 黄点设置 -->
+      <div class="settings-box">
+        <el-checkbox v-model="includeBonus">
+          <strong>计算黄点（属性加成）</strong>
+        </el-checkbox>
+      </div>
+
+      <!-- ===== 1.1 英雄与平均DPS ===== -->
+      <div class="section-divider blue">
+        <h2>💙 1.1 英雄与平均DPS的关系</h2>
+      </div>
+
       <section class="chart-section">
-        <h3>F1. 物理对抗击杀时间分析</h3>
-        <p class="formula">
-          生存时间 = 物理EHP ÷ 平均DPS | 击杀时间 = 平均EHP ÷ 自身DPS
-        </p>
-        <div class="settings-box">
-          <el-checkbox v-model="includeBonus">
-            <strong>计算黄点</strong>
-          </el-checkbox>
-          <span class="settings-hint">等级：</span>
-          <LevelSlider v-model="ttkLevel" style="flex: 1; max-width: 300px;" />
-        </div>
-        <AnalysisTTKChart
-          :heroes="heroes"
+        <h3>1.1.1 被平均DPS击杀时间排行</h3>
+        <p class="formula">生存时间 = 物理EHP ÷ 平均DPS（已排除美杜莎）</p>
+        <LevelSlider v-model="ttkLevel" />
+        <HeroBarChart
+          :heroes="filteredHeroesForTTK"
           :level="ttkLevel"
-          :get-physical-e-h-p="getPhysicalEHP"
-          :get-d-p-s="getDPS"
+          :value-getter="getSurvivalTime"
+          title="被平均DPS击杀时间排行"
+          unit=" 秒"
         />
-        <SummaryBox title="击杀时间分析解读" level="section" color="red">
-          <ul>
-            <li><strong>生存时间</strong>：该英雄被"平均DPS"击杀需要多久，越长说明越肉</li>
-            <li><strong>击杀时间</strong>：该英雄击杀"平均EHP目标"需要多久，越短说明输出越高</li>
-            <li><strong>散点图解读</strong>：右下角=坦克型（能抗且输出高），左上角=脆皮型（脆且输出低）</li>
-            <li><strong>理想定位</strong>：力量英雄偏右（生存强），敏捷英雄偏下（击杀快）</li>
-          </ul>
-        </SummaryBox>
+      </section>
+
+      <section class="chart-section">
+        <h3>1.1.2 被平均DPS击杀时间成长曲线（1-30级）</h3>
+        <p class="formula">选择英雄对比其被平均DPS击杀时间随等级的变化</p>
+        <HeroSelector
+          v-model="survivalCurveSelected"
+          :heroes="filteredHeroesForTTK"
+        />
+        <HeroLineChart
+          :heroes="filteredHeroesForTTK"
+          :selected-heroes="survivalCurveSelected"
+          title="被平均DPS击杀时间成长曲线"
+          y-axis-name="被击杀时间(秒)"
+          :value-getter="getSurvivalTime"
+        />
+        <HeroCurveAnalysisBox
+          :heroes="filteredHeroesForTTK"
+          :selected-heroes="survivalCurveSelected"
+          title="被击杀时间"
+          :value-getter="getSurvivalTime"
+          unit="秒"
+        />
+      </section>
+
+      <!-- ===== 1.2 英雄与英雄之间的对抗关系 ===== -->
+      <div class="section-divider orange">
+        <h2>⚔️ 1.2 英雄与英雄之间的对抗关系</h2>
+      </div>
+
+      <!-- 击杀其他英雄 -->
+      <section class="chart-section">
+        <h3>1.2.1 击杀其他英雄</h3>
+        <p class="formula">击杀时间 = 目标物理EHP ÷ 自身DPS（已排除美杜莎）</p>
+        <div class="chart-controls">
+          <div class="control-row">
+            <span class="control-label">选择攻击者：</span>
+            <HeroSingleSelect
+              v-model="killOthersSelected"
+              :heroes="filteredHeroesForTTK"
+              :exclude-heroes="TTK_EXCLUDE"
+            />
+          </div>
+          <div v-if="selectedAttackerInfo" class="control-row control-info-row">
+            <span class="control-info">DPS: {{ selectedAttackerInfo.dps.toFixed(1) }}</span>
+          </div>
+          <div class="control-row">
+            <LevelSlider v-model="ttkLevel" class="control-slider" />
+          </div>
+        </div>
+        <HeroBarChart
+          v-if="killOthersSelected"
+          :heroes="filteredHeroesForTTK"
+          :level="ttkLevel"
+          :value-getter="getKillTimeAsAttacker"
+          title="击杀其他英雄的时间排行"
+          unit=" 秒"
+        />
+        <div v-else class="chart-placeholder">请选择攻击者英雄</div>
+      </section>
+
+      <section class="chart-section">
+        <h3>1.2.2 击杀其他英雄的时间分布（箱线图）</h3>
+        <p class="formula">每个英雄击杀所有英雄所需时间的分布（已排除美杜莎）</p>
+        <LevelSlider v-model="ttkLevel" />
+        <HeroBoxplotChart
+          :heroes="filteredHeroesForTTK"
+          :level="ttkLevel"
+          title="击杀其他英雄的时间分布"
+          y-axis-name="击杀时间(秒)"
+          :values-getter="getKillOthersValues"
+          sort-order="asc"
+          :exclude-heroes="TTK_EXCLUDE"
+        />
+      </section>
+
+      <!-- 被其他英雄击杀 -->
+      <section class="chart-section">
+        <h3>1.2.3 被其他英雄击杀</h3>
+        <p class="formula">被击杀时间 = 自身物理EHP ÷ 攻击者DPS（已排除美杜莎）</p>
+        <div class="chart-controls">
+          <div class="control-row">
+            <span class="control-label">选择目标：</span>
+            <HeroSingleSelect
+              v-model="killedBySelected"
+              :heroes="filteredHeroesForTTK"
+              :exclude-heroes="TTK_EXCLUDE"
+            />
+          </div>
+          <div v-if="selectedTargetInfo" class="control-row control-info-row">
+            <span class="control-info">物理EHP: {{ selectedTargetInfo.ehp.toFixed(0) }}</span>
+          </div>
+          <div class="control-row">
+            <LevelSlider v-model="ttkLevel" class="control-slider" />
+          </div>
+        </div>
+        <HeroBarChart
+          v-if="killedBySelected"
+          :heroes="filteredHeroesForTTK"
+          :level="ttkLevel"
+          :value-getter="getKillTimeAsTarget"
+          title="被其他英雄击杀的时间排行"
+          unit=" 秒"
+        />
+        <div v-else class="chart-placeholder">请选择目标英雄</div>
+      </section>
+
+      <section class="chart-section">
+        <h3>1.2.4 被其他英雄击杀的时间分布（箱线图）</h3>
+        <p class="formula">该英雄被所有英雄击杀所需时间的分布（已排除美杜莎）</p>
+        <LevelSlider v-model="ttkLevel" />
+        <HeroBoxplotChart
+          :heroes="filteredHeroesForTTK"
+          :level="ttkLevel"
+          title="被其他英雄击杀的时间分布"
+          y-axis-name="被击杀时间(秒)"
+          :values-getter="getKilledByValues"
+          sort-order="desc"
+          :exclude-heroes="TTK_EXCLUDE"
+        />
       </section>
 
       <!-- 综合总结 -->
@@ -1029,5 +1222,84 @@ const getAttackSpeed = (hero: Hero, level: number) => calculateAttackSpeed(hero,
 
 .tab-btn.synthesis:hover {
   background: linear-gradient(135deg, #5f27cd 0%, #4a1fad 100%);
+}
+
+.hero-select {
+  padding: 0.5rem 1rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+  background: white;
+  color: #2c3e50;
+  font-size: 0.9rem;
+  min-width: 200px;
+}
+
+.chart-section-inline {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.chart-controls {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.control-row:last-child {
+  margin-bottom: 0;
+}
+
+.control-label {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.control-slider {
+  flex: 1;
+  max-width: 400px;
+}
+
+.control-info-row {
+  padding-left: 5.5em;
+}
+
+.control-info {
+  color: #3498db;
+  font-size: 0.85rem;
+  background: #e8f4fc;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+}
+
+.selected-info {
+  background: #f0f8ff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-size: 0.9rem;
+  border-left: 3px solid #3498db;
+}
+
+.chart-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  color: #7f8c8d;
+  font-size: 0.9rem;
 }
 </style>

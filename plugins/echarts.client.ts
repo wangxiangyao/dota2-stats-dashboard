@@ -9,7 +9,8 @@ import {
   ScatterChart,
   LineChart,
   BarChart,
-  PieChart
+  PieChart,
+  BoxplotChart
 } from 'echarts/charts'
 import {
   GridComponent,
@@ -30,6 +31,7 @@ use([
   LineChart,
   BarChart,
   PieChart,
+  BoxplotChart,
   GridComponent,
   TooltipComponent,
   LegendComponent,
