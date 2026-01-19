@@ -85,7 +85,7 @@ body {
 .site-main {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 20px 2rem;
 }
 
 section {
@@ -264,15 +264,37 @@ h3 {
 }
 
 /* 英雄属性颜色类 */
-.attr-strength { color: var(--color-strength); }
-.attr-agility { color: var(--color-agility); }
-.attr-intelligence { color: var(--color-intelligence); }
-.attr-universal { color: var(--color-universal); }
+.attr-strength {
+    color: var(--color-strength);
+}
 
-.bg-strength { background-color: var(--color-strength); }
-.bg-agility { background-color: var(--color-agility); }
-.bg-intelligence { background-color: var(--color-intelligence); }
-.bg-universal { background-color: var(--color-universal); }
+.attr-agility {
+    color: var(--color-agility);
+}
+
+.attr-intelligence {
+    color: var(--color-intelligence);
+}
+
+.attr-universal {
+    color: var(--color-universal);
+}
+
+.bg-strength {
+    background-color: var(--color-strength);
+}
+
+.bg-agility {
+    background-color: var(--color-agility);
+}
+
+.bg-intelligence {
+    background-color: var(--color-intelligence);
+}
+
+.bg-universal {
+    background-color: var(--color-universal);
+}
 
 /* 等级滑块样式 */
 .level-slider {

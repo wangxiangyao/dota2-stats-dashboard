@@ -12,6 +12,8 @@ export type AttackType = 'melee' | 'ranged'
 export interface Hero {
   id: number
   name: string
+  nameEn?: string  // 英文名
+  internalName?: string  // 内部名称，如 npc_dota_hero_antimage
   localizedName: string
   primaryAttribute: PrimaryAttribute
   attackType: AttackType
@@ -43,24 +45,57 @@ export interface Hero {
   img?: string
 }
 
+// 技能属性
+export interface AbilityAttribute {
+  key: string
+  header: string
+  value: string | string[]
+  generated?: boolean
+}
+
 // 技能数据
 export interface Ability {
-  id: number
+  internalName: string
   name: string
-  localizedName: string
-  heroId?: number
+  name_zh?: string  // 技能中文名
   description?: string
+  behavior: string | null
+  damageType: string | null  // 'Physical' | 'Magical' | 'Pure' | null
+  cooldown: string | string[] | null
+  manaCost: string | string[] | null
+  attributes: AbilityAttribute[]
+  heroName: string
+  is_ultimate?: boolean  // 是否是大招
+}
 
-  // 技能属性
-  manaCost?: number[]
-  cooldown?: number[]
-  damage?: number[]
-  damageType?: 'physical' | 'magical' | 'pure'
+// 技能分类类型
+export type AbilitySlotType = 'normal' | 'ultimate' | 'special'
+export type DamageType = 'Physical' | 'Magical' | 'Pure'
+export type AbilityFunctionType = 'damage' | 'control' | 'buff' | 'survival' | 'mobility' | 'hybrid' | 'other'
+export type TargetType = 'unit_target' | 'no_target' | 'point' | 'passive'
 
-  // 其他属性
-  behavior?: string[]
-  targetType?: string
-  isUltimate?: boolean
+// 技能统计数据
+export interface AbilityStats {
+  damage: number
+  cooldown: number
+  manaCost: number
+  crowdControl: number
+  castRange: number
+  aoeRadius: number
+  dps: number
+  damagePerMana: number
+  dpm: number
+  controlRate: number
+}
+
+// 技能分组统计
+export interface AbilityGroupStats {
+  count: number
+  avgDamage: number
+  avgCooldown: number
+  avgManaCost: number
+  avgDPS: number
+  avgDamagePerMana: number
 }
 
 // 物品数据

@@ -43,6 +43,21 @@ export const useDataLoader = () => {
   const loadHeroAbilities = () => loadJson<Ability[]>('heroesAbilities.json')
 
   /**
+   * 加载主动技能数据（带分类标签）
+   */
+  const loadActiveAbilities = () => loadJson<Ability[]>('abilities/active.json')
+
+  /**
+   * 加载被动技能数据（带分类标签）
+   */
+  const loadPassiveAbilities = () => loadJson<Ability[]>('abilities/passive.json')
+
+  /**
+   * 加载技能索引数据
+   */
+  const loadAbilitiesIndex = () => loadJson<any>('abilities/index.json')
+
+  /**
    * 加载物品数据
    */
   const loadItems = () => loadJson<Item[]>('items.json')
@@ -77,6 +92,9 @@ export const useDataLoader = () => {
     loadHeroes,
     loadAbilities,
     loadHeroAbilities,
+    loadActiveAbilities,
+    loadPassiveAbilities,
+    loadAbilitiesIndex,
     loadItems,
     loadWorld,
     loadAll,

@@ -3,6 +3,7 @@ const navItems = [
   { path: '/', label: '首页' },
   { path: '/heroes', label: '英雄数值' },
   { path: '/abilities', label: '技能数值' },
+  { path: '/ability-check', label: '技能验证' },
   { path: '/items', label: '物品数值' },
   { path: '/world', label: '世界数值' },
   { path: '/synthesis', label: '综合分析' }
