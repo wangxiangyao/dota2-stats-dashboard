@@ -28,7 +28,11 @@ logs
 node_modules
 
 # Project specific
-public/source/                      # VPK 原始数据（可重新提取）
-public/data/dota_schinese.txt       # 原始翻译文件（太大）
-public/data/damage-abilities-classified.json  # 中间产物
-public/data/*.cjs                   # 临时工具脚本
+# VPK 原始数据（可重新提取）
+public/source/
+# 原始翻译文件（太大）
+public/data/dota_schinese.txt
+# 中间产物
+public/data/damage-abilities-classified.json
+# 临时工具脚本
+public/data/*.cjs
