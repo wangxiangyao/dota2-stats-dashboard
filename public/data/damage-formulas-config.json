@@ -1,0 +1,2873 @@
+{
+  "abaddon_aphotic_shield": {
+    "nameZh": "无光之盾",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_absorb",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "abyssal_underlord_firestorm": {
+    "nameZh": "火焰风暴",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "wave_damage × wave_count + burn_damage / 100 * base_hp * 8",
+    "formulaMax": null,
+    "customParams": {
+      "base_hp": "590 763 936 1109"
+    },
+    "notes": "多个伤害键: wave_damage, burn_damage",
+    "reviewed": true
+  },
+  "alchemist_acid_spray": {
+    "nameZh": "酸性喷雾",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage × (duration / tick_rate)",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "alchemist_unstable_concoction": {
+    "nameZh": "不稳定化合物",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "max_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: brew_explosion, max_damage",
+    "reviewed": true
+  },
+  "ancient_apparition_chilling_touch": {
+    "nameZh": "极寒之触",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage + base_attack",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "63 83 95 110"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "ancient_apparition_ice_blast": {
+    "nameZh": "冰晶爆轰",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "250 / 325 / 400"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "antimage_mana_void": {
+    "nameZh": "法力虚空",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_mana × mana_void_damage_per_mana",
+    "formulaMax": null,
+    "customParams": {
+      "base_mana": "460 / 635 / 820"
+    },
+    "notes": "需要定义目标基准值",
+    "reviewed": true
+  },
+  "arc_warden_flux": {
+    "nameZh": "乱流",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_second × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "arc_warden_spark_wraith": {
+    "nameZh": "闪光幽魂",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "spark_damage_base",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "axe_battle_hunger": {
+    "nameZh": "战斗饥渴",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_second × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "axe_culling_blade": {
+    "nameZh": "淘汰之刃",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "bane_brain_sap": {
+    "nameZh": "蚀脑",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "brain_sap_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "bane_fiends_grip": {
+    "nameZh": "魔爪",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "fiend_grip_damage * AbilityChannelTime",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "beastmaster_primal_roar": {
+    "nameZh": "原始咆哮",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, side_damage, damage_radius",
+    "reviewed": true
+  },
+  "beastmaster_wild_axes": {
+    "nameZh": "野性之斧",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "axe_damage × 2",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "bloodseeker_blood_bath": {
+    "nameZh": "血祭",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "brewmaster_cinder_brew": {
+    "nameZh": "余烬佳酿",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "total_ignite_damage + barrel_impact_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: total_ignite_damage, barrel_impact_damage",
+    "reviewed": true
+  },
+  "brewmaster_thunder_clap": {
+    "nameZh": "雷霆一击",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "broodmother_spawn_spiderlings": {
+    "nameZh": "孵化蜘蛛",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, damage_bonus",
+    "reviewed": true
+  },
+  "centaur_double_edge": {
+    "nameZh": "双刃剑",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "edge_damage + strength_damage / 100 * 50",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: edge_damage, strength_damage",
+    "reviewed": true
+  },
+  "centaur_hoof_stomp": {
+    "nameZh": "马蹄践踏",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "stomp_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "centaur_stampede": {
+    "nameZh": "奔袭冲撞",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "strength_damage × hero_strength",
+    "formulaMax": null,
+    "customParams": {
+      "hero_strength": "50 90 130"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "chaos_knight_chaos_bolt": {
+    "nameZh": "混乱之箭",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "(damage_min + damage_max) / 2",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage_min, damage_max",
+    "reviewed": true
+  },
+  "chen_penitence": {
+    "nameZh": "赎罪",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "clinkz_searing_arrows": {
+    "nameZh": "灼热之箭",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "(base_attack + damage_bonus) * base_attack_speed * base_attack_time",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "63 83 95 110",
+      "base_attack_speed": "0.73 0.78 0.83 0.88",
+      "base_attack_time": "3"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "crystal_maiden_crystal_nova": {
+    "nameZh": "冰霜新星",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "nova_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "crystal_maiden_freezing_field": {
+    "nameZh": "极寒领域",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage * 100 * 0.16",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: explosion_radius, explosion_interval, explosion_min_dist, explosion_max_dist, damage",
+    "reviewed": true
+  },
+  "crystal_maiden_frostbite": {
+    "nameZh": "冰封禁制",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_second × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "dark_seer_ion_shell": {
+    "nameZh": "离子外壳",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_second × 4",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "dark_seer_vacuum": {
+    "nameZh": "真空",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "dark_willow_bedlam": {
+    "nameZh": "作祟",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "attack_damage * (roaming_duration / attack_interval - 1)",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "dark_willow_bramble_maze": {
+    "nameZh": "荆棘迷宫",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_tick * (latch_duration / 0.5)",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "dark_willow_shadow_realm": {
+    "nameZh": "暗影之境",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "dawnbreaker_celestial_hammer": {
+    "nameZh": "上界重锤",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "hammer_damage + burn_damage * flare_debuff_duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: hammer_damage, burn_damage",
+    "reviewed": true
+  },
+  "dawnbreaker_fire_wreath": {
+    "nameZh": "星破天惊",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "(swipe_damage + base_attack) × 3",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "63 83 95 110"
+    },
+    "notes": "多个伤害键: swipe_damage, smash_damage",
+    "reviewed": true
+  },
+  "dawnbreaker_solar_guardian": {
+    "nameZh": "天光现世",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage * 5 + land_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: base_damage, land_damage",
+    "reviewed": true
+  },
+  "dazzle_poison_touch": {
+    "nameZh": "剧毒之触",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "dazzle_shadow_wave": {
+    "nameZh": "暗影波",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage * tooltip_max_targets_inc_dazzle * 0.35",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage_radius, damage",
+    "reviewed": true
+  },
+  "death_prophet_carrion_swarm": {
+    "nameZh": "地穴虫群",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "death_prophet_spirit_siphon": {
+    "nameZh": "吸魂巫术",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage * haunt_duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "disruptor_glimpse": {
+    "nameZh": "恶念瞥视",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "max_damage × 0.66",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "需要定义目标基准值; 多个伤害键: min_damage, max_damage, damage_to_distance_pct",
+    "reviewed": true
+  },
+  "disruptor_static_storm": {
+    "nameZh": "静态风暴",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_max × duration",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "485 666 844"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "disruptor_thunder_strike": {
+    "nameZh": "风雷之击",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "strike_damage * strikes",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "doom_bringer_doom": {
+    "nameZh": "末日",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "damage × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "doom_bringer_scorched_earth": {
+    "nameZh": "焦土",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_second × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "dragon_knight_breathe_fire": {
+    "nameZh": "火焰气息",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "dragon_knight_dragon_tail": {
+    "nameZh": "神龙摆尾",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "earth_spirit_boulder_smash": {
+    "nameZh": "巨石冲击",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "rock_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "earth_spirit_geomagnetic_grip": {
+    "nameZh": "地磁之握",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "rock_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "earth_spirit_magnetize": {
+    "nameZh": "磁化",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_second * damage_duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage_per_second, rock_explosion_radius, damage_interval, rock_explosion_delay",
+    "reviewed": true
+  },
+  "earth_spirit_rolling_boulder": {
+    "nameZh": "巨石翻滚",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage + 50",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, damage_str",
+    "reviewed": true
+  },
+  "earthshaker_echo_slam": {
+    "nameZh": "回音击",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "echo_slam_initial_damage + echo_slam_echo_damage × 4",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: echo_slam_damage_range, echo_slam_echo_damage, echo_slam_initial_damage",
+    "reviewed": true
+  },
+  "earthshaker_fissure": {
+    "nameZh": "沟壑",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "fissure_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "elder_titan_earth_splitter": {
+    "nameZh": "裂地沟壑",
+    "damageType": "MAGICAL",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "base_hp * damage_pct / 100",
+    "formulaMax": null,
+    "customParams": {
+      "base_hp": "885 1238 1724"
+    },
+    "notes": "无 damageKeys",
+    "reviewed": true
+  },
+  "elder_titan_echo_stomp": {
+    "nameZh": "回音重踏",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "stomp_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: stomp_damage, wake_damage_limit",
+    "reviewed": true
+  },
+  "elder_titan_echo_stomp_spirit": {
+    "nameZh": "回音重踏",
+    "damageType": "MAGICAL",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "stomp_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: stomp_damage, wake_damage_limit",
+    "reviewed": true
+  },
+  "ember_spirit_fire_remnant": {
+    "nameZh": "残焰",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "ember_spirit_flame_guard": {
+    "nameZh": "烈火罩",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_second × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "ember_spirit_searing_chains": {
+    "nameZh": "炎阳索",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_second × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "enigma_black_hole": {
+    "nameZh": "黑洞",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "damage × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "enigma_malefice": {
+    "nameZh": "憎恶",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage * stun_instances",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "enigma_midnight_pulse": {
+    "nameZh": "午夜凋零",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "(base_damage + base_hp × damage_percent / 100 ) * duration * 0.7",
+    "formulaMax": null,
+    "customParams": {
+      "base_hp": "590 763 936 1109"
+    },
+    "notes": "需要定义目标基准值; 多个伤害键: base_damage, damage_percent",
+    "reviewed": true
+  },
+  "faceless_void_time_dilation": {
+    "nameZh": "时间膨胀",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_stack * 2 × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "furion_sprout": {
+    "nameZh": "发芽",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "sprout_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: sprout_damage, sprout_damage_radius",
+    "reviewed": true
+  },
+  "furion_wrath_of_nature": {
+    "nameZh": "自然之怒",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage * (1 + damage_percent_add / 100) ** 16",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "需要定义目标基准值; 多个伤害键: damage, damage_percent_add",
+    "reviewed": true
+  },
+  "grimstroke_dark_artistry": {
+    "nameZh": "绝笔",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage + bonus_damage_per_hero + bonus_damage_per_creep",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "grimstroke_ink_creature": {
+    "nameZh": "戾影",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "pop_damage + damage_per_second * latch_duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage_per_second, pop_damage",
+    "reviewed": true
+  },
+  "grimstroke_spirit_walk": {
+    "nameZh": "墨涌",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "max_damage + tick_dps_tooltip * buff_duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: max_damage, damage_per_tick",
+    "reviewed": true
+  },
+  "gyrocopter_call_down": {
+    "nameZh": "召唤飞弹",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "gyrocopter_homing_missile": {
+    "nameZh": "追踪导弹",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "hit_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: hit_damage, hero_damage",
+    "reviewed": true
+  },
+  "gyrocopter_rocket_barrage": {
+    "nameZh": "火箭弹幕",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "rocket_damage × rockets_per_second × barrage_duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "hoodwink_acorn_shot": {
+    "nameZh": "爆栗出击",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "(acorn_shot_damage + base_attack * base_damage_pct / 100) * 3",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "63 83 95 110"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "hoodwink_bushwhack": {
+    "nameZh": "野地奇袭",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "total_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "hoodwink_sharpshooter": {
+    "nameZh": "一箭穿心",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "max_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "huskar_inner_fire": {
+    "nameZh": "心炎",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "huskar_life_break": {
+    "nameZh": "牺牲",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "283 470 758"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "invoker_chaos_meteor": {
+    "nameZh": "混沌陨石",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "main_damage * 4 + end_vision_duration * burn_dps * 4",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage_interval, main_damage",
+    "reviewed": true
+  },
+  "invoker_deafening_blast": {
+    "nameZh": "超震声波",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "invoker_emp": {
+    "nameZh": "电磁脉冲",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "mana_burned × damage_per_mana_pct / 100",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "需要定义目标基准值",
+    "reviewed": true
+  },
+  "invoker_sun_strike": {
+    "nameZh": "阳炎冲击",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "invoker_tornado": {
+    "nameZh": "强袭飓风",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage + wex_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: base_damage, wex_damage",
+    "reviewed": true
+  },
+  "jakiro_dual_breath": {
+    "nameZh": "冰火交加",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "burn_damage * 5",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "jakiro_ice_path": {
+    "nameZh": "冰封路径",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "jakiro_macropyre": {
+    "nameZh": "烈焰焚身",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "juggernaut_blade_fury": {
+    "nameZh": "剑刃风暴",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "blade_fury_damage × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: blade_fury_damage, blade_fury_damage_tick",
+    "reviewed": true
+  },
+  "keeper_of_the_light_blinding_light": {
+    "nameZh": "致盲之光",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "keeper_of_the_light_illuminate": {
+    "nameZh": "冲击波",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "total_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "kez_echo_slash": {
+    "nameZh": "回音重斩",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "(base_attack * katana_echo_damage / 100 + echo_hero_damage) * 2",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "63 83 95 110"
+    },
+    "notes": "多个伤害键: katana_echo_damage, echo_hero_damage",
+    "reviewed": true
+  },
+  "kez_raptor_dance": {
+    "nameZh": "猛禽之舞",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "base_damage * strikes",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "kez_talon_toss": {
+    "nameZh": "利爪飞掷",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "kunkka_ghostship": {
+    "nameZh": "幽灵船",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "350 475 600"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "kunkka_torrent": {
+    "nameZh": "洪流",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "torrent_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: torrent_damage, damage_tick_interval",
+    "reviewed": true
+  },
+  "largo_catchy_lick": {
+    "nameZh": "动人之舐",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "largo_frogstomp": {
+    "nameZh": "蛙力千钧",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_stomp * total_ticks",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "legion_commander_overwhelming_odds": {
+    "nameZh": "压倒性优势",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage + damage_per_unit * 2 + damage_per_hero * 2",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, damage_per_unit, damage_per_hero",
+    "reviewed": true
+  },
+  "leshrac_diabolic_edict": {
+    "nameZh": "恶魔敕令",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "damage * num_explosions",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: num_explosions, damage",
+    "reviewed": true
+  },
+  "leshrac_lightning_storm": {
+    "nameZh": "闪电风暴",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "leshrac_pulse_nova": {
+    "nameZh": "脉冲新星",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage * 10",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "leshrac_split_earth": {
+    "nameZh": "撕裂大地",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "115 / 170 / 225 / 280"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "lich_chain_frost": {
+    "nameZh": "连环霜冻",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage * bonus_jump_damage / 2",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, bonus_jump_damage",
+    "reviewed": true
+  },
+  "lich_frost_nova": {
+    "nameZh": "寒霜爆发",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage + aoe_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, aoe_damage",
+    "reviewed": true
+  },
+  "lich_frost_shield": {
+    "nameZh": "冰霜魔盾",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "life_stealer_infest": {
+    "nameZh": "感染",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "lina_dragon_slave": {
+    "nameZh": "龙破斩",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "dragon_slave_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "lina_laguna_blade": {
+    "nameZh": "神灭斩",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, damage_delay",
+    "reviewed": true
+  },
+  "lina_light_strike_array": {
+    "nameZh": "光击阵",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "light_strike_array_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "lion_finger_of_death": {
+    "nameZh": "死亡之指",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, damage_per_kill, damage_delay",
+    "reviewed": true
+  },
+  "lion_impale": {
+    "nameZh": "裂地尖刺",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "luna_eclipse": {
+    "nameZh": "月蚀",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "luna_lucent_beam_damage * beams",
+    "formulaMax": null,
+    "customParams": {
+      "luna_lucent_beam_damage": "225 300 300"
+    },
+    "notes": "无 damageKeys",
+    "reviewed": true
+  },
+  "luna_lucent_beam": {
+    "nameZh": "月光",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "beam_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "magnataur_reverse_polarity": {
+    "nameZh": "两极反转",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "polarity_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "magnataur_shockwave": {
+    "nameZh": "震荡波",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "shock_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "magnataur_skewer": {
+    "nameZh": "巨角冲撞",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "skewer_damage + damage_distance_pct / 100 * range",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "需要定义目标基准值; 多个伤害键: skewer_damage, damage_distance_pct",
+    "reviewed": true
+  },
+  "marci_companion_run": {
+    "nameZh": "回身踢",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "impact_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "marci_grapple": {
+    "nameZh": "过肩摔",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "impact_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "marci_unleash": {
+    "nameZh": "怒拳破",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_attack * 5 × 9",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "70 90 120"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "mars_arena_of_blood": {
+    "nameZh": "热血竞技场",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "spear_damage × 2.5",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "mars_gods_rebuke": {
+    "nameZh": "神之谴戒",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "(base_attack + bonus_damage_vs_heroes) * crit_mult / 100",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "63 83 95 110"
+    },
+    "notes": "无 damageKeys",
+    "reviewed": true
+  },
+  "mars_spear": {
+    "nameZh": "战神迅矛",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "medusa_gorgon_grasp": {
+    "nameZh": "罗网箭阵",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage + (damage_pers * duration)",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, damage_pers, damage_interval",
+    "reviewed": true
+  },
+  "medusa_mystic_snake": {
+    "nameZh": "秘术异蛇",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "snake_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "meepo_poof": {
+    "nameZh": "忽悠",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "poof_damage * 3",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "mirana_arrow": {
+    "nameZh": "月神之箭",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage + arrow_bonus_damage * 0.33",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "60 / 150 / 240 / 330"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "mirana_starfall": {
+    "nameZh": "群星风暴",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage + damage × secondary_starfall_damage_percent / 100",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "需要定义目标基准值; 多个伤害键: damage, secondary_starfall_damage_percent",
+    "reviewed": true
+  },
+  "monkey_king_boundless_strike": {
+    "nameZh": "棒击大地",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "strike_flat_damage + base_attack * strike_crit_mult / 100",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "63 83 95 110"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "monkey_king_primal_spring": {
+    "nameZh": "乾坤之跃",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "impact_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "morphling_adaptive_strike_agi": {
+    "nameZh": "变体打击",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_base + damage_max * 100",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage_base, damage_min, damage_max",
+    "reviewed": true
+  },
+  "morphling_waveform": {
+    "nameZh": "波浪形态",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "75 150 225 300"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "muerta_dead_shot": {
+    "nameZh": "弹无虚发",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "muerta_the_calling": {
+    "nameZh": "唤魂",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage × 2",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "naga_siren_deluge": {
+    "nameZh": "洪水",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "necrolyte_death_pulse": {
+    "nameZh": "死亡脉冲",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "AbilityDamage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "100 / 160 / 220 / 280"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "necrolyte_reapers_scythe": {
+    "nameZh": "死神镰刀",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_hp - base_hp / (1 + damage_per_health)",
+    "formulaMax": null,
+    "customParams": {
+      "base_hp": "885 1238 1724"
+    },
+    "notes": "需要定义目标基准值",
+    "reviewed": true
+  },
+  "nevermore_requiem": {
+    "nameZh": "魂之挽歌",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage * base_soul",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "80 / 120 / 160",
+      "base_soul": "13 15 15"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "nevermore_shadowraze1": {
+    "nameZh": "毁灭阴影",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "shadowraze_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "nevermore_shadowraze2": {
+    "nameZh": "毁灭阴影",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "shadowraze_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "nevermore_shadowraze3": {
+    "nameZh": "毁灭阴影",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "shadowraze_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "night_stalker_crippling_fear": {
+    "nameZh": "伤残恐惧",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "dps * duration_night",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "night_stalker_void": {
+    "nameZh": "虚空",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, invisible_damage_tickrate",
+    "reviewed": true
+  },
+  "nyx_assassin_impale": {
+    "nameZh": "穿刺",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "impale_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "nyx_assassin_jolt": {
+    "nameZh": "神智爆裂",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_mana × max_mana_as_damage_pct / 100 + (impale_damage + 300) * damage_echo_pct / 100",
+    "formulaMax": null,
+    "customParams": {
+      "base_mana": "373 460 547 635",
+      "impale_damage": "100 / 160 / 220 / 280"
+    },
+    "notes": "需要定义目标基准值",
+    "reviewed": true
+  },
+  "nyx_assassin_vendetta": {
+    "nameZh": "复仇",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "bonus_damage + base_attack",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "63 83 95 110"
+    },
+    "notes": "无 damageKeys",
+    "reviewed": true
+  },
+  "obsidian_destroyer_astral_imprisonment": {
+    "nameZh": "星体禁锢",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "obsidian_destroyer_sanity_eclipse": {
+    "nameZh": "神智之蚀",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage + (hero_mana - base_mana) * damage_multiplier",
+    "formulaMax": null,
+    "customParams": {
+      "hero_mana": "814 1177 1627",
+      "base_mana": "460 635 882"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "ogre_magi_fireblast": {
+    "nameZh": "火焰爆轰",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "fireblast_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "ogre_magi_ignite": {
+    "nameZh": "引燃",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "burn_damage × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "omniknight_hammer_of_purity": {
+    "nameZh": "纯洁之锤",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "base_attack + base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "63 83 95 110"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "omniknight_purification": {
+    "nameZh": "洗礼",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "heal",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "无 damageKeys",
+    "reviewed": true
+  },
+  "oracle_fortunes_end": {
+    "nameZh": "气运之末",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "oracle_purifying_flames": {
+    "nameZh": "涤罪之焰",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, damage_modifier",
+    "reviewed": true
+  },
+  "pangolier_gyroshell": {
+    "nameZh": "地雷滚滚",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage × 2",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "100 / 200 / 300"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "pangolier_shield_crash": {
+    "nameZh": "甲盾冲击",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "pangolier_swashbuckle": {
+    "nameZh": "虚张声势",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage * strikes",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, damage_penalty",
+    "reviewed": true
+  },
+  "phantom_lancer_spirit_lance": {
+    "nameZh": "灵魂之矛",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "lance_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "需要定义目标基准值; 多个伤害键: lance_damage, illusion_damage_in_pct",
+    "reviewed": true
+  },
+  "phoenix_fire_spirits": {
+    "nameZh": "烈火精灵",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_second × duration * 1.5",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "phoenix_icarus_dive": {
+    "nameZh": "凤凰冲击",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_second * burn_duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "phoenix_sun_ray": {
+    "nameZh": "烈日炙烤",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "(base_damage + hp_perc_damage * 1000 / 100) * 3 / tick_interval",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: base_damage, hp_perc_damage",
+    "reviewed": true
+  },
+  "phoenix_supernova": {
+    "nameZh": "超新星",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_sec * 4",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "primal_beast_onslaught": {
+    "nameZh": "突",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "knockback_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "primal_beast_pulverize": {
+    "nameZh": "捶",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage * 3 + bonus_damage_per_hit * 2",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "primal_beast_trample": {
+    "nameZh": "踏",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "(base_damage + base_attack * attack_damage / 100) × duration * 2",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "63 83 95 110"
+    },
+    "notes": "多个伤害键: base_damage, attack_damage",
+    "reviewed": true
+  },
+  "puck_dream_coil": {
+    "nameZh": "梦境缠绕",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "coil_initial_damage + coil_break_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: coil_initial_damage, coil_break_damage",
+    "reviewed": true
+  },
+  "puck_illusory_orb": {
+    "nameZh": "幻象法球",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "puck_waning_rift": {
+    "nameZh": "新月之痕",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "pudge_dismember": {
+    "nameZh": "肢解",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "dismember_damage * AbilityChannelTime + base_str * strength_damage * AbilityChannelTime",
+    "formulaMax": null,
+    "customParams": {
+      "base_str": "40 58 82"
+    },
+    "notes": "多个伤害键: dismember_damage, strength_damage",
+    "reviewed": true
+  },
+  "pudge_meat_hook": {
+    "nameZh": "肉钩",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "pudge_rot": {
+    "nameZh": "腐烂",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "rot_damage * 4",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "pugna_life_drain": {
+    "nameZh": "生命汲取",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_drain * 10",
+    "formulaMax": null,
+    "customParams": {
+      "base_drain": "150 250 350"
+    },
+    "notes": "无 damageKeys",
+    "reviewed": true
+  },
+  "pugna_nether_blast": {
+    "nameZh": "幽冥爆轰",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "blast_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: structure_damage_mod, blast_damage",
+    "reviewed": true
+  },
+  "queenofpain_scream_of_pain": {
+    "nameZh": "痛苦尖叫",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "queenofpain_shadow_strike": {
+    "nameZh": "暗影突袭",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "strike_damage + duration_damage * (duration / damage_interval)",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: strike_damage, damage_interval",
+    "reviewed": true
+  },
+  "queenofpain_sonic_wave": {
+    "nameZh": "超声冲击波",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "rattletrap_battery_assault": {
+    "nameZh": "弹幕冲击",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage × duration / 0.7 * 0.35",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "rattletrap_hookshot": {
+    "nameZh": "发射钩爪",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "rattletrap_power_cogs": {
+    "nameZh": "能量齿轮",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage * 1.3",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "rattletrap_rocket_flare": {
+    "nameZh": "照明火箭",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "razor_eye_of_the_storm": {
+    "nameZh": "风暴之眼",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "razor_plasma_field": {
+    "nameZh": "等离子场",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_max * 2",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage_min, damage_max",
+    "reviewed": true
+  },
+  "ringmaster_impalement": {
+    "nameZh": "尖刀戏",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_impact + 4 * bleed_health_pct / 100 * base_hp",
+    "formulaMax": null,
+    "customParams": {
+      "base_hp": "590 763 936 1109"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "ringmaster_tame_the_beasts": {
+    "nameZh": "驯兽术",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_max / 2 + damage_min / 2",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage_min, damage_max",
+    "reviewed": true
+  },
+  "ringmaster_wheel": {
+    "nameZh": "奇观轮",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "aura_damage * 3 + explosion_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: aura_damage, explosion_damage",
+    "reviewed": true
+  },
+  "rubick_fade_bolt": {
+    "nameZh": "弱化能流",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "sandking_burrowstrike": {
+    "nameZh": "掘地穿刺",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "80 / 150 / 220 / 290"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "sandking_epicenter": {
+    "nameZh": "地震",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "epicenter_pulses * epicenter_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "sandking_sand_storm": {
+    "nameZh": "沙尘暴",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "sand_storm_damage * AbilityDuration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage_tick_rate, sand_storm_damage",
+    "reviewed": true
+  },
+  "shadow_demon_shadow_poison": {
+    "nameZh": "暗影剧毒",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "hit_damage * 5 + stack_damage * 16",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: stack_damage, bonus_stack_damage, hit_damage",
+    "reviewed": true
+  },
+  "shadow_shaman_ether_shock": {
+    "nameZh": "苍穹震击",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "shadow_shaman_shackles": {
+    "nameZh": "枷锁",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "total_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "shredder_chakram": {
+    "nameZh": "锯齿飞轮",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "pass_damage * 2 + damage_per_second",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: pass_damage, damage_per_second, damage_interval",
+    "reviewed": true
+  },
+  "shredder_timber_chain": {
+    "nameZh": "伐木锯链",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "shredder_twisted_chakram": {
+    "nameZh": "锯齿轮旋",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "shredder_whirling_death": {
+    "nameZh": "死亡旋风",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "whirling_damage + tree_damage_scale * 2",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: whirling_damage, tree_damage_scale",
+    "reviewed": true
+  },
+  "silencer_curse_of_the_silent": {
+    "nameZh": "奥术诅咒",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "application_damage + damage × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, application_damage",
+    "reviewed": true
+  },
+  "silencer_last_word": {
+    "nameZh": "遗言",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "skeleton_king_hellfire_blast": {
+    "nameZh": "冥火爆击",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage + blast_dot_damage * blast_dot_duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, blast_dot_damage",
+    "reviewed": true
+  },
+  "skywrath_mage_arcane_bolt": {
+    "nameZh": "奥法鹰隼",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "bolt_damage + int_multiplier * base_intelligence",
+    "formulaMax": null,
+    "customParams": {
+      "base_intelligence": "37 50 63 76"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "skywrath_mage_concussive_shot": {
+    "nameZh": "震荡光弹",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "skywrath_mage_mystic_flare": {
+    "nameZh": "神秘之耀",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, damage_interval",
+    "reviewed": true
+  },
+  "slardar_slithereen_crush": {
+    "nameZh": "鱼人碎击",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "crush_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "slark_dark_pact": {
+    "nameZh": "黑暗契约",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "total_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "snapfire_lil_shredder": {
+    "nameZh": "霹雳铁手",
+    "damageType": "PHYSICAL",
+    "effectiveType": "PHYSICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage * buffed_attacks",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "snapfire_mortimer_kisses": {
+    "nameZh": "蜥蜴绝吻",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_impact * projectile_count * 0.4 + burn_damage * (duration_tooltip + burn_ground_duration) * 0.33",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage_per_impact, burn_damage",
+    "reviewed": true
+  },
+  "snapfire_scatterblast": {
+    "nameZh": "电光石火",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "sniper_assassinate": {
+    "nameZh": "暗杀",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "sniper_shrapnel": {
+    "nameZh": "榴霰弹",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "shrapnel_damage × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: shrapnel_damage, damage_delay",
+    "reviewed": true
+  },
+  "spectre_spectral_dagger": {
+    "nameZh": "幽鬼之刃",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "spirit_breaker_nether_strike": {
+    "nameZh": "幽冥一击",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "storm_spirit_static_remnant": {
+    "nameZh": "残影",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "100 160 220 280"
+    },
+    "notes": "多个伤害键: static_remnant_damage_radius, static_remnant_damage",
+    "reviewed": true
+  },
+  "sven_storm_bolt": {
+    "nameZh": "风暴之拳",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "80 / 160 / 240 / 320"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "techies_land_mines": {
+    "nameZh": "感应地雷",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, outer_damage",
+    "reviewed": true
+  },
+  "techies_sticky_bomb": {
+    "nameZh": "粘性炸弹",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: damage, explosion_radius",
+    "reviewed": true
+  },
+  "techies_suicide": {
+    "nameZh": "爆破起飞！",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "templar_assassin_psionic_trap": {
+    "nameZh": "灵能陷阱",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "trap_bonus_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: extra_damage, damage_tick_rate",
+    "reviewed": true
+  },
+  "tidehunter_gush": {
+    "nameZh": "巨浪",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "gush_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "tidehunter_ravage": {
+    "nameZh": "毁灭",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "275 / 375 / 475"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "tinker_laser": {
+    "nameZh": "激光",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "laser_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "tinker_march_of_the_machines": {
+    "nameZh": "机械行军",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage × 10",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "tiny_avalanche": {
+    "nameZh": "山崩",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "avalanche_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "tiny_toss": {
+    "nameZh": "投掷",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "toss_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "treant_leech_seed": {
+    "nameZh": "寄生种子",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "leech_damage + base_attack",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "63 83 95 110"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "treant_natures_grasp": {
+    "nameZh": "自然卷握",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage_per_second * vines_duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "treant_overgrowth": {
+    "nameZh": "疯狂生长",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "troll_warlord_whirling_axes_melee": {
+    "nameZh": "旋风飞斧（近战）",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "troll_warlord_whirling_axes_ranged": {
+    "nameZh": "旋风飞斧（远程）",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "axe_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "tusk_ice_shards": {
+    "nameZh": "寒冰碎片",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "shard_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "tusk_snowball": {
+    "nameZh": "雪球",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "snowball_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: snowball_damage, snowball_damage_bonus",
+    "reviewed": true
+  },
+  "tusk_walrus_punch": {
+    "nameZh": "海象神拳！",
+    "damageType": null,
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "(bonus_damage + base_attack) * crit_multiplier / 100",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "70 90 120"
+    },
+    "notes": "无 damageKeys",
+    "reviewed": true
+  },
+  "undying_decay": {
+    "nameZh": "腐朽",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "decay_damage + str_steal * 22",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "ursa_earthshock": {
+    "nameZh": "震撼大地",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "75 / 125 / 175 / 225"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "vengefulspirit_magic_missile": {
+    "nameZh": "魔法箭",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "magic_missile_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "vengefulspirit_nether_swap": {
+    "nameZh": "移形换位",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "vengefulspirit_wave_of_terror": {
+    "nameZh": "恐怖波动",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "venomancer_noxious_plague": {
+    "nameZh": "恶性瘟疫",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "impact_damage + base_hp * health_damage / 100 * debuff_duration",
+    "formulaMax": null,
+    "customParams": {
+      "base_hp": "885 1238 1724"
+    },
+    "notes": "多个伤害键: impact_damage, health_damage",
+    "reviewed": true
+  },
+  "venomancer_venomous_gale": {
+    "nameZh": "瘴气",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "strike_damage + duration / 3 * tick_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: strike_damage, tick_damage",
+    "reviewed": true
+  },
+  "viper_nethertoxin": {
+    "nameZh": "幽冥剧毒",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "(max_damage + min_damage) × max_duration / 2 + max_damage * (duration - max_duration)",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: min_damage, max_damage",
+    "reviewed": true
+  },
+  "viper_viper_strike": {
+    "nameZh": "蝮蛇突袭",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "visage_soul_assumption": {
+    "nameZh": "灵魂超度",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "soul_base_damage + soul_charge_damage * stack_limit",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: soul_base_damage, soul_charge_damage, damage_limit, damage_min, damage_max",
+    "reviewed": true
+  },
+  "void_spirit_aether_remnant": {
+    "nameZh": "残阴",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "impact_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "void_spirit_astral_step": {
+    "nameZh": "太虚之径",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_attack + pop_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_attack": "63 83 95 110"
+    },
+    "notes": "多个伤害键: pop_damage_delay, pop_damage",
+    "reviewed": true
+  },
+  "void_spirit_dissimilate": {
+    "nameZh": "异化",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "120 / 200 / 280 / 360"
+    },
+    "notes": "多个伤害键: AbilityDamage, damage_radius",
+    "reviewed": true
+  },
+  "void_spirit_resonant_pulse": {
+    "nameZh": "共鸣脉冲",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "warlock_shadow_word": {
+    "nameZh": "暗言术",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage × duration",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "warlock_upheaval": {
+    "nameZh": "剧变",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "278 512 790 1106"
+    },
+    "notes": "多个伤害键: damage_per_second, max_damage, damage_tick_interval",
+    "reviewed": true
+  },
+  "windrunner_powershot": {
+    "nameZh": "强力击",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "powershot_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "winter_wyvern_arctic_burn": {
+    "nameZh": "严寒烧灼",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_hp × percent_damage / 100 * damage_duration",
+    "formulaMax": null,
+    "customParams": {
+      "base_hp": "590 763 936 1109"
+    },
+    "notes": "需要定义目标基准值",
+    "reviewed": true
+  },
+  "winter_wyvern_splinter_blast": {
+    "nameZh": "碎裂冲击",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "wisp_spirits": {
+    "nameZh": "幽魂",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "hero_damage * spirit_amount",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "多个伤害键: creep_damage, hero_damage",
+    "reviewed": true
+  },
+  "witch_doctor_death_ward": {
+    "nameZh": "死亡守卫",
+    "damageType": "PURE",
+    "effectiveType": "PURE",
+    "formulaMin": null,
+    "formulaExpected": "damage * 8",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "witch_doctor_maledict": {
+    "nameZh": "巫蛊咒术",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "base_damage",
+    "formulaMax": null,
+    "customParams": {
+      "base_damage": "190 280 340 417"
+    },
+    "notes": null,
+    "reviewed": true
+  },
+  "zuus_arc_lightning": {
+    "nameZh": "弧形闪电",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "arc_damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "zuus_lightning_bolt": {
+    "nameZh": "雷击",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  },
+  "zuus_thundergods_wrath": {
+    "nameZh": "雷神之怒",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,
+    "formulaExpected": "damage",
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "reviewed": true
+  }
+}

@@ -5,9 +5,13 @@
 ```
 VPK原始数据 → parse-valve-data.cjs → abilities.json (932个)
                                           ↓
-                              filter-damage-abilities.cjs → damage-abilities.json (293个)
+                              filter-damage-abilities.cjs → damage-abilities.json (254个，isDamagePurpose=true)
                                                                 ↓
-                                                 apply-direct-damage-marks.cjs → 添加 isDamagePurpose 标记
+                                         generate-hero-damage-docs-v2.cjs → docs/damage-formulas/*.md (人工审核公式)
+                                                                                     ↓
+                                                           extract-formulas-to-json.cjs → damage-formulas-config.json
+                                                                                               ↓
+                                                                           calculate-damage.cjs → 计算各等级伤害
 ```
 
 ## 脚本列表
@@ -37,13 +41,14 @@ node scripts/parse-valve-data.cjs
 - `public/data/abilities.json`
 
 **输出**：
-- `public/data/damage-abilities.json` - 主动伤害技能（293个）
+- `public/data/damage-abilities.json` - 伤害技能（含 `isDamagePurpose` 标记）
 
 **筛选规则**：
 - 排除被动技能、先天技能
 - 排除幻象/召唤/增益类技能
 - 排除非直接伤害的 damageKey
 - 通过白名单/黑名单手动调整
+- `isDamagePurpose=true` 表示以伤害为主要目的（共254个）
 
 **运行**：
 ```bash
@@ -52,47 +57,79 @@ node scripts/filter-damage-abilities.cjs
 
 ---
 
-### analyze-damage-types.cjs
-**功能**：分析伤害技能的分类，生成概览文档供人工审核
+### generate-hero-damage-docs-v2.cjs
+**功能**：为每个英雄生成独立的伤害公式文档，供人工审核
 
 **输入**：
 - `public/data/damage-abilities.json`
 
 **输出**：
-- `docs/技能分类概览.md` - 按分类列出所有技能，带"直接伤害"标记列
-- `public/data/damage-abilities-classified.json` - 带 damageCategory 字段
-
-**分类**：
-- simple（简单直接伤害）
-- dot（持续伤害）
-- multi（多段伤害）
-- percent（百分比伤害）
-- complex（复杂技能）
-- special（特殊技能）
+- `docs/damage-formulas/*.md` - 每个英雄一个文档，列出技能的原始数据和公式定义
 
 **运行**：
 ```bash
-node scripts/analyze-damage-types.cjs
+node scripts/generate-hero-damage-docs-v2.cjs
 ```
 
 ---
 
-### apply-direct-damage-marks.cjs
-**功能**：从 `技能分类概览.md` 读取人工标注的 ✓ 标记，更新到 JSON
+### extract-formulas-to-json.cjs
+**功能**：从已审核的 MD 文档中提取公式，生成 JSON 配置
 
 **输入**：
-- `docs/技能分类概览.md` - 人工标注后的文档
-- `public/data/damage-abilities.json`
+- `docs/damage-formulas/*.md` - 人工审核后的文档（`reviewed: ✅`）
 
 **输出**：
-- `public/data/damage-abilities.json` - 添加 `isDamagePurpose` 字段
+- `public/data/damage-formulas-config.json` - 技能公式配置
 
-**使用流程**：
-1. 运行 `analyze-damage-types.cjs` 生成概览文档
-2. 手动在 `技能分类概览.md` 中用 ✓ 标记"以伤害为主要目的"的技能
-3. 运行 `apply-direct-damage-marks.cjs` 同步标记到 JSON
+**JSON 结构**：
+```json
+{
+  "ability_internal_name": {
+    "nameZh": "技能名",
+    "damageType": "MAGICAL",
+    "effectiveType": "MAGICAL",
+    "formulaMin": null,           // 最小伤害公式
+    "formulaExpected": "damage × 2", // 期望伤害公式
+    "formulaMax": null,           // 最大伤害公式
+    "customParams": { "hero_strength": "50 90 130" },
+    "notes": null,
+    "reviewed": true
+  }
+}
+```
 
 **运行**：
 ```bash
-node scripts/apply-direct-damage-marks.cjs
+node scripts/extract-formulas-to-json.cjs
+```
+
+---
+
+### calculate-damage.cjs
+**功能**：根据公式计算各等级伤害
+
+**输入**：
+- `docs/damage-formulas/*.md` 或 `public/data/damage-formulas-config.json`
+- `public/data/damage-abilities.json`
+
+**参数**：
+- `<英雄名>` - 要计算的英雄名称
+
+**输出**：
+- 控制台输出各技能的各等级伤害值
+
+**运行**：
+```bash
+node scripts/calculate-damage.cjs 矮人直升机
+```
+
+**示例输出**：
+```
+=== 矮人直升机 伤害计算 ===
+
+【火箭弹幕】
+  公式: rocket_damage × rockets_per_second × barrage_duration
+  审核: ✅
+  各等级伤害: 240 / 420 / 600 / 780
 ```
