@@ -20,6 +20,7 @@
   "license": "MIT",
   "devDependencies": {
     "@nuxt/devtools": "latest",
+    "@types/node": "^25.0.9",
     "nuxt": "^3.14.0",
     "typescript": "^5.3.0",
     "vue": "^3.4.0",

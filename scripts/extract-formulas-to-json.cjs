@@ -49,6 +49,27 @@ function parseFormulasFromMD(filePath) {
             }
         }
 
+        // 提取 abilityValues (完整参数)
+        const abilityValuesMatch = block.match(/\*\*abilityValues\*\* \(完整参数\):\s*([\s\S]*?)(?=\*\*customParams\*\*|### 公式定义)/);
+        let abilityValues = {};
+        if (abilityValuesMatch) {
+            const valuesBlock = abilityValuesMatch[1];
+            const valueLines = valuesBlock.match(/`([^`]+)`:\s*(.+)/g);
+            if (valueLines) {
+                valueLines.forEach(line => {
+                    const match = line.match(/`([^`]+)`:\s*(.+)/);
+                    if (match) {
+                        const key = match[1];
+                        const val = match[2].trim();
+                        // 跳过 [object Object] 类型的值
+                        if (val !== '[object Object]') {
+                            abilityValues[key] = val;
+                        }
+                    }
+                });
+            }
+        }
+
         // 提取备注
         const notesMatch = block.match(/\*\*备注\*\*:\s*(.+)/);
         const notes = notesMatch && notesMatch[1].trim() !== '-' ? notesMatch[1].trim() : null;
@@ -67,6 +88,7 @@ function parseFormulasFromMD(filePath) {
             formulaMin: null,
             formulaExpected: formula,
             formulaMax: null,
+            abilityValues: Object.keys(abilityValues).length > 0 ? abilityValues : null,
             customParams: Object.keys(customParams).length > 0 ? customParams : null,
             notes: notes,
             reviewed: reviewed
