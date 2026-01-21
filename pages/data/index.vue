@@ -16,6 +16,10 @@ const loading = ref(true)
 const parsing = ref(false)
 const parseResult = ref<{ success: boolean; message: string } | null>(null)
 
+// 物品数据
+const items = ref<any[]>([])
+const itemsLoading = ref(true)
+
 // 加载数据
 const loadData = async () => {
   loading.value = true
@@ -33,7 +37,23 @@ const loadData = async () => {
   }
 }
 
-onMounted(loadData)
+// 加载物品数据
+const loadItems = async () => {
+  itemsLoading.value = true
+  try {
+    const data = await $fetch<any[]>('/data/items/items.json')
+    items.value = data || []
+  } catch (e) {
+    console.error('加载物品数据失败:', e)
+  } finally {
+    itemsLoading.value = false
+  }
+}
+
+onMounted(() => {
+  loadData()
+  loadItems()
+})
 
 // 执行 VPK 解析
 const parseVPK = async () => {
@@ -184,10 +204,11 @@ const damageStats = computed(() => {
 
       <!-- 物品页签 -->
       <el-tab-pane label="物品数据" name="items">
-        <div class="placeholder">
-          <div class="placeholder-icon">🎒</div>
-          <div class="placeholder-text">物品数据管理 - 开发中</div>
-        </div>
+        <ItemList
+          :items="items"
+          :loading="itemsLoading"
+          @reload="loadItems"
+        />
       </el-tab-pane>
     </el-tabs>
   </div>

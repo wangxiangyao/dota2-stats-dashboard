@@ -1,0 +1,1055 @@
+{
+  "item_branches": {
+    "isBasic": true,
+    "attributes": {
+      "allStats": 1
+    }
+  },
+  "item_gauntlets": {
+    "isBasic": true,
+    "attributes": {
+      "strength": 3
+    }
+  },
+  "item_slippers": {
+    "isBasic": true,
+    "attributes": {
+      "agility": 3
+    }
+  },
+  "item_mantle": {
+    "isBasic": true,
+    "attributes": {
+      "intellect": 3
+    }
+  },
+  "item_circlet": {
+    "isBasic": true,
+    "attributes": {
+      "allStats": 2
+    }
+  },
+  "item_ring_of_protection": {
+    "isBasic": true,
+    "attributes": {
+      "armor": 2
+    }
+  },
+  "item_ring_of_regen": {
+    "isBasic": true,
+    "attributes": {
+      "healthRegen": 1.25
+    }
+  },
+  "item_sobi_mask": {
+    "isBasic": true,
+    "attributes": {
+      "manaRegen": 0.7
+    }
+  },
+  "item_fluffy_hat": {
+    "isBasic": true,
+    "attributes": {
+      "health": 125
+    }
+  },
+  "item_blades_of_attack": {
+    "isBasic": true,
+    "attributes": {
+      "damage": 9
+    }
+  },
+  "item_belt_of_strength": {
+    "isBasic": true,
+    "attributes": {
+      "strength": 6
+    }
+  },
+  "item_boots_of_elves": {
+    "isBasic": true,
+    "attributes": {
+      "agility": 6
+    }
+  },
+  "item_robe": {
+    "isBasic": true,
+    "attributes": {
+      "intellect": 6
+    }
+  },
+  "item_crown": {
+    "isBasic": true,
+    "attributes": {
+      "allStats": 4
+    }
+  },
+  "item_gloves": {
+    "isBasic": true,
+    "attributes": {
+      "attackSpeed": 20
+    }
+  },
+  "item_boots": {
+    "isBasic": true,
+    "attributes": {
+      "moveSpeed": 45
+    }
+  },
+  "item_chainmail": {
+    "isBasic": true,
+    "attributes": {
+      "armor": 4
+    }
+  },
+  "item_ring_of_health": {
+    "isBasic": true,
+    "attributes": {
+      "healthRegen": 4.5
+    }
+  },
+  "item_void_stone": {
+    "isBasic": true,
+    "attributes": {
+      "manaRegen": 1.75
+    }
+  },
+  "item_energy_booster": {
+    "isBasic": true,
+    "attributes": {
+      "mana": 250
+    }
+  },
+  "item_broadsword": {
+    "isBasic": true,
+    "attributes": {
+      "damage": 15
+    }
+  },
+  "item_diadem": {
+    "isBasic": true,
+    "attributes": {
+      "allStats": 6
+    }
+  },
+  "item_ogre_axe": {
+    "isBasic": true,
+    "attributes": {
+      "strength": 10
+    }
+  },
+  "item_blade_of_alacrity": {
+    "isBasic": true,
+    "attributes": {
+      "agility": 10
+    }
+  },
+  "item_staff_of_wizardry": {
+    "isBasic": true,
+    "attributes": {
+      "intellect": 10
+    }
+  },
+  "item_blitz_knuckles": {
+    "isBasic": true,
+    "attributes": {
+      "attackSpeed": 35
+    }
+  },
+  "item_vitality_booster": {
+    "isBasic": true,
+    "attributes": {
+      "health": 250
+    }
+  },
+  "item_cloak": {
+    "isBasic": true,
+    "attributes": {
+      "magicResist": 20
+    }
+  },
+  "item_wind_lace": {
+    "isBasic": true,
+    "attributes": {
+      "moveSpeed": 15
+    }
+  },
+  "item_claymore": {
+    "isBasic": true,
+    "attributes": {
+      "damage": 20
+    }
+  },
+  "item_lifesteal": {
+    "isBasic": true,
+    "attributes": {
+      "lifesteal": 18
+    }
+  },
+  "item_voodoo_mask": {
+    "isBasic": true,
+    "attributes": {
+      "spellLifesteal": 12
+    }
+  },
+  "item_talisman_of_evasion": {
+    "isBasic": true,
+    "attributes": {
+      "evasion": 15
+    }
+  },
+  "item_mithril_hammer": {
+    "isBasic": true,
+    "attributes": {
+      "damage": 24
+    }
+  },
+  "item_ultimate_orb": {
+    "isBasic": true,
+    "attributes": {
+      "allStats": 15
+    }
+  },
+  "item_tiara_of_selemene": {
+    "isBasic": true,
+    "attributes": {
+      "manaRegen": 6
+    }
+  },
+  "item_mystic_staff": {
+    "isBasic": true,
+    "attributes": {
+      "intellect": 25
+    }
+  },
+  "item_ring_of_tarrasque": {
+    "isBasic": true,
+    "attributes": {
+      "healthRegen": 12
+    }
+  },
+  "item_hyperstone": {
+    "isBasic": true,
+    "attributes": {
+      "attackSpeed": 60
+    }
+  },
+  "item_reaver": {
+    "isBasic": true,
+    "attributes": {
+      "strength": 25
+    }
+  },
+  "item_eagle": {
+    "isBasic": true,
+    "attributes": {
+      "agility": 25
+    }
+  },
+  "item_demon_edge": {
+    "isBasic": true,
+    "attributes": {
+      "damage": 40
+    }
+  },
+  "item_relic": {
+    "isBasic": true,
+    "attributes": {
+      "damage": 55
+    }
+  },
+  "item_platemail": {
+    "isBasic": true,
+    "attributes": {
+      "armor": 10
+    }
+  },
+  "item_javelin": {
+    "isBasic": true,
+    "attributes": {}
+  },
+  "item_overwhelming_blink": {
+    "attributes": {
+      "strength": 25
+    }
+  },
+  "item_swift_blink": {
+    "attributes": {
+      "agility": 25,
+      "moveSpeed": null
+    },
+    "isBasic": false
+  },
+  "item_arcane_blink": {
+    "attributes": {
+      "intellect": 25
+    }
+  },
+  "item_moon_shard": {
+    "attributes": {
+      "attackSpeed": 140
+    }
+  },
+  "item_magic_wand": {
+    "attributes": {
+      "allStats": 3
+    }
+  },
+  "item_travel_boots": {
+    "attributes": {
+      "moveSpeed": 90
+    }
+  },
+  "item_travel_boots_2": {
+    "attributes": {
+      "moveSpeed": 110
+    }
+  },
+  "item_phase_boots": {
+    "attributes": {
+      "moveSpeed": 50,
+      "attackSpeed": 0,
+      "armor": 4
+    }
+  },
+  "item_power_treads": {
+    "attributes": {
+      "attackSpeed": 25,
+      "damage": 0,
+      "strength": 10,
+      "moveSpeed": 45
+    },
+    "isBasic": false
+  },
+  "item_phylactery": {
+    "attributes": {
+      "allStats": 7,
+      "healthRegen": 6.5,
+      "manaRegen": 2.5
+    }
+  },
+  "item_angels_demise": {
+    "attributes": {
+      "health": 450,
+      "mana": 450,
+      "allStats": 8,
+      "healthRegen": 7,
+      "manaRegen": 3
+    }
+  },
+  "item_hand_of_midas": {
+    "attributes": {
+      "attackSpeed": 35
+    }
+  },
+  "item_oblivion_staff": {
+    "attributes": {
+      "intellect": 10,
+      "attackSpeed": 35,
+      "manaRegen": 1
+    }
+  },
+  "item_witch_blade": {
+    "attributes": {
+      "attackSpeed": 40,
+      "intellect": 12,
+      "manaRegen": 1.5,
+      "armor": 5
+    }
+  },
+  "item_pers": {
+    "attributes": {
+      "healthRegen": 6.5,
+      "manaRegen": 2.25
+    }
+  },
+  "item_bracer": {
+    "attributes": {
+      "strength": 5,
+      "agility": 2,
+      "intellect": 2,
+      "damage": 0,
+      "healthRegen": 0.75,
+      "health": 50
+    }
+  },
+  "item_wraith_band": {
+    "attributes": {
+      "agility": 5,
+      "strength": 2,
+      "intellect": 2,
+      "attackSpeed": 6,
+      "armor": 1.75
+    }
+  },
+  "item_null_talisman": {
+    "attributes": {
+      "intellect": 5,
+      "strength": 2,
+      "agility": 2,
+      "manaRegen": 1
+    }
+  },
+  "item_mekansm": {
+    "attributes": {
+      "armor": 5,
+      "healthRegen": 2.5
+    }
+  },
+  "item_vladmir": {
+    "attributes": {
+      "armor": 3,
+      "manaRegen": 1.75,
+      "lifesteal": 20,
+      "damage": 18
+    },
+    "isBasic": false
+  },
+  "item_buckler": {
+    "attributes": {
+      "armor": 3
+    },
+    "isBasic": false
+  },
+  "item_ring_of_basilius": {
+    "attributes": {
+      "manaRegen": 1.25
+    },
+    "isBasic": false
+  },
+  "item_holy_locket": {
+    "attributes": {
+      "health": 0,
+      "mana": 0,
+      "allStats": 7
+    }
+  },
+  "item_pipe": {
+    "attributes": {
+      "healthRegen": 16.5,
+      "allStats": 0,
+      "magicResist": 28
+    },
+    "isBasic": false
+  },
+  "item_urn_of_shadows": {
+    "attributes": {
+      "manaRegen": 1.25,
+      "armor": 2,
+      "allStats": 2
+    }
+  },
+  "item_headdress": {
+    "attributes": {
+      "healthRegen": 2.5
+    },
+    "isBasic": false
+  },
+  "item_sheepstick": {
+    "attributes": {
+      "intellect": 30,
+      "manaRegen": 8.5
+    }
+  },
+  "item_orchid": {
+    "attributes": {
+      "attackSpeed": 35,
+      "damage": 10,
+      "manaRegen": 3,
+      "healthRegen": 6,
+      "intellect": 10
+    }
+  },
+  "item_bloodthorn": {
+    "attributes": {
+      "intellect": 10,
+      "attackSpeed": 95,
+      "manaRegen": 3.25,
+      "healthRegen": 6.5,
+      "damage": 10
+    }
+  },
+  "item_echo_sabre": {
+    "attributes": {
+      "damage": 20,
+      "strength": 15,
+      "manaRegen": 1.75
+    }
+  },
+  "item_cyclone": {
+    "attributes": {
+      "intellect": 10,
+      "manaRegen": 2.5,
+      "moveSpeed": 20
+    }
+  },
+  "item_wind_waker": {
+    "attributes": {
+      "moveSpeed": 30,
+      "manaRegen": 3,
+      "intellect": 35
+    }
+  },
+  "item_aether_lens": {
+    "attributes": {
+      "mana": 300,
+      "manaRegen": 2.5
+    }
+  },
+  "item_force_staff": {
+    "attributes": {
+      "intellect": 10,
+      "health": 175
+    }
+  },
+  "item_hurricane_pike": {
+    "attributes": {
+      "intellect": 15,
+      "health": 200,
+      "agility": 20,
+      "strength": 15,
+      "attackSpeed": 100
+    }
+  },
+  "item_dagon": {
+    "attributes": {
+      "intellect": null,
+      "strength": null,
+      "agility": null,
+      "lifesteal": 10,
+      "allStats": 7
+    },
+    "isBasic": false
+  },
+  "item_dagon_2": {
+    "attributes": {
+      "intellect": null,
+      "strength": null,
+      "agility": null,
+      "allStats": 9,
+      "spellLifesteal": 10
+    },
+    "isBasic": false
+  },
+  "item_dagon_3": {
+    "attributes": {
+      "intellect": null,
+      "strength": null,
+      "agility": null,
+      "allStats": 11,
+      "lifesteal": 10
+    },
+    "isBasic": false
+  },
+  "item_dagon_4": {
+    "attributes": {
+      "intellect": null,
+      "strength": null,
+      "agility": null,
+      "allStats": 13,
+      "lifesteal": 10
+    },
+    "isBasic": false
+  },
+  "item_dagon_5": {
+    "attributes": {
+      "intellect": null,
+      "strength": null,
+      "agility": null,
+      "allStats": 15,
+      "spellLifesteal": 10
+    },
+    "isBasic": false
+  },
+  "item_ultimate_scepter": {
+    "attributes": {
+      "allStats": 10,
+      "health": 175,
+      "mana": 175
+    }
+  },
+  "item_ultimate_scepter_2": {
+    "attributes": {}
+  },
+  "item_refresher": {
+    "attributes": {
+      "healthRegen": 12,
+      "manaRegen": 6,
+      "damage": 0
+    }
+  },
+  "item_assault": {
+    "attributes": {
+      "attackSpeed": 60,
+      "armor": 15
+    },
+    "isBasic": false
+  },
+  "item_heart": {
+    "attributes": {
+      "strength": 40
+    }
+  },
+  "item_black_king_bar": {
+    "attributes": {
+      "strength": 10,
+      "damage": 24
+    }
+  },
+  "item_shivas_guard": {
+    "attributes": {
+      "intellect": 5,
+      "strength": 5,
+      "agility": 5,
+      "armor": 15,
+      "attackSpeed": -45
+    }
+  },
+  "item_bloodstone": {
+    "attributes": {
+      "health": 450,
+      "mana": 450,
+      "spellLifesteal": 25
+    }
+  },
+  "item_sphere": {
+    "attributes": {
+      "allStats": 16,
+      "healthRegen": 6.5,
+      "manaRegen": 4.25
+    }
+  },
+  "item_lotus_orb": {
+    "attributes": {
+      "armor": 10,
+      "healthRegen": 6.5,
+      "manaRegen": 4,
+      "mana": 250
+    }
+  },
+  "item_meteor_hammer": {
+    "attributes": {
+      "strength": 6,
+      "agility": 6,
+      "intellect": 24
+    }
+  },
+  "item_nullifier": {
+    "attributes": {
+      "damage": 75,
+      "armor": 10
+    }
+  },
+  "item_aeon_disk": {
+    "attributes": {
+      "health": 250,
+      "mana": 300
+    }
+  },
+  "item_kaya": {
+    "attributes": {
+      "intellect": 16
+    }
+  },
+  "item_spirit_vessel": {
+    "attributes": {
+      "manaRegen": 1.75,
+      "allStats": 10,
+      "armor": 2,
+      "health": 0
+    }
+  },
+  "item_vanguard": {
+    "attributes": {
+      "health": 250,
+      "healthRegen": 4.5
+    }
+  },
+  "item_crimson_guard": {
+    "attributes": {
+      "health": 250,
+      "healthRegen": 12,
+      "armor": 8
+    }
+  },
+  "item_blade_mail": {
+    "attributes": {
+      "damage": 15,
+      "armor": 6,
+      "intellect": 0
+    }
+  },
+  "item_soul_booster": {
+    "attributes": {
+      "health": 425,
+      "mana": 425
+    }
+  },
+  "item_eternal_shroud": {
+    "attributes": {
+      "strength": 10,
+      "health": 250,
+      "magicResist": 20
+    },
+    "isBasic": false
+  },
+  "item_rapier": {
+    "attributes": {
+      "damage": 350
+    },
+    "isBasic": false
+  },
+  "item_monkey_king_bar": {
+    "attributes": {
+      "damage": 40,
+      "attackSpeed": 45
+    }
+  },
+  "item_radiance": {
+    "attributes": {
+      "damage": 115
+    }
+  },
+  "item_butterfly": {
+    "attributes": {
+      "agility": 35,
+      "evasion": 35,
+      "damage": 25
+    }
+  },
+  "item_greater_crit": {
+    "attributes": {
+      "damage": 88
+    }
+  },
+  "item_basher": {
+    "attributes": {
+      "damage": 30,
+      "strength": 10
+    }
+  },
+  "item_bfury": {
+    "attributes": {
+      "damage": 50,
+      "healthRegen": 7.5,
+      "manaRegen": 2.75
+    }
+  },
+  "item_manta": {
+    "attributes": {
+      "strength": 10,
+      "agility": 26,
+      "intellect": 10,
+      "attackSpeed": 15,
+      "moveSpeed": 10
+    }
+  },
+  "item_lesser_crit": {
+    "attributes": {
+      "damage": 32
+    }
+  },
+  "item_dragon_lance": {
+    "attributes": {
+      "agility": 15,
+      "strength": 10
+    }
+  },
+  "item_armlet": {
+    "attributes": {
+      "damage": 15,
+      "attackSpeed": 25,
+      "armor": 6,
+      "healthRegen": 5
+    }
+  },
+  "item_invis_sword": {
+    "attributes": {
+      "damage": 25,
+      "attackSpeed": 35
+    }
+  },
+  "item_silver_edge": {
+    "attributes": {
+      "damage": 70,
+      "attackSpeed": 35,
+      "strength": 0,
+      "intellect": 0,
+      "manaRegen": 0
+    }
+  },
+  "item_sange_and_yasha": {
+    "attributes": {
+      "strength": 16,
+      "agility": 16,
+      "attackSpeed": 20
+    }
+  },
+  "item_kaya_and_sange": {
+    "attributes": {
+      "strength": 16,
+      "intellect": 16
+    }
+  },
+  "item_yasha_and_kaya": {
+    "attributes": {
+      "agility": 16,
+      "intellect": 16,
+      "attackSpeed": 20
+    }
+  },
+  "item_satanic": {
+    "attributes": {
+      "strength": 25,
+      "damage": 25,
+      "lifesteal": 30
+    }
+  },
+  "item_mjollnir": {
+    "attributes": {
+      "damage": 25,
+      "attackSpeed": 90
+    }
+  },
+  "item_skadi": {
+    "attributes": {
+      "allStats": 35,
+      "health": 0,
+      "mana": 0
+    }
+  },
+  "item_sange": {
+    "attributes": {
+      "strength": 16
+    }
+  },
+  "item_helm_of_the_dominator": {
+    "attributes": {
+      "armor": 6,
+      "allStats": 6,
+      "healthRegen": 6
+    },
+    "isBasic": false
+  },
+  "item_helm_of_the_overlord": {
+    "attributes": {
+      "armor": 7,
+      "allStats": 21,
+      "healthRegen": 7
+    },
+    "isBasic": false
+  },
+  "item_maelstrom": {
+    "attributes": {
+      "damage": 25,
+      "attackSpeed": 25
+    }
+  },
+  "item_gungir": {
+    "attributes": {
+      "intellect": 12,
+      "mana": 200,
+      "health": 450
+    },
+    "isBasic": false
+  },
+  "item_desolator": {
+    "attributes": {
+      "damage": 55
+    }
+  },
+  "item_yasha": {
+    "attributes": {
+      "agility": 16,
+      "attackSpeed": 15
+    }
+  },
+  "item_mask_of_madness": {
+    "attributes": {
+      "damage": 20,
+      "lifesteal": 24
+    }
+  },
+  "item_diffusal_blade": {
+    "attributes": {
+      "agility": 15,
+      "intellect": 10
+    }
+  },
+  "item_disperser": {
+    "attributes": {
+      "agility": 40,
+      "intellect": 10
+    }
+  },
+  "item_ethereal_blade": {
+    "attributes": {
+      "agility": 24,
+      "strength": 24,
+      "intellect": 24
+    }
+  },
+  "item_soul_ring": {
+    "attributes": {
+      "strength": 6,
+      "armor": 2
+    }
+  },
+  "item_arcane_boots": {
+    "attributes": {
+      "moveSpeed": 45,
+      "manaRegen": 1.25
+    }
+  },
+  "item_octarine_core": {
+    "attributes": {
+      "health": 450,
+      "mana": 450,
+      "healthRegen": 0,
+      "manaRegen": 6
+    }
+  },
+  "item_orb_of_corrosion": {
+    "attributes": {
+      "agility": 7
+    }
+  },
+  "item_falcon_blade": {
+    "attributes": {
+      "health": 200,
+      "manaRegen": 1.8,
+      "damage": 14
+    }
+  },
+  "item_mage_slayer": {
+    "attributes": {
+      "magicResist": 20,
+      "attackSpeed": 30,
+      "healthRegen": 5,
+      "manaRegen": 2,
+      "damage": 8
+    }
+  },
+  "item_ancient_janggo": {
+    "attributes": {
+      "strength": 7,
+      "intellect": 7,
+      "moveSpeed": 15
+    },
+    "isBasic": false
+  },
+  "item_boots_of_bearing": {
+    "attributes": {
+      "strength": 8,
+      "intellect": 8,
+      "moveSpeed": 65,
+      "healthRegen": 18
+    }
+  },
+  "item_solar_crest": {
+    "attributes": {
+      "armor": 4,
+      "allStats": 4,
+      "mana": 300,
+      "health": 175
+    }
+  },
+  "item_pavise": {
+    "attributes": {
+      "armor": 3,
+      "mana": 250,
+      "health": 175
+    }
+  },
+  "item_veil_of_discord": {
+    "attributes": {
+      "allStats": 4,
+      "armor": 4
+    }
+  },
+  "item_revenants_brooch": {
+    "attributes": {
+      "damage": 35,
+      "spellLifesteal": 14
+    }
+  },
+  "item_devastator": {
+    "attributes": {
+      "intellect": 40,
+      "attackSpeed": 40,
+      "armor": 7,
+      "manaRegen": 1.5
+    }
+  },
+  "item_guardian_greaves": {
+    "attributes": {
+      "moveSpeed": 50,
+      "armor": 5,
+      "manaRegen": 3,
+      "healthRegen": 2.5
+    }
+  },
+  "item_rod_of_atos": {
+    "attributes": {
+      "intellect": 12,
+      "health": 275
+    },
+    "isBasic": false
+  },
+  "item_abyssal_blade": {
+    "attributes": {
+      "damage": 35,
+      "strength": 26
+    }
+  },
+  "item_heavens_halberd": {
+    "attributes": {
+      "health": 275,
+      "healthRegen": 6,
+      "allStats": 5
+    }
+  },
+  "item_tranquil_boots": {
+    "attributes": {
+      "moveSpeed": 65,
+      "armor": 0,
+      "healthRegen": 14
+    }
+  },
+  "item_glimmer_cape": {
+    "attributes": {
+      "magicResist": 20
+    }
+  },
+  "item_harpoon": {
+    "attributes": {
+      "damage": 25,
+      "strength": 25,
+      "agility": 10,
+      "intellect": 10,
+      "manaRegen": 2
+    }
+  },
+  "item_helm_of_iron_will": {
+    "attributes": {
+      "armor": 4
+    }
+  },
+  "item_ghost": {
+    "attributes": {
+      "allStats": 5
+    }
+  },
+  "item_point_booster": {
+    "attributes": {
+      "mana": 175,
+      "health": 175
+    }
+  },
+  "item_cornucopia": {
+    "attributes": {
+      "healthRegen": 5,
+      "manaRegen": 2,
+      "damage": 7
+    }
+  }
+}

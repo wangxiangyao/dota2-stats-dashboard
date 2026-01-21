@@ -1,0 +1,113 @@
+{
+    "version": "7.40b",
+    "description": "各属性的基准价格，从基础物品中提取",
+    "pricing": {
+        "bonus_strength": {
+            "name": "力量",
+            "unitPrice": 46.7,
+            "reference": "力量手套 (140g / 3点)",
+            "unit": "点"
+        },
+        "bonus_agility": {
+            "name": "敏捷",
+            "unitPrice": 46.7,
+            "reference": "敏捷便鞋 (140g / 3点)",
+            "unit": "点"
+        },
+        "bonus_intellect": {
+            "name": "智力",
+            "unitPrice": 46.7,
+            "reference": "智力斗篷 (140g / 3点)",
+            "unit": "点"
+        },
+        "bonus_all_stats": {
+            "name": "全属性",
+            "unitPrice": 55,
+            "reference": "铁树枝干 (55g / 1点)",
+            "unit": "点"
+        },
+        "bonus_damage": {
+            "name": "攻击力",
+            "unitPrice": 50,
+            "reference": "攻击之爪 (450g / 9点)",
+            "unit": "点"
+        },
+        "bonus_armor": {
+            "name": "护甲",
+            "unitPrice": 87.5,
+            "reference": "守护指环 (175g / 2点)",
+            "unit": "点"
+        },
+        "bonus_attack_speed": {
+            "name": "攻速",
+            "unitPrice": 14.3,
+            "reference": "疾行靴 (2000g / 140点)",
+            "unit": "点"
+        },
+        "movement_speed": {
+            "name": "移速",
+            "unitPrice": 15,
+            "reference": "风灵之纹 (225g / 15点)",
+            "unit": "点"
+        },
+        "bonus_health": {
+            "name": "生命值",
+            "unitPrice": 2.4,
+            "reference": "活力之球 (1000g / 425点)",
+            "unit": "点"
+        },
+        "bonus_mana": {
+            "name": "魔法值",
+            "unitPrice": 1.35,
+            "reference": "能量之球 (800g / 600点)",
+            "unit": "点"
+        },
+        "bonus_regen": {
+            "name": "生命恢复",
+            "unitPrice": 112.5,
+            "reference": "回复戒指 (225g / 2点)",
+            "unit": "/秒"
+        },
+        "bonus_mana_regen_pct": {
+            "name": "魔法恢复%",
+            "unitPrice": 75,
+            "reference": "贤者面罩 (300g / 100%)",
+            "unit": "%"
+        },
+        "spell_amp": {
+            "name": "技能增强",
+            "unitPrice": 200,
+            "reference": "估算值",
+            "unit": "%"
+        },
+        "bonus_evasion": {
+            "name": "闪避",
+            "unitPrice": 93.75,
+            "reference": "闪避护符 (1500g / 16%)",
+            "unit": "%"
+        },
+        "spell_lifesteal_amp": {
+            "name": "技能吸血",
+            "unitPrice": 50,
+            "reference": "估算值",
+            "unit": "%"
+        },
+        "hp_regen_amp": {
+            "name": "生命恢复增强",
+            "unitPrice": 10,
+            "reference": "估算值",
+            "unit": "%"
+        },
+        "bonus_magical_armor": {
+            "name": "魔法抗性",
+            "unitPrice": 30,
+            "reference": "抗魔斗篷 (450g / 15%)",
+            "unit": "%"
+        }
+    },
+    "notes": [
+        "单位价格 = 物品价格 / 属性数值",
+        "参考物品选取纯属性/少属性的基础组件",
+        "部分属性为估算值，需根据实际数据调整"
+    ]
+}
