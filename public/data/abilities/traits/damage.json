@@ -4,7 +4,8 @@
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "abyssal_underlord_firestorm": {
     "formulaExpected": "wave_damage × wave_count + burn_damage / 100 * base_hp * 8",
@@ -13,21 +14,26 @@
     "customParams": {
       "base_hp": "590 763 936 1109"
     },
-    "notes": "多个伤害键: wave_damage, burn_damage"
+    "notes": "多个伤害键: wave_damage, burn_damage",
+    "isBurst": false,
+    "damageTime": "8"
   },
   "alchemist_acid_spray": {
     "formulaExpected": "damage × (duration / tick_rate)",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "15"
   },
   "alchemist_unstable_concoction": {
     "formulaExpected": "max_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: brew_explosion, max_damage"
+    "notes": "多个伤害键: brew_explosion, max_damage",
+    "isBurst": true
   },
   "ancient_apparition_chilling_touch": {
     "formulaExpected": "damage + base_attack",
@@ -36,7 +42,8 @@
     "customParams": {
       "base_attack": "63 83 95 110"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "ancient_apparition_ice_blast": {
     "formulaExpected": "base_damage",
@@ -45,7 +52,8 @@
     "customParams": {
       "base_damage": "250 / 325 / 400"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "antimage_mana_void": {
     "formulaExpected": "base_mana × mana_void_damage_per_mana",
@@ -54,105 +62,124 @@
     "customParams": {
       "base_mana": "460 / 635 / 820"
     },
-    "notes": "需要定义目标基准值"
+    "notes": "需要定义目标基准值",
+    "isBurst": true
   },
   "arc_warden_flux": {
     "formulaExpected": "damage_per_second × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "6.0"
   },
   "arc_warden_spark_wraith": {
     "formulaExpected": "spark_damage_base",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "axe_battle_hunger": {
     "formulaExpected": "damage_per_second × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "12.0"
   },
   "axe_culling_blade": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "bane_brain_sap": {
     "formulaExpected": "brain_sap_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "bane_fiends_grip": {
     "formulaExpected": "fiend_grip_damage * AbilityChannelTime",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "4.75 5.25 5.75"
   },
   "beastmaster_wild_axes": {
     "formulaExpected": "axe_damage × 2",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "beastmaster_primal_roar": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, side_damage, damage_radius"
+    "notes": "多个伤害键: damage, side_damage, damage_radius",
+    "isBurst": true
   },
   "bloodseeker_blood_bath": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "brewmaster_thunder_clap": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "brewmaster_cinder_brew": {
     "formulaExpected": "total_ignite_damage + barrel_impact_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: total_ignite_damage, barrel_impact_damage"
+    "notes": "多个伤害键: total_ignite_damage, barrel_impact_damage",
+    "isBurst": false,
+    "damageTime": "8"
   },
   "broodmother_spawn_spiderlings": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, damage_bonus"
+    "notes": "多个伤害键: damage, damage_bonus",
+    "isBurst": true
   },
   "centaur_hoof_stomp": {
     "formulaExpected": "stomp_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "centaur_double_edge": {
     "formulaExpected": "edge_damage + strength_damage / 100 * 50",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: edge_damage, strength_damage"
+    "notes": "多个伤害键: edge_damage, strength_damage",
+    "isBurst": true
   },
   "centaur_stampede": {
     "formulaExpected": "strength_damage × hero_strength",
@@ -161,21 +188,24 @@
     "customParams": {
       "hero_strength": "50 90 130"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "chaos_knight_chaos_bolt": {
     "formulaExpected": "(damage_min + damage_max) / 2",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage_min, damage_max"
+    "notes": "多个伤害键: damage_min, damage_max",
+    "isBurst": true
   },
   "chen_penitence": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "clinkz_searing_arrows": {
     "formulaExpected": "(base_attack + damage_bonus) * base_attack_speed * base_attack_time",
@@ -186,63 +216,77 @@
       "base_attack_speed": "0.73 0.78 0.83 0.88",
       "base_attack_time": "3"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "crystal_maiden_crystal_nova": {
     "formulaExpected": "nova_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "crystal_maiden_frostbite": {
     "formulaExpected": "damage_per_second × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "1.5 2 2.5 3"
   },
   "crystal_maiden_freezing_field": {
     "formulaExpected": "damage * 100 * 0.16",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: explosion_radius, explosion_interval, explosion_min_dist, explosion_max_dist, damage"
+    "notes": "多个伤害键: explosion_radius, explosion_interval, explosion_min_dist, explosion_max_dist, damage",
+    "isBurst": false,
+    "damageTime": "10"
   },
   "dark_seer_vacuum": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "dark_seer_ion_shell": {
     "formulaExpected": "damage_per_second × 4",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "4"
   },
   "dark_willow_bramble_maze": {
     "formulaExpected": "damage_per_tick * (latch_duration / 0.5)",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "1.0 1.5 2.0 2.5"
   },
   "dark_willow_bedlam": {
     "formulaExpected": "attack_damage * (roaming_duration / attack_interval - 1)",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "5.5"
   },
   "dark_willow_shadow_realm": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "dawnbreaker_fire_wreath": {
     "formulaExpected": "(swipe_damage + base_attack) × 3",
@@ -251,63 +295,77 @@
     "customParams": {
       "base_attack": "63 83 95 110"
     },
-    "notes": "多个伤害键: swipe_damage, smash_damage"
+    "notes": "多个伤害键: swipe_damage, smash_damage",
+    "isBurst": true
   },
   "dawnbreaker_celestial_hammer": {
     "formulaExpected": "hammer_damage + burn_damage * flare_debuff_duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: hammer_damage, burn_damage"
+    "notes": "多个伤害键: hammer_damage, burn_damage",
+    "isBurst": false,
+    "damageTime": "2.5 3 3.5 4"
   },
   "dawnbreaker_solar_guardian": {
     "formulaExpected": "base_damage * 5 + land_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: base_damage, land_damage"
+    "notes": "多个伤害键: base_damage, land_damage",
+    "isBurst": false,
+    "damageTime": "2.5"
   },
   "dazzle_poison_touch": {
     "formulaExpected": "damage × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "3.5 5 6.5 8"
   },
   "dazzle_shadow_wave": {
     "formulaExpected": "damage * tooltip_max_targets_inc_dazzle * 0.35",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage_radius, damage"
+    "notes": "多个伤害键: damage_radius, damage",
+    "isBurst": true
   },
   "death_prophet_carrion_swarm": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "death_prophet_spirit_siphon": {
     "formulaExpected": "damage * haunt_duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "6"
   },
   "disruptor_thunder_strike": {
     "formulaExpected": "strike_damage * strikes",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "6"
   },
   "disruptor_glimpse": {
     "formulaExpected": "max_damage × 0.66",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "需要定义目标基准值; 多个伤害键: min_damage, max_damage, damage_to_distance_pct"
+    "notes": "需要定义目标基准值; 多个伤害键: min_damage, max_damage, damage_to_distance_pct",
+    "isBurst": true
   },
   "disruptor_static_storm": {
     "formulaExpected": "damage_max × duration",
@@ -316,91 +374,108 @@
     "customParams": {
       "base_damage": "485 666 844"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "6.0"
   },
   "doom_bringer_scorched_earth": {
     "formulaExpected": "damage_per_second × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "10.0 12.0 14.0 16.0"
   },
   "doom_bringer_doom": {
     "formulaExpected": "damage × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "12 14 16"
   },
   "dragon_knight_breathe_fire": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "dragon_knight_dragon_tail": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "earthshaker_fissure": {
     "formulaExpected": "fissure_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "earthshaker_echo_slam": {
     "formulaExpected": "echo_slam_initial_damage + echo_slam_echo_damage × 4",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: echo_slam_damage_range, echo_slam_echo_damage, echo_slam_initial_damage"
+    "notes": "多个伤害键: echo_slam_damage_range, echo_slam_echo_damage, echo_slam_initial_damage",
+    "isBurst": true
   },
   "earth_spirit_boulder_smash": {
     "formulaExpected": "rock_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "earth_spirit_rolling_boulder": {
     "formulaExpected": "damage + 50",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, damage_str"
+    "notes": "多个伤害键: damage, damage_str",
+    "isBurst": true
   },
   "earth_spirit_geomagnetic_grip": {
     "formulaExpected": "rock_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "earth_spirit_magnetize": {
     "formulaExpected": "damage_per_second * damage_duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage_per_second, rock_explosion_radius, damage_interval, rock_explosion_delay"
+    "notes": "多个伤害键: damage_per_second, rock_explosion_radius, damage_interval, rock_explosion_delay",
+    "isBurst": false,
+    "damageTime": "6.0"
   },
   "elder_titan_echo_stomp": {
     "formulaExpected": "stomp_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: stomp_damage, wake_damage_limit"
+    "notes": "多个伤害键: stomp_damage, wake_damage_limit",
+    "isBurst": true
   },
   "elder_titan_echo_stomp_spirit": {
     "formulaExpected": "stomp_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: stomp_damage, wake_damage_limit"
+    "notes": "多个伤害键: stomp_damage, wake_damage_limit",
+    "isBurst": true
   },
   "elder_titan_earth_splitter": {
     "formulaExpected": "base_hp * damage_pct / 100",
@@ -409,35 +484,43 @@
     "customParams": {
       "base_hp": "885 1238 1724"
     },
-    "notes": "无 damageKeys"
+    "notes": "无 damageKeys",
+    "isBurst": true
   },
   "ember_spirit_searing_chains": {
     "formulaExpected": "damage_per_second × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "1.5 2.0 2.5 3.0"
   },
   "ember_spirit_flame_guard": {
     "formulaExpected": "damage_per_second × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "12 14 16 18"
   },
   "ember_spirit_fire_remnant": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "enigma_malefice": {
     "formulaExpected": "damage * stun_instances",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "4"
   },
   "enigma_midnight_pulse": {
     "formulaExpected": "(base_damage + base_hp × damage_percent / 100 ) * duration * 0.7",
@@ -446,77 +529,95 @@
     "customParams": {
       "base_hp": "590 763 936 1109"
     },
-    "notes": "需要定义目标基准值; 多个伤害键: base_damage, damage_percent"
+    "notes": "需要定义目标基准值; 多个伤害键: base_damage, damage_percent",
+    "isBurst": false,
+    "damageTime": "9 10 11 12"
   },
   "enigma_black_hole": {
     "formulaExpected": "damage × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "4.0"
   },
   "faceless_void_time_dilation": {
     "formulaExpected": "damage_per_stack * 2 × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "7 8 9 10"
   },
   "furion_sprout": {
     "formulaExpected": "sprout_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: sprout_damage, sprout_damage_radius"
+    "notes": "多个伤害键: sprout_damage, sprout_damage_radius",
+    "isBurst": true
   },
   "furion_wrath_of_nature": {
     "formulaExpected": "damage * (1 + damage_percent_add / 100) ** 16",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "需要定义目标基准值; 多个伤害键: damage, damage_percent_add"
+    "notes": "需要定义目标基准值; 多个伤害键: damage, damage_percent_add",
+    "isBurst": true
   },
   "grimstroke_dark_artistry": {
     "formulaExpected": "damage + bonus_damage_per_hero + bonus_damage_per_creep",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "grimstroke_ink_creature": {
     "formulaExpected": "pop_damage + damage_per_second * latch_duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage_per_second, pop_damage"
+    "notes": "多个伤害键: damage_per_second, pop_damage",
+    "isBurst": false,
+    "damageTime": "5"
   },
   "grimstroke_spirit_walk": {
     "formulaExpected": "max_damage + tick_dps_tooltip * buff_duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: max_damage, damage_per_tick"
+    "notes": "多个伤害键: max_damage, damage_per_tick",
+    "isBurst": false,
+    "damageTime": "3"
   },
   "gyrocopter_rocket_barrage": {
     "formulaExpected": "rocket_damage × rockets_per_second × barrage_duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "3"
   },
   "gyrocopter_homing_missile": {
     "formulaExpected": "hit_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: hit_damage, hero_damage"
+    "notes": "多个伤害键: hit_damage, hero_damage",
+    "isBurst": true
   },
   "gyrocopter_call_down": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true,
+    "damageTime": null
   },
   "hoodwink_acorn_shot": {
     "formulaExpected": "(acorn_shot_damage + base_attack * base_damage_pct / 100) * 3",
@@ -525,28 +626,33 @@
     "customParams": {
       "base_attack": "63 83 95 110"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "1.7 1.7 2.3 2.5"
   },
   "hoodwink_bushwhack": {
     "formulaExpected": "total_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "hoodwink_sharpshooter": {
     "formulaExpected": "max_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "huskar_inner_fire": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "huskar_life_break": {
     "formulaExpected": "base_damage",
@@ -555,84 +661,100 @@
     "customParams": {
       "base_damage": "283 470 758"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "invoker_tornado": {
     "formulaExpected": "base_damage + wex_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: base_damage, wex_damage"
+    "notes": "多个伤害键: base_damage, wex_damage",
+    "isBurst": true
   },
   "invoker_emp": {
     "formulaExpected": "mana_burned × damage_per_mana_pct / 100",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "需要定义目标基准值"
+    "notes": "需要定义目标基准值",
+    "isBurst": true
   },
   "invoker_chaos_meteor": {
     "formulaExpected": "main_damage * 4 + end_vision_duration * burn_dps * 4",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage_interval, main_damage"
+    "notes": "多个伤害键: damage_interval, main_damage",
+    "isBurst": false,
+    "damageTime": "4.4"
   },
   "invoker_sun_strike": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "invoker_deafening_blast": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "jakiro_dual_breath": {
     "formulaExpected": "burn_damage * 5",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "5"
   },
   "jakiro_ice_path": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "jakiro_macropyre": {
     "formulaExpected": "damage × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "10.0"
   },
   "juggernaut_blade_fury": {
     "formulaExpected": "blade_fury_damage × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: blade_fury_damage, blade_fury_damage_tick"
+    "notes": "多个伤害键: blade_fury_damage, blade_fury_damage_tick",
+    "isBurst": false,
+    "damageTime": "5.0"
   },
   "keeper_of_the_light_illuminate": {
     "formulaExpected": "total_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "keeper_of_the_light_blinding_light": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "kez_echo_slash": {
     "formulaExpected": "(base_attack * katana_echo_damage / 100 + echo_hero_damage) * 2",
@@ -641,28 +763,33 @@
     "customParams": {
       "base_attack": "63 83 95 110"
     },
-    "notes": "多个伤害键: katana_echo_damage, echo_hero_damage"
+    "notes": "多个伤害键: katana_echo_damage, echo_hero_damage",
+    "isBurst": true
   },
   "kez_raptor_dance": {
     "formulaExpected": "base_damage * strikes",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "2"
   },
   "kez_talon_toss": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "kunkka_torrent": {
     "formulaExpected": "torrent_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: torrent_damage, damage_tick_interval"
+    "notes": "多个伤害键: torrent_damage, damage_tick_interval",
+    "isBurst": true
   },
   "kunkka_ghostship": {
     "formulaExpected": "base_damage",
@@ -671,28 +798,33 @@
     "customParams": {
       "base_damage": "350 475 600"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "largo_frogstomp": {
     "formulaExpected": "damage_per_stomp * total_ticks",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "4 5 6 7"
   },
   "largo_catchy_lick": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "legion_commander_overwhelming_odds": {
     "formulaExpected": "damage + damage_per_unit * 2 + damage_per_hero * 2",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, damage_per_unit, damage_per_hero"
+    "notes": "多个伤害键: damage, damage_per_unit, damage_per_hero",
+    "isBurst": true
   },
   "leshrac_split_earth": {
     "formulaExpected": "base_damage",
@@ -701,98 +833,116 @@
     "customParams": {
       "base_damage": "115 / 170 / 225 / 280"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "leshrac_diabolic_edict": {
     "formulaExpected": "damage * num_explosions",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: num_explosions, damage"
+    "notes": "多个伤害键: num_explosions, damage",
+    "isBurst": false,
+    "damageTime": "10"
   },
   "leshrac_lightning_storm": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "leshrac_pulse_nova": {
     "formulaExpected": "damage * 10",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "10"
   },
   "lich_frost_nova": {
     "formulaExpected": "damage + aoe_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, aoe_damage"
+    "notes": "多个伤害键: damage, aoe_damage",
+    "isBurst": true
   },
   "lich_frost_shield": {
     "formulaExpected": "damage × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "4 5 6 7"
   },
   "lich_chain_frost": {
     "formulaExpected": "damage * bonus_jump_damage / 2",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, bonus_jump_damage"
+    "notes": "多个伤害键: damage, bonus_jump_damage",
+    "isBurst": false,
+    "damageTime": "13"
   },
   "life_stealer_infest": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "lina_dragon_slave": {
     "formulaExpected": "dragon_slave_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "lina_light_strike_array": {
     "formulaExpected": "light_strike_array_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "lina_laguna_blade": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, damage_delay"
+    "notes": "多个伤害键: damage, damage_delay",
+    "isBurst": true
   },
   "lion_impale": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "lion_finger_of_death": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, damage_per_kill, damage_delay"
+    "notes": "多个伤害键: damage, damage_per_kill, damage_delay",
+    "isBurst": true
   },
   "luna_lucent_beam": {
     "formulaExpected": "beam_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "luna_eclipse": {
     "formulaExpected": "luna_lucent_beam_damage * beams",
@@ -801,35 +951,41 @@
     "customParams": {
       "luna_lucent_beam_damage": "225 300 300"
     },
-    "notes": "无 damageKeys"
+    "notes": "无 damageKeys",
+    "isBurst": false,
+    "damageTime": "10.0"
   },
   "magnataur_shockwave": {
     "formulaExpected": "shock_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "magnataur_skewer": {
     "formulaExpected": "skewer_damage + damage_distance_pct / 100 * range",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "需要定义目标基准值; 多个伤害键: skewer_damage, damage_distance_pct"
+    "notes": "需要定义目标基准值; 多个伤害键: skewer_damage, damage_distance_pct",
+    "isBurst": true
   },
   "magnataur_reverse_polarity": {
     "formulaExpected": "polarity_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "marci_grapple": {
     "formulaExpected": "impact_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "marci_unleash": {
     "formulaExpected": "base_attack * 5 × 9",
@@ -838,21 +994,25 @@
     "customParams": {
       "base_attack": "70 90 120"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "16"
   },
   "marci_companion_run": {
     "formulaExpected": "impact_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "mars_spear": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "mars_gods_rebuke": {
     "formulaExpected": "(base_attack + bonus_damage_vs_heroes) * crit_mult / 100",
@@ -861,35 +1021,41 @@
     "customParams": {
       "base_attack": "63 83 95 110"
     },
-    "notes": "无 damageKeys"
+    "notes": "无 damageKeys",
+    "isBurst": true
   },
   "mars_arena_of_blood": {
     "formulaExpected": "spear_damage × 2.5",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false
   },
   "medusa_mystic_snake": {
     "formulaExpected": "snake_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "medusa_gorgon_grasp": {
     "formulaExpected": "damage + (damage_pers * duration)",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, damage_pers, damage_interval"
+    "notes": "多个伤害键: damage, damage_pers, damage_interval",
+    "isBurst": false,
+    "damageTime": "0.8 1.2 1.6 2.0"
   },
   "meepo_poof": {
     "formulaExpected": "poof_damage * 3",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "mirana_arrow": {
     "formulaExpected": "base_damage + arrow_bonus_damage * 0.33",
@@ -898,14 +1064,16 @@
     "customParams": {
       "base_damage": "60 / 150 / 240 / 330"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "mirana_starfall": {
     "formulaExpected": "damage + damage × secondary_starfall_damage_percent / 100",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "需要定义目标基准值; 多个伤害键: damage, secondary_starfall_damage_percent"
+    "notes": "需要定义目标基准值; 多个伤害键: damage, secondary_starfall_damage_percent",
+    "isBurst": true
   },
   "monkey_king_boundless_strike": {
     "formulaExpected": "strike_flat_damage + base_attack * strike_crit_mult / 100",
@@ -914,14 +1082,16 @@
     "customParams": {
       "base_attack": "63 83 95 110"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "monkey_king_primal_spring": {
     "formulaExpected": "impact_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "morphling_waveform": {
     "formulaExpected": "base_damage",
@@ -930,44 +1100,52 @@
     "customParams": {
       "base_damage": "75 150 225 300"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "morphling_adaptive_strike_agi": {
     "formulaExpected": "damage_base + damage_max * 100",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage_base, damage_min, damage_max"
+    "notes": "多个伤害键: damage_base, damage_min, damage_max",
+    "isBurst": true
   },
   "muerta_dead_shot": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "muerta_the_calling": {
     "formulaExpected": "damage × 2",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "2"
   },
   "naga_siren_deluge": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "necrolyte_death_pulse": {
-    "formulaExpected": "AbilityDamage",
+    "formulaExpected": "base_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": {
       "base_damage": "100 / 160 / 220 / 280"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true,
+    "damageTime": null
   },
   "necrolyte_reapers_scythe": {
     "formulaExpected": "base_hp - base_hp / (1 + damage_per_health)",
@@ -976,28 +1154,32 @@
     "customParams": {
       "base_hp": "885 1238 1724"
     },
-    "notes": "需要定义目标基准值"
+    "notes": "需要定义目标基准值",
+    "isBurst": true
   },
   "nevermore_shadowraze1": {
     "formulaExpected": "shadowraze_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "nevermore_shadowraze2": {
     "formulaExpected": "shadowraze_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "nevermore_shadowraze3": {
     "formulaExpected": "shadowraze_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "nevermore_requiem": {
     "formulaExpected": "base_damage * base_soul",
@@ -1007,28 +1189,33 @@
       "base_damage": "80 / 120 / 160",
       "base_soul": "13 15 15"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "night_stalker_void": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, invisible_damage_tickrate"
+    "notes": "多个伤害键: damage, invisible_damage_tickrate",
+    "isBurst": true
   },
   "night_stalker_crippling_fear": {
     "formulaExpected": "dps * duration_night",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "4.5 5 5.5 6.0"
   },
   "nyx_assassin_impale": {
     "formulaExpected": "impale_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "nyx_assassin_jolt": {
     "formulaExpected": "base_mana × max_mana_as_damage_pct / 100 + (impale_damage + 300) * damage_echo_pct / 100",
@@ -1038,7 +1225,8 @@
       "base_mana": "373 460 547 635",
       "impale_damage": "100 / 160 / 220 / 280"
     },
-    "notes": "需要定义目标基准值"
+    "notes": "需要定义目标基准值",
+    "isBurst": true
   },
   "nyx_assassin_vendetta": {
     "formulaExpected": "bonus_damage + base_attack",
@@ -1047,14 +1235,16 @@
     "customParams": {
       "base_attack": "63 83 95 110"
     },
-    "notes": "无 damageKeys"
+    "notes": "无 damageKeys",
+    "isBurst": true
   },
   "obsidian_destroyer_astral_imprisonment": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "obsidian_destroyer_sanity_eclipse": {
     "formulaExpected": "base_damage + (hero_mana - base_mana) * damage_multiplier",
@@ -1064,21 +1254,25 @@
       "hero_mana": "814 1177 1627",
       "base_mana": "460 635 882"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "ogre_magi_fireblast": {
     "formulaExpected": "fireblast_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "ogre_magi_ignite": {
     "formulaExpected": "burn_damage × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "5 6 7 8"
   },
   "omniknight_hammer_of_purity": {
     "formulaExpected": "base_attack + base_damage",
@@ -1087,42 +1281,48 @@
     "customParams": {
       "base_attack": "63 83 95 110"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "omniknight_purification": {
     "formulaExpected": "heal",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "无 damageKeys"
+    "notes": "无 damageKeys",
+    "isBurst": true
   },
   "oracle_fortunes_end": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "oracle_purifying_flames": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, damage_modifier"
+    "notes": "多个伤害键: damage, damage_modifier",
+    "isBurst": true
   },
   "pangolier_swashbuckle": {
     "formulaExpected": "damage * strikes",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, damage_penalty"
+    "notes": "多个伤害键: damage, damage_penalty",
+    "isBurst": true
   },
   "pangolier_shield_crash": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "pangolier_gyroshell": {
     "formulaExpected": "base_damage × 2",
@@ -1131,49 +1331,61 @@
     "customParams": {
       "base_damage": "100 / 200 / 300"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "2"
   },
   "phantom_lancer_spirit_lance": {
     "formulaExpected": "lance_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "需要定义目标基准值; 多个伤害键: lance_damage, illusion_damage_in_pct"
+    "notes": "需要定义目标基准值; 多个伤害键: lance_damage, illusion_damage_in_pct",
+    "isBurst": true
   },
   "phoenix_icarus_dive": {
     "formulaExpected": "damage_per_second * burn_duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "4"
   },
   "phoenix_fire_spirits": {
     "formulaExpected": "damage_per_second × duration * 1.5",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "4.0"
   },
   "phoenix_sun_ray": {
     "formulaExpected": "(base_damage + hp_perc_damage * 1000 / 100) * 3 / tick_interval",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: base_damage, hp_perc_damage"
+    "notes": "多个伤害键: base_damage, hp_perc_damage",
+    "isBurst": false,
+    "damageTime": "4"
   },
   "phoenix_supernova": {
     "formulaExpected": "damage_per_sec * 4",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "4"
   },
   "primal_beast_onslaught": {
     "formulaExpected": "knockback_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "primal_beast_trample": {
     "formulaExpected": "(base_damage + base_attack * attack_damage / 100) × duration * 2",
@@ -1182,49 +1394,59 @@
     "customParams": {
       "base_attack": "63 83 95 110"
     },
-    "notes": "多个伤害键: base_damage, attack_damage"
+    "notes": "多个伤害键: base_damage, attack_damage",
+    "isBurst": false,
+    "damageTime": "5.5"
   },
   "primal_beast_pulverize": {
     "formulaExpected": "damage * 3 + bonus_damage_per_hit * 2",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "2.3"
   },
   "puck_illusory_orb": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "puck_waning_rift": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "puck_dream_coil": {
     "formulaExpected": "coil_initial_damage + coil_break_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: coil_initial_damage, coil_break_damage"
+    "notes": "多个伤害键: coil_initial_damage, coil_break_damage",
+    "isBurst": true
   },
   "pudge_meat_hook": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "pudge_rot": {
     "formulaExpected": "rot_damage * 4",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "4"
   },
   "pudge_dismember": {
     "formulaExpected": "dismember_damage * AbilityChannelTime + base_str * strength_damage * AbilityChannelTime",
@@ -1233,14 +1455,17 @@
     "customParams": {
       "base_str": "40 58 82"
     },
-    "notes": "多个伤害键: dismember_damage, strength_damage"
+    "notes": "多个伤害键: dismember_damage, strength_damage",
+    "isBurst": false,
+    "damageTime": "2.75 2.75 2.75"
   },
   "pugna_nether_blast": {
     "formulaExpected": "blast_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: structure_damage_mod, blast_damage"
+    "notes": "多个伤害键: structure_damage_mod, blast_damage",
+    "isBurst": true
   },
   "pugna_life_drain": {
     "formulaExpected": "base_drain * 10",
@@ -1249,84 +1474,102 @@
     "customParams": {
       "base_drain": "150 250 350"
     },
-    "notes": "无 damageKeys"
+    "notes": "无 damageKeys",
+    "isBurst": false,
+    "damageTime": "10"
   },
   "queenofpain_shadow_strike": {
     "formulaExpected": "strike_damage + duration_damage * (duration / damage_interval)",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: strike_damage, damage_interval"
+    "notes": "多个伤害键: strike_damage, damage_interval。刷新型DoT，CD内实际伤害用cdDamageFormula",
+    "isBurst": false,
+    "damageTime": "16",
+    "cdDamageFormula": "strike_damage + duration_damage * (4 / damage_interval)"
   },
   "queenofpain_scream_of_pain": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "queenofpain_sonic_wave": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "rattletrap_battery_assault": {
     "formulaExpected": "damage × duration / 0.7 * 0.35",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "10.5 10.5 10.5 10.5"
   },
   "rattletrap_power_cogs": {
     "formulaExpected": "damage * 1.3",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "rattletrap_rocket_flare": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "rattletrap_hookshot": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "razor_plasma_field": {
     "formulaExpected": "damage_max * 2",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage_min, damage_max"
+    "notes": "多个伤害键: damage_min, damage_max",
+    "isBurst": true
   },
   "razor_eye_of_the_storm": {
     "formulaExpected": "damage × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "30.0"
   },
   "ringmaster_tame_the_beasts": {
     "formulaExpected": "damage_max / 2 + damage_min / 2",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage_min, damage_max"
+    "notes": "多个伤害键: damage_min, damage_max",
+    "isBurst": true
   },
   "ringmaster_wheel": {
     "formulaExpected": "aura_damage * 3 + explosion_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: aura_damage, explosion_damage"
+    "notes": "多个伤害键: aura_damage, explosion_damage",
+    "isBurst": false,
+    "damageTime": "3"
   },
   "ringmaster_impalement": {
     "formulaExpected": "damage_impact + 4 * bleed_health_pct / 100 * base_hp",
@@ -1335,14 +1578,17 @@
     "customParams": {
       "base_hp": "590 763 936 1109"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "4"
   },
   "rubick_fade_bolt": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "sandking_burrowstrike": {
     "formulaExpected": "base_damage",
@@ -1351,91 +1597,109 @@
     "customParams": {
       "base_damage": "80 / 150 / 220 / 290"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "sandking_sand_storm": {
     "formulaExpected": "sand_storm_damage * AbilityDuration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage_tick_rate, sand_storm_damage"
+    "notes": "多个伤害键: damage_tick_rate, sand_storm_damage",
+    "isBurst": false,
+    "damageTime": "16 20 24 28"
   },
   "sandking_epicenter": {
     "formulaExpected": "epicenter_pulses * epicenter_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "shadow_demon_shadow_poison": {
     "formulaExpected": "hit_damage * 5 + stack_damage * 16",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: stack_damage, bonus_stack_damage, hit_damage"
+    "notes": "多个伤害键: stack_damage, bonus_stack_damage, hit_damage",
+    "isBurst": false,
+    "damageTime": "15"
   },
   "shadow_shaman_ether_shock": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "shadow_shaman_shackles": {
     "formulaExpected": "total_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "2.4 3.0 3.6 4.2"
   },
   "shredder_whirling_death": {
     "formulaExpected": "whirling_damage + tree_damage_scale * 2",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: whirling_damage, tree_damage_scale"
+    "notes": "多个伤害键: whirling_damage, tree_damage_scale",
+    "isBurst": true
   },
   "shredder_timber_chain": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "shredder_chakram": {
     "formulaExpected": "pass_damage * 2 + damage_per_second",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: pass_damage, damage_per_second, damage_interval"
+    "notes": "多个伤害键: pass_damage, damage_per_second, damage_interval",
+    "isBurst": false,
+    "damageTime": "1.5"
   },
   "shredder_twisted_chakram": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "silencer_curse_of_the_silent": {
     "formulaExpected": "application_damage + damage × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, application_damage"
+    "notes": "多个伤害键: damage, application_damage",
+    "isBurst": false,
+    "damageTime": "6"
   },
   "silencer_last_word": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "skeleton_king_hellfire_blast": {
     "formulaExpected": "damage + blast_dot_damage * blast_dot_duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, blast_dot_damage"
+    "notes": "多个伤害键: damage, blast_dot_damage",
+    "isBurst": true
   },
   "skywrath_mage_arcane_bolt": {
     "formulaExpected": "bolt_damage + int_multiplier * base_intelligence",
@@ -1444,84 +1708,102 @@
     "customParams": {
       "base_intelligence": "37 50 63 76"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "skywrath_mage_concussive_shot": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "skywrath_mage_mystic_flare": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, damage_interval"
+    "notes": "多个伤害键: damage, damage_interval",
+    "isBurst": false,
+    "damageTime": "2.0"
   },
   "slardar_slithereen_crush": {
     "formulaExpected": "crush_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "slark_dark_pact": {
     "formulaExpected": "total_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "snapfire_scatterblast": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "snapfire_mortimer_kisses": {
     "formulaExpected": "damage_per_impact * projectile_count * 0.4 + burn_damage * (duration_tooltip + burn_ground_duration) * 0.33",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage_per_impact, burn_damage"
+    "notes": "多个伤害键: damage_per_impact, burn_damage",
+    "isBurst": false,
+    "damageTime": "5"
   },
   "snapfire_lil_shredder": {
-    "formulaExpected": "damage * buffed_attacks",
+    "formulaExpected": "(damage + base_attack * damage_pct / 100 * 1.3) * buffed_attacks",
     "formulaMin": null,
     "formulaMax": null,
-    "customParams": null,
-    "notes": null
+    "customParams": {
+      "base_attack": "60 73 86 99"
+    },
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "1.5"
   },
   "sniper_shrapnel": {
     "formulaExpected": "shrapnel_damage × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: shrapnel_damage, damage_delay"
+    "notes": "多个伤害键: shrapnel_damage, damage_delay",
+    "isBurst": false,
+    "damageTime": "10.0"
   },
   "sniper_assassinate": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "spectre_spectral_dagger": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "spirit_breaker_nether_strike": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "storm_spirit_static_remnant": {
     "formulaExpected": "base_damage",
@@ -1530,7 +1812,8 @@
     "customParams": {
       "base_damage": "100 160 220 280"
     },
-    "notes": "多个伤害键: static_remnant_damage_radius, static_remnant_damage"
+    "notes": "多个伤害键: static_remnant_damage_radius, static_remnant_damage",
+    "isBurst": true
   },
   "sven_storm_bolt": {
     "formulaExpected": "base_damage",
@@ -1539,42 +1822,48 @@
     "customParams": {
       "base_damage": "80 / 160 / 240 / 320"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "techies_land_mines": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, outer_damage"
+    "notes": "多个伤害键: damage, outer_damage",
+    "isBurst": true
   },
   "techies_suicide": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "techies_sticky_bomb": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: damage, explosion_radius"
+    "notes": "多个伤害键: damage, explosion_radius",
+    "isBurst": true
   },
   "templar_assassin_psionic_trap": {
     "formulaExpected": "trap_bonus_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: extra_damage, damage_tick_rate"
+    "notes": "多个伤害键: extra_damage, damage_tick_rate",
+    "isBurst": true
   },
   "tidehunter_gush": {
     "formulaExpected": "gush_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "tidehunter_ravage": {
     "formulaExpected": "base_damage",
@@ -1583,42 +1872,50 @@
     "customParams": {
       "base_damage": "275 / 375 / 475"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "tinker_laser": {
     "formulaExpected": "laser_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "tinker_march_of_the_machines": {
     "formulaExpected": "damage × 10",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "6.0"
   },
   "tiny_avalanche": {
     "formulaExpected": "avalanche_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "tiny_toss": {
     "formulaExpected": "toss_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "treant_natures_grasp": {
     "formulaExpected": "damage_per_second * vines_duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "9 10 11 12"
   },
   "treant_leech_seed": {
     "formulaExpected": "leech_damage + base_attack",
@@ -1627,42 +1924,49 @@
     "customParams": {
       "base_attack": "63 83 95 110"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "treant_overgrowth": {
     "formulaExpected": "damage × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "3 4 5"
   },
   "troll_warlord_whirling_axes_ranged": {
     "formulaExpected": "axe_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "troll_warlord_whirling_axes_melee": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "tusk_ice_shards": {
     "formulaExpected": "shard_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "tusk_snowball": {
     "formulaExpected": "snowball_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: snowball_damage, snowball_damage_bonus"
+    "notes": "多个伤害键: snowball_damage, snowball_damage_bonus",
+    "isBurst": true
   },
   "tusk_walrus_punch": {
     "formulaExpected": "(bonus_damage + base_attack) * crit_multiplier / 100",
@@ -1671,14 +1975,16 @@
     "customParams": {
       "base_attack": "70 90 120"
     },
-    "notes": "无 damageKeys"
+    "notes": "无 damageKeys",
+    "isBurst": true
   },
   "undying_decay": {
     "formulaExpected": "decay_damage + str_steal * 22",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "ursa_earthshock": {
     "formulaExpected": "base_damage",
@@ -1687,35 +1993,41 @@
     "customParams": {
       "base_damage": "75 / 125 / 175 / 225"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "vengefulspirit_magic_missile": {
     "formulaExpected": "magic_missile_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "vengefulspirit_wave_of_terror": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "vengefulspirit_nether_swap": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "venomancer_venomous_gale": {
     "formulaExpected": "strike_damage + duration / 3 * tick_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: strike_damage, tick_damage"
+    "notes": "多个伤害键: strike_damage, tick_damage",
+    "isBurst": false,
+    "damageTime": "15"
   },
   "venomancer_noxious_plague": {
     "formulaExpected": "impact_damage + base_hp * health_damage / 100 * debuff_duration",
@@ -1724,35 +2036,43 @@
     "customParams": {
       "base_hp": "885 1238 1724"
     },
-    "notes": "多个伤害键: impact_damage, health_damage"
+    "notes": "多个伤害键: impact_damage, health_damage",
+    "isBurst": false,
+    "damageTime": "5"
   },
   "viper_nethertoxin": {
     "formulaExpected": "(max_damage + min_damage) × max_duration / 2 + max_damage * (duration - max_duration)",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: min_damage, max_damage"
+    "notes": "多个伤害键: min_damage, max_damage",
+    "isBurst": false,
+    "damageTime": "6.5 7 7.5 8"
   },
   "viper_viper_strike": {
     "formulaExpected": "damage × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "6"
   },
   "visage_soul_assumption": {
     "formulaExpected": "soul_base_damage + soul_charge_damage * stack_limit",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: soul_base_damage, soul_charge_damage, damage_limit, damage_min, damage_max"
+    "notes": "多个伤害键: soul_base_damage, soul_charge_damage, damage_limit, damage_min, damage_max",
+    "isBurst": true
   },
   "void_spirit_aether_remnant": {
     "formulaExpected": "impact_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "void_spirit_dissimilate": {
     "formulaExpected": "base_damage",
@@ -1761,7 +2081,8 @@
     "customParams": {
       "base_damage": "120 / 200 / 280 / 360"
     },
-    "notes": "多个伤害键: AbilityDamage, damage_radius"
+    "notes": "多个伤害键: AbilityDamage, damage_radius",
+    "isBurst": true
   },
   "void_spirit_astral_step": {
     "formulaExpected": "base_attack + pop_damage",
@@ -1770,21 +2091,25 @@
     "customParams": {
       "base_attack": "63 83 95 110"
     },
-    "notes": "多个伤害键: pop_damage_delay, pop_damage"
+    "notes": "多个伤害键: pop_damage_delay, pop_damage",
+    "isBurst": true
   },
   "void_spirit_resonant_pulse": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "warlock_shadow_word": {
     "formulaExpected": "damage × duration",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "10.0"
   },
   "warlock_upheaval": {
     "formulaExpected": "base_damage",
@@ -1793,14 +2118,17 @@
     "customParams": {
       "base_damage": "278 512 790 1106"
     },
-    "notes": "多个伤害键: damage_per_second, max_damage, damage_tick_interval"
+    "notes": "多个伤害键: damage_per_second, max_damage, damage_tick_interval",
+    "isBurst": false,
+    "damageTime": "10 12 14 16"
   },
   "windrunner_powershot": {
     "formulaExpected": "powershot_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "winter_wyvern_arctic_burn": {
     "formulaExpected": "base_hp × percent_damage / 100 * damage_duration",
@@ -1809,21 +2137,26 @@
     "customParams": {
       "base_hp": "590 763 936 1109"
     },
-    "notes": "需要定义目标基准值"
+    "notes": "需要定义目标基准值",
+    "isBurst": false,
+    "damageTime": "5.0"
   },
   "winter_wyvern_splinter_blast": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "wisp_spirits": {
     "formulaExpected": "hero_damage * spirit_amount",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": "多个伤害键: creep_damage, hero_damage"
+    "notes": "多个伤害键: creep_damage, hero_damage",
+    "isBurst": false,
+    "damageTime": "1.7"
   },
   "witch_doctor_maledict": {
     "formulaExpected": "base_damage",
@@ -1832,34 +2165,41 @@
     "customParams": {
       "base_damage": "190 280 340 417"
     },
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "12.0"
   },
   "witch_doctor_death_ward": {
     "formulaExpected": "damage * 8",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": false,
+    "damageTime": "8"
   },
   "zuus_arc_lightning": {
     "formulaExpected": "arc_damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "zuus_lightning_bolt": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   },
   "zuus_thundergods_wrath": {
     "formulaExpected": "damage",
     "formulaMin": null,
     "formulaMax": null,
     "customParams": null,
-    "notes": null
+    "notes": null,
+    "isBurst": true
   }
 }

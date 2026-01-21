@@ -7863,6 +7863,9 @@
     ],
     "damageValues": [
       [
+        100,
+        100,
+        100,
         100
       ]
     ],
@@ -16714,11 +16717,20 @@
     "duration": null,
     "abilityDamage": null,
     "damageKeys": [
-      "damage_per_mana_pct"
+      "mana_burned"
     ],
     "damageValues": [
       [
-        60
+        100,
+        175,
+        250,
+        325,
+        400,
+        475,
+        550,
+        625,
+        700,
+        775
       ]
     ],
     "hasScepterUpgrade": false,
@@ -35357,6 +35369,9 @@
     ],
     "damageValues": [
       [
+        50,
+        50,
+        50,
         50
       ]
     ],

@@ -199,12 +199,30 @@ const getTooltipContent = (ability: any): string => {
   return `<div style="text-align:left;line-height:1.5;font-size:12px;">${summary.replace(/\n/g, '<br>')}</div>`
 }
 
-// 获取伤害显示信息
+// 获取伤害显示信息（持续伤害显示 DPS）
 const getDamageDisplay = (ability: any): { expected: string; min: string | null; max: string | null } | null => {
   const data = traitData.value[ability.internalName]
   if (!data || !data.formulaExpected) return null
   
   const result = calculateAbilityDamage(ability, data)
+  
+  // 如果是持续伤害且有 damageTime，计算 DPS
+  if (data.isBurst === false && data.damageTime) {
+    const times = data.damageTime.split(/\s+/).map(Number).filter(v => !isNaN(v) && v > 0)
+    const formatWithDps = (damages: number[]) => {
+      return damages.map((dmg, i) => {
+        const time = times.length > 1 ? (times[i] ?? times[times.length - 1]) : times[0]
+        const dps = time ? Math.round(dmg / time) : 0
+        return `${Math.round(dmg)}(${dps})`
+      }).join(' / ')
+    }
+    return {
+      expected: formatWithDps(result.expected),
+      min: data.formulaMin ? formatWithDps(result.min) : null,
+      max: data.formulaMax ? formatWithDps(result.max) : null
+    }
+  }
+  
   return {
     expected: formatDamageArray(result.expected),
     min: data.formulaMin ? formatDamageArray(result.min) : null,
@@ -267,7 +285,16 @@ const editingData = ref<DamageTraitData>({
   formulaMin: null,
   formulaMax: null,
   customParams: null,
-  notes: null
+  notes: null,
+  isBurst: true,
+  damageTime: null
+})
+
+// 当 isBurst 变化时，自动清空 damageTime
+watch(() => editingData.value.isBurst, (isBurst) => {
+  if (isBurst) {
+    editingData.value.damageTime = null
+  }
 })
 
 // 自定义变量编辑（数组形式便于 UI 编辑）
@@ -290,7 +317,9 @@ const openEditDialog = (ability: any) => {
       formulaMin: null,
       formulaMax: null,
       customParams: null,
-      notes: null
+      notes: null,
+      isBurst: true,
+      damageTime: null
     }
     editingCustomParams.value = []
   }
@@ -339,10 +368,10 @@ const formatAttrValue = (value: any): string => {
   return String(value)
 }
 
-// 跟踪当前聚焦的公式输入框
-const activeFormulaField = ref<'expected' | 'min' | 'max'>('expected')
+// 跟踪当前聚焦的输入框
+const activeFormulaField = ref<'expected' | 'min' | 'max' | 'damageTime'>('expected')
 
-// 点击变量插入到当前聚焦的公式输入框
+// 点击变量插入到当前聚焦的输入框
 const insertVariable = (varName: string) => {
   const field = activeFormulaField.value
   if (field === 'expected') {
@@ -351,6 +380,13 @@ const insertVariable = (varName: string) => {
     editingData.value.formulaMin = (editingData.value.formulaMin || '') + varName
   } else if (field === 'max') {
     editingData.value.formulaMax = (editingData.value.formulaMax || '') + varName
+  } else if (field === 'damageTime') {
+    // 对于 damageTime，插入变量的值而不是变量名
+    const values = editingAbility.value?.abilityValues?.[varName]
+    if (values) {
+      const val = typeof values === 'object' && values.value ? values.value : String(values)
+      editingData.value.damageTime = val
+    }
   }
 }
 
@@ -374,10 +410,25 @@ const liveCalcResult = computed(() => {
   
   const result = calculateAbilityDamage(editingAbility.value, tempData)
   
+  // 格式化函数：持续伤害带 DPS
+  const formatWithOptionalDps = (damages: number[]) => {
+    if (editingData.value.isBurst === false && editingData.value.damageTime) {
+      const times = editingData.value.damageTime.split(/\s+/).map(Number).filter(v => !isNaN(v) && v > 0)
+      if (times.length > 0) {
+        return damages.map((dmg, i) => {
+          const time = times.length > 1 ? (times[i] ?? times[times.length - 1]) : times[0]
+          const dps = time ? Math.round(dmg / time) : 0
+          return `${Math.round(dmg)}(${dps})`
+        }).join(' / ')
+      }
+    }
+    return formatDamageArray(damages)
+  }
+  
   return {
-    expected: result.expected.length > 0 ? formatDamageArray(result.expected) : '-',
-    min: result.min.length > 0 ? formatDamageArray(result.min) : '-',
-    max: result.max.length > 0 ? formatDamageArray(result.max) : '-'
+    expected: result.expected.length > 0 ? formatWithOptionalDps(result.expected) : '-',
+    min: result.min.length > 0 ? formatWithOptionalDps(result.min) : '-',
+    max: result.max.length > 0 ? formatWithOptionalDps(result.max) : '-'
   }
 })
 
@@ -496,6 +547,8 @@ const stats = computed(() => ({
                       >
                         <span class="ability-name" :class="{ ultimate: ability.isUltimate }">
                           {{ ability.nameZh || ability.internalName }}
+                          <span v-if="traitData[ability.internalName]?.isBurst === true" class="burst-icon" title="瞬间伤害">⚡</span>
+                          <span v-else-if="traitData[ability.internalName]?.isBurst === false" class="dot-icon" title="持续伤害">🔥</span>
                         </span>
                       </el-tooltip>
                       <span class="damage-type" :class="ability.damageType?.toLowerCase()">
@@ -602,6 +655,22 @@ const stats = computed(() => ({
                 </div>
                 <el-button size="small" @click="addCustomParam">+ 添加变量</el-button>
               </div>
+            </el-form-item>
+            
+            <el-form-item label="伤害类型">
+              <el-radio-group v-model="editingData.isBurst">
+                <el-radio :value="true">⚡ 瞬间伤害</el-radio>
+                <el-radio :value="false">🔥 持续伤害 (DoT)</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            
+            <el-form-item v-if="editingData.isBurst === false" label="造成伤害所需时间（秒）">
+              <el-input 
+                v-model="editingData.damageTime" 
+                placeholder="如: 16 或 4 5 6 7（按等级）或点击左侧变量" 
+                @focus="activeFormulaField = 'damageTime'"
+              />
+              <div class="form-tip">点击左侧变量可自动填入，用于计算 DPS</div>
             </el-form-item>
             
             <el-form-item label="备注">
@@ -857,6 +926,11 @@ const stats = computed(() => ({
   font-weight: 500;
 }
 
+.burst-icon, .dot-icon {
+  font-size: 0.7rem;
+  margin-left: 3px;
+}
+
 .damage-type {
   font-size: 0.65rem;
   padding: 1px 5px;
@@ -1054,5 +1128,11 @@ const stats = computed(() => ({
 
 .param-value :deep(input) {
   font-family: monospace;
+}
+
+.form-tip {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  margin-top: 4px;
 }
 </style>

@@ -30,12 +30,12 @@ export const useDataLoader = () => {
   /**
    * 加载英雄数据
    */
-  const loadHeroes = () => loadJson<Hero[]>('heroes.json')
+  const loadHeroes = () => loadJson<Hero[]>('heroes/heroes.json')
 
   /**
    * 加载技能数据
    */
-  const loadAbilities = () => loadJson<Ability[]>('abilities.json')
+  const loadAbilities = () => loadJson<Ability[]>('abilities/abilities.json')
 
   /**
    * 加载英雄技能数据（过滤后的）
@@ -60,12 +60,12 @@ export const useDataLoader = () => {
   /**
    * 加载物品数据
    */
-  const loadItems = () => loadJson<Item[]>('items.json')
+  const loadItems = () => loadJson<Item[]>('items/items.json')
 
   /**
    * 加载世界数据
    */
-  const loadWorld = () => loadJson<WorldData>('world.json')
+  const loadWorld = () => loadJson<WorldData>('world/world.json')
 
   /**
    * 加载所有数据
