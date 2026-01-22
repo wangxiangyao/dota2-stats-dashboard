@@ -16,6 +16,7 @@ export default defineNuxtConfig({
     { path: '~/components/ability', prefix: 'Ability' },
     { path: '~/components/analysis', prefix: 'Analysis' },
     { path: '~/components/chart', prefix: 'Chart' },
+    { path: '~/components/world', prefix: 'World' },
   ],
 
   // TypeScript配置

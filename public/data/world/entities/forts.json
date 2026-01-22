@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "source": "mapdata.json",
+    "entityType": "npc_dota_fort",
+    "version": "7.40b",
+    "extractedAt": "2026-01-22T16:32:05.750Z"
+  },
+  "data": [
+    {
+      "bat": 0,
+      "x": 5528,
+      "y": 5000,
+      "bounds": [
+        373.96197509766,
+        373.96197509766
+      ],
+      "name": "dota_badguys_fort",
+      "dayVision": 2600,
+      "nightVision": 2600,
+      "healthRegen": 12,
+      "health": 4500,
+      "armor": 23,
+      "team": 3
+    },
+    {
+      "bat": 0,
+      "x": -5920,
+      "y": -5352,
+      "bounds": [
+        298.72647094727,
+        298.72647094727
+      ],
+      "name": "dota_goodguys_fort",
+      "dayVision": 2600,
+      "nightVision": 2600,
+      "healthRegen": 12,
+      "health": 4500,
+      "armor": 23,
+      "team": 2
+    }
+  ]
+}

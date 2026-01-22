@@ -1,0 +1,230 @@
+{
+  "meta": {
+    "source": "npc_units.txt + Liquipedia",
+    "extractedAt": "2026-01-22T04:11:27.199Z"
+  },
+  "towers": {
+    "tier1": {
+      "nameZh": "一塔",
+      "nameEn": "Tier 1 Tower",
+      "stats": {
+        "hp": 1800,
+        "hpRegen": 0,
+        "armor": 12,
+        "magicResist": 0,
+        "attackMin": 88,
+        "attackMax": 92,
+        "attackRate": 0.9,
+        "attackRange": 700,
+        "moveSpeed": 0,
+        "goldMin": 0,
+        "goldMax": 0,
+        "xp": 0,
+        "level": 1
+      },
+      "goldBounty": {
+        "killer": 150,
+        "team": 100
+      }
+    },
+    "tier2": {
+      "nameZh": "二塔",
+      "nameEn": "Tier 2 Tower",
+      "stats": {
+        "hp": 2500,
+        "hpRegen": 0,
+        "armor": 16,
+        "magicResist": 0,
+        "attackMin": 170,
+        "attackMax": 174,
+        "attackRate": 0.9,
+        "attackRange": 700,
+        "moveSpeed": 0,
+        "goldMin": 0,
+        "goldMax": 0,
+        "xp": 0,
+        "level": 2
+      },
+      "goldBounty": {
+        "killer": 125,
+        "team": 200
+      }
+    },
+    "tier3": {
+      "nameZh": "高地塔",
+      "nameEn": "Tier 3 Tower",
+      "stats": {
+        "hp": 2500,
+        "hpRegen": 0,
+        "armor": 16,
+        "magicResist": 0,
+        "attackMin": 170,
+        "attackMax": 174,
+        "attackRate": 0.9,
+        "attackRange": 700,
+        "moveSpeed": 0,
+        "goldMin": 0,
+        "goldMax": 0,
+        "xp": 0,
+        "level": 3
+      },
+      "goldBounty": {
+        "killer": 125,
+        "team": 200
+      }
+    },
+    "tier4": {
+      "nameZh": "门塔",
+      "nameEn": "Tier 4 Tower",
+      "stats": {
+        "hp": 2600,
+        "hpRegen": 0,
+        "armor": 21,
+        "magicResist": 0,
+        "attackMin": 170,
+        "attackMax": 174,
+        "attackRate": 0.9,
+        "attackRange": 700,
+        "moveSpeed": 0,
+        "goldMin": 0,
+        "goldMax": 0,
+        "xp": 0,
+        "level": 4
+      },
+      "goldBounty": {
+        "killer": 125,
+        "team": 200
+      },
+      "count": 2
+    }
+  },
+  "barracks": {
+    "melee": {
+      "nameZh": "近战兵营",
+      "nameEn": "Melee Barracks",
+      "hp": 2200,
+      "hpRegen": 5,
+      "armor": 15,
+      "goldBounty": {
+        "killer": 225,
+        "team": 100
+      }
+    },
+    "ranged": {
+      "nameZh": "远程兵营",
+      "nameEn": "Ranged Barracks",
+      "hp": 1300,
+      "hpRegen": 5,
+      "armor": 10,
+      "goldBounty": {
+        "killer": 225,
+        "team": 100
+      },
+      "notes": "摧毁后敌方攻城车+16攻击"
+    }
+  },
+  "ancient": {
+    "nameZh": "遗迹",
+    "nameEn": "Ancient",
+    "stats": {
+      "hp": 4500,
+      "hpRegen": 12,
+      "armor": 23,
+      "magicResist": 0,
+      "attackMin": 0,
+      "attackMax": 0,
+      "attackRate": 1,
+      "attackRange": 0,
+      "moveSpeed": 0,
+      "goldMin": 0,
+      "goldMax": 0,
+      "xp": 0,
+      "level": 1
+    }
+  },
+  "fountain": {
+    "nameZh": "泉水",
+    "nameEn": "Fountain",
+    "stats": {
+      "hp": 500,
+      "hpRegen": 0,
+      "armor": 0,
+      "magicResist": 0,
+      "attackMin": 290,
+      "attackMax": 310,
+      "attackRate": 0.15,
+      "attackRange": 1200,
+      "moveSpeed": 0,
+      "goldMin": 0,
+      "goldMax": 0,
+      "xp": 0,
+      "level": 1
+    },
+    "notes": "True Strike，对英雄造成25%当前生命值伤害（最低80点）"
+  },
+  "roshan": {
+    "nameZh": "肉山",
+    "nameEn": "Roshan",
+    "stats": {
+      "hp": 6000,
+      "hpRegen": 20,
+      "armor": 30,
+      "magicResist": 55,
+      "attackMin": 75,
+      "attackMax": 75,
+      "attackRate": 2,
+      "attackRange": 150,
+      "moveSpeed": 270,
+      "goldMin": 200,
+      "goldMax": 290,
+      "xp": 400,
+      "level": 30
+    },
+    "respawn": {
+      "min": 480,
+      "max": 660
+    },
+    "drops": {
+      "first": [
+        "aegis"
+      ],
+      "second": [
+        "aegis",
+        "cheese"
+      ],
+      "thirdPlus": [
+        "aegis",
+        "cheese",
+        "refresher_shard|aghs_shard"
+      ]
+    },
+    "goldBounty": {
+      "killer": "200-290",
+      "team": 135
+    },
+    "xpBounty": "400 + 20×击杀次数"
+  },
+  "mechanics": {
+    "backdoorProtection": {
+      "nameZh": "后门保护",
+      "hpRegen": {
+        "tier1": 0,
+        "tier2Plus": 90,
+        "ancient": 180
+      },
+      "damageReduction": 0.5,
+      "notes": "T1塔无后门保护；需兵线接近才会解除"
+    },
+    "towerArmor": {
+      "bonusPerHero": 3,
+      "startAt": 3,
+      "notes": "附近每多1个敌方英雄（超过2个），塔+3护甲"
+    },
+    "glyph": {
+      "nameZh": "防御符文",
+      "duration": 6,
+      "cooldown": 300,
+      "notes": "初始可用，T1塔被摧毁后刷新；使建筑和兵线无敌6秒"
+    }
+  }
+}

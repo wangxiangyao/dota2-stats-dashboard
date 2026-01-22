@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "source": "mapdata.json",
+    "entityType": "ent_dota_fountain",
+    "version": "7.40b",
+    "extractedAt": "2026-01-22T16:32:05.751Z"
+  },
+  "data": [
+    {
+      "bat": 0.15000000596046,
+      "x": 7408,
+      "y": 6848,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "ent_dota_fountain_bad",
+      "damageMax": 310,
+      "damageMin": 290,
+      "dayVision": 1800,
+      "nightVision": 1800,
+      "healthRegen": 0,
+      "health": 500,
+      "armor": 0,
+      "team": 3
+    },
+    {
+      "bat": 0.15000000596046,
+      "x": -7456,
+      "y": -6938,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "ent_dota_fountain_good",
+      "damageMax": 310,
+      "damageMin": 290,
+      "dayVision": 1800,
+      "nightVision": 1800,
+      "healthRegen": 0,
+      "health": 500,
+      "armor": 0,
+      "team": 2
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "source": "mapdata.json",
+    "entityType": "npc_dota_watch_tower",
+    "version": "7.40b",
+    "extractedAt": "2026-01-22T16:32:05.752Z"
+  },
+  "data": [
+    {
+      "bat": 0,
+      "x": -4096,
+      "y": -448,
+      "bounds": [
+        96,
+        96
+      ],
+      "name": "npc_dota_watch_tower_bottom",
+      "dayVision": 0,
+      "nightVision": 0,
+      "healthRegen": 0,
+      "health": 450,
+      "armor": 0,
+      "team": 2
+    },
+    {
+      "bat": 0,
+      "x": 3392,
+      "y": -448,
+      "bounds": [
+        96,
+        96
+      ],
+      "name": "npc_dota_watch_tower_top",
+      "dayVision": 0,
+      "nightVision": 0,
+      "healthRegen": 0,
+      "health": 450,
+      "armor": 0,
+      "team": 2
+    }
+  ]
+}

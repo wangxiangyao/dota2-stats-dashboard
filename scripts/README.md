@@ -63,6 +63,36 @@ node scripts/calculate-damage.cjs 矮人直升机
 
 ---
 
+### pull-map-data.cjs
+**功能**：从 `dota-map-coordinates` 项目拉取地图数据（JSON 和图片）
+
+**配置文件**：`scripts/config.json`
+```json
+{
+  "mapCoordinatesPath": "D:\\02_projects\\Dota\\dota-map-coordinates",
+  "defaultVersion": "7.40b"
+}
+```
+
+**拉取的文件**：
+- JSON 数据：`mapdata.json`, `worlddata.json`, `gridnavdata.json`, `elevationdata.json`
+- 图片：`map.png`, `gridnav.png`, `elevation.png`, `tree_elevation.png`, `map_data.png`
+
+**输出**：
+- `public/data/map/<version>/` - JSON 数据文件
+- `public/images/map/<version>/` - 图片文件
+
+**运行**：
+```bash
+# 使用默认版本
+node scripts/pull-map-data.cjs
+
+# 指定版本
+node scripts/pull-map-data.cjs --version 7.40b
+```
+
+---
+
 ## 已废弃的脚本
 
 以下脚本已被页面功能替代，已删除：

@@ -1,0 +1,406 @@
+{
+  "meta": {
+    "source": "mapdata.json",
+    "entityType": "npc_dota_tower",
+    "version": "7.40b",
+    "extractedAt": "2026-01-22T16:32:05.750Z"
+  },
+  "data": [
+    {
+      "bat": 0.89999997615814,
+      "x": -3952,
+      "y": -6112,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_goodguys_tower3_bot",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2500,
+      "armor": 16,
+      "team": 2
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": -4640,
+      "y": -4144,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_goodguys_tower3_mid",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2500,
+      "armor": 16,
+      "team": 2
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": -6592,
+      "y": -3408,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_goodguys_tower3_top",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2500,
+      "armor": 16,
+      "team": 2
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": -360,
+      "y": -6256,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_goodguys_tower2_bot",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2500,
+      "armor": 16,
+      "team": 2
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": 4904,
+      "y": -6198,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_goodguys_tower1_bot",
+      "damageMax": 92,
+      "damageMin": 88,
+      "dayVision": 1900,
+      "nightVision": 800,
+      "healthRegen": 0,
+      "health": 1800,
+      "armor": 12,
+      "team": 2
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": -3190,
+      "y": -2926,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_goodguys_tower2_mid",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2500,
+      "armor": 16,
+      "team": 2
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": -6501,
+      "y": -872,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_goodguys_tower2_top",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2500,
+      "armor": 16,
+      "team": 2
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": -6336,
+      "y": 1856,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_goodguys_tower1_top",
+      "damageMax": 92,
+      "damageMin": 88,
+      "dayVision": 1900,
+      "nightVision": 800,
+      "healthRegen": 0,
+      "health": 1800,
+      "armor": 12,
+      "team": 2
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": -5712,
+      "y": -4864,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_goodguys_tower4_top",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2600,
+      "armor": 21,
+      "team": 2
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": 4944,
+      "y": 4776,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_badguys_tower4_top",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2600,
+      "armor": 21,
+      "team": 3
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": -128,
+      "y": 6016,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_badguys_tower2_top",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2500,
+      "armor": 16,
+      "team": 3
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": -5275,
+      "y": 5928,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_badguys_tower1_top",
+      "damageMax": 92,
+      "damageMin": 88,
+      "dayVision": 1900,
+      "nightVision": 800,
+      "healthRegen": 0,
+      "health": 1800,
+      "armor": 12,
+      "team": 3
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": 2496,
+      "y": 2112,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_badguys_tower2_mid",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2500,
+      "armor": 16,
+      "team": 3
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": 524,
+      "y": 652,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_badguys_tower1_mid",
+      "damageMax": 92,
+      "damageMin": 88,
+      "dayVision": 1900,
+      "nightVision": 800,
+      "healthRegen": 0,
+      "health": 1800,
+      "armor": 12,
+      "team": 3
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": 6400,
+      "y": 384,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_badguys_tower2_bot",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2500,
+      "armor": 16,
+      "team": 3
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": 6336,
+      "y": 3032,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_badguys_tower3_bot",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2500,
+      "armor": 16,
+      "team": 3
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": 3552,
+      "y": 5776,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_badguys_tower3_top",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2500,
+      "armor": 16,
+      "team": 3
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": 4272,
+      "y": 3759,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_badguys_tower3_mid",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2500,
+      "armor": 16,
+      "team": 3
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": 5280,
+      "y": 4432,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_badguys_tower4_bot",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2600,
+      "armor": 21,
+      "team": 3
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": -5392,
+      "y": -5192,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_goodguys_tower4_bot",
+      "damageMax": 174,
+      "damageMin": 170,
+      "dayVision": 1900,
+      "nightVision": 1100,
+      "healthRegen": 0,
+      "health": 2600,
+      "armor": 21,
+      "team": 2
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": -1544,
+      "y": -1408,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_goodguys_tower1_mid",
+      "damageMax": 92,
+      "damageMin": 88,
+      "dayVision": 1900,
+      "nightVision": 800,
+      "healthRegen": 0,
+      "health": 1800,
+      "armor": 12,
+      "team": 2
+    },
+    {
+      "bat": 0.89999997615814,
+      "x": 6269,
+      "y": -2240,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "dota_badguys_tower1_bot",
+      "damageMax": 92,
+      "damageMin": 88,
+      "dayVision": 1900,
+      "nightVision": 800,
+      "healthRegen": 0,
+      "health": 1800,
+      "armor": 12,
+      "team": 3
+    }
+  ]
+}
