@@ -32,7 +32,14 @@ const ENTITY_MAPPING = {
     'npc_dota_tower': 'towers.json',
     'npc_dota_fort': 'forts.json',
     'ent_dota_fountain': 'fountains.json',
-    'npc_dota_watch_tower': 'outposts.json'
+    'npc_dota_watch_tower': 'outposts.json',
+    // 新增实体类型
+    'npc_dota_healer': 'shrines.json',                      // 经验神龛
+    'dota_item_rune_spawner_bounty': 'runes-bounty.json',   // 赏金符
+    'dota_item_rune_spawner_powerup': 'runes-power.json',   // 能量符
+    'npc_dota_roshan_spawner': 'roshan.json',               // 肉山
+    'npc_dota_barracks': 'barracks.json',                   // 兵营
+    'ent_dota_shop': 'shops.json'                           // 商店
 };
 
 function loadConfig() {

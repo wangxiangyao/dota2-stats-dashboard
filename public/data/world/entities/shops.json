@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "source": "mapdata.json",
+    "entityType": "ent_dota_shop",
+    "version": "7.40b",
+    "extractedAt": "2026-01-23T03:49:57.605Z"
+  },
+  "data": [
+    {
+      "bat": 1.7000000476837,
+      "x": 6697,
+      "y": 6809,
+      "bounds": [
+        24,
+        24
+      ],
+      "name": "ent_dota_shop",
+      "dayVision": 575,
+      "nightVision": 575,
+      "healthRegen": 0,
+      "health": 150,
+      "armor": 0,
+      "team": 5
+    },
+    {
+      "bat": 1.7000000476837,
+      "x": -7542,
+      "y": -6171,
+      "bounds": [
+        24,
+        24
+      ],
+      "name": "ent_dota_shop",
+      "dayVision": 575,
+      "nightVision": 575,
+      "healthRegen": 0,
+      "health": 150,
+      "armor": 0,
+      "team": 5
+    },
+    {
+      "bat": 1.7000000476837,
+      "x": 4886,
+      "y": -1208,
+      "bounds": [
+        24,
+        24
+      ],
+      "name": "ent_dota_shop",
+      "dayVision": 575,
+      "nightVision": 575,
+      "healthRegen": 0,
+      "health": 150,
+      "armor": 0,
+      "team": 5
+    },
+    {
+      "bat": 1.7000000476837,
+      "x": -5080,
+      "y": 1948,
+      "bounds": [
+        24,
+        24
+      ],
+      "name": "ent_dota_shop",
+      "dayVision": 575,
+      "nightVision": 575,
+      "healthRegen": 0,
+      "health": 150,
+      "armor": 0,
+      "team": 5
+    }
+  ]
+}

@@ -8,7 +8,7 @@
     <!-- Tab 1: 互动地图 -->
     <template #map>
       <div class="interactive-map-container">
-        <WorldMapMoveSpeed />
+        <WorldInteractiveMap />
       </div>
     </template>
 

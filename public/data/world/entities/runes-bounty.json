@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "source": "mapdata.json",
+    "entityType": "dota_item_rune_spawner_bounty",
+    "version": "7.40b",
+    "extractedAt": "2026-01-23T03:49:57.603Z"
+  },
+  "data": [
+    {
+      "name": "dota_item_rune_spawner_bounty",
+      "y": 4431,
+      "bounds": [
+        0,
+        0
+      ],
+      "x": -996,
+      "team": 0
+    },
+    {
+      "name": "dota_item_rune_spawner_bounty",
+      "y": -4660,
+      "bounds": [
+        0,
+        0
+      ],
+      "x": 595,
+      "team": 0
+    }
+  ]
+}

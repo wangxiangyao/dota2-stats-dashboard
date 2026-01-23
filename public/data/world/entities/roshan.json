@@ -1,0 +1,19 @@
+{
+  "meta": {
+    "source": "mapdata.json",
+    "entityType": "npc_dota_roshan_spawner",
+    "version": "7.40b",
+    "extractedAt": "2026-01-23T03:49:57.604Z"
+  },
+  "data": [
+    {
+      "bounds": [
+        0,
+        0
+      ],
+      "x": 2831,
+      "y": -2740,
+      "team": 0
+    }
+  ]
+}

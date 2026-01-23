@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "source": "mapdata.json",
+    "entityType": "dota_item_rune_spawner_powerup",
+    "version": "7.40b",
+    "extractedAt": "2026-01-23T03:49:57.604Z"
+  },
+  "data": [
+    {
+      "name": "dota_item_rune_spawner_powerup",
+      "y": 1112,
+      "bounds": [
+        0,
+        0
+      ],
+      "x": -1640,
+      "team": 0
+    },
+    {
+      "name": "dota_item_rune_spawner_powerup",
+      "y": -1216,
+      "bounds": [
+        0,
+        0
+      ],
+      "x": 1180,
+      "team": 0
+    }
+  ]
+}

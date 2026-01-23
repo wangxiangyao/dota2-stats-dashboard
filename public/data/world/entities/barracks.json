@@ -1,0 +1,202 @@
+{
+  "meta": {
+    "source": "mapdata.json",
+    "entityType": "npc_dota_barracks",
+    "version": "7.40b",
+    "extractedAt": "2026-01-23T03:49:57.604Z"
+  },
+  "data": [
+    {
+      "bat": 0,
+      "x": -4672,
+      "y": -4552,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "good_rax_melee_mid",
+      "dayVision": 900,
+      "nightVision": 600,
+      "healthRegen": 5,
+      "health": 2200,
+      "armor": 15,
+      "team": 2
+    },
+    {
+      "bat": 0,
+      "x": -5060,
+      "y": -4199,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "good_rax_range_mid",
+      "dayVision": 900,
+      "nightVision": 600,
+      "healthRegen": 0,
+      "health": 1300,
+      "armor": 9,
+      "team": 2
+    },
+    {
+      "bat": 0,
+      "x": -4280,
+      "y": -6360,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "good_rax_melee_bot",
+      "dayVision": 900,
+      "nightVision": 600,
+      "healthRegen": 5,
+      "health": 2200,
+      "armor": 15,
+      "team": 2
+    },
+    {
+      "bat": 0,
+      "x": -4279,
+      "y": -5853,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "good_rax_range_bot",
+      "dayVision": 900,
+      "nightVision": 600,
+      "healthRegen": 0,
+      "health": 1300,
+      "armor": 9,
+      "team": 2
+    },
+    {
+      "bat": 0,
+      "x": -6336,
+      "y": -3758,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "good_rax_melee_top",
+      "dayVision": 900,
+      "nightVision": 600,
+      "healthRegen": 5,
+      "health": 2200,
+      "armor": 15,
+      "team": 2
+    },
+    {
+      "bat": 0,
+      "x": -6844,
+      "y": -3759,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "good_rax_range_top",
+      "dayVision": 900,
+      "nightVision": 600,
+      "healthRegen": 0,
+      "health": 1300,
+      "armor": 9,
+      "team": 2
+    },
+    {
+      "bat": 0,
+      "x": 6592,
+      "y": 3392,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "bad_rax_melee_bot",
+      "dayVision": 900,
+      "nightVision": 600,
+      "healthRegen": 5,
+      "health": 2200,
+      "armor": 15,
+      "team": 3
+    },
+    {
+      "bat": 0,
+      "x": 6064,
+      "y": 3376,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "bad_rax_range_bot",
+      "dayVision": 900,
+      "nightVision": 600,
+      "healthRegen": 0,
+      "health": 1300,
+      "armor": 9,
+      "team": 3
+    },
+    {
+      "bat": 0,
+      "x": 4336,
+      "y": 4183,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "bad_rax_range_mid",
+      "dayVision": 900,
+      "nightVision": 600,
+      "healthRegen": 0,
+      "health": 1300,
+      "armor": 9,
+      "team": 3
+    },
+    {
+      "bat": 0,
+      "x": 4702,
+      "y": 3824,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "bad_rax_melee_mid",
+      "dayVision": 900,
+      "nightVision": 600,
+      "healthRegen": 5,
+      "health": 2200,
+      "armor": 15,
+      "team": 3
+    },
+    {
+      "bat": 0,
+      "x": 3898,
+      "y": 5496,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "bad_rax_melee_top",
+      "dayVision": 900,
+      "nightVision": 600,
+      "healthRegen": 5,
+      "health": 2200,
+      "armor": 15,
+      "team": 3
+    },
+    {
+      "bat": 0,
+      "x": 3894,
+      "y": 6025,
+      "bounds": [
+        144,
+        144
+      ],
+      "name": "bad_rax_range_top",
+      "dayVision": 900,
+      "nightVision": 600,
+      "healthRegen": 0,
+      "health": 1300,
+      "armor": 9,
+      "team": 3
+    }
+  ]
+}
