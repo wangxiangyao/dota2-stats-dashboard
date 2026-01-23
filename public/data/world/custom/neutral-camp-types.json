@@ -1,211 +1,205 @@
 {
   "meta": {
-    "description": "野怪营地类型标注（需手动编辑）",
-    "types": [
-      "small",
-      "medium",
-      "large",
-      "ancient"
-    ],
+    "source": "manual annotation based on Dota 2 minimap",
     "version": "7.40b",
-    "createdAt": "2026-01-22T16:32:05.752Z"
+    "annotatedAt": "2026-01-23"
   },
   "camps": [
     {
       "id": 1,
       "x": -852,
       "y": 4940,
-      "type": null,
-      "note": ""
+      "type": "medium",
+      "note": "天辉上野区"
     },
     {
       "id": 2,
       "x": 3392,
       "y": -1408,
-      "type": null,
-      "note": ""
+      "type": "medium",
+      "note": "夜魇远古（中右）"
     },
     {
       "id": 3,
       "x": 3951,
       "y": -5075,
-      "type": null,
-      "note": ""
+      "type": "small",
+      "note": "夜魇下三角"
     },
     {
       "id": 4,
       "x": 7928,
       "y": -120,
-      "type": null,
-      "note": ""
+      "type": "large",
+      "note": "夜魇右边缘"
     },
     {
       "id": 5,
       "x": -4824,
       "y": 3915,
-      "type": null,
-      "note": ""
+      "type": "large",
+      "note": "天辉野区"
     },
     {
       "id": 6,
       "x": 4649,
       "y": -3699,
-      "type": null,
-      "note": ""
+      "type": "large",
+      "note": "夜魇下三角"
     },
     {
       "id": 7,
       "x": -1454,
       "y": -3356,
-      "type": null,
-      "note": ""
+      "type": "large",
+      "note": "河道下方"
     },
     {
       "id": 8,
       "x": 186,
       "y": -5197,
-      "type": null,
-      "note": ""
+      "type": "medium",
+      "note": "夜魇野区上"
     },
     {
       "id": 9,
       "x": -5015,
       "y": -96,
-      "type": null,
-      "note": ""
+      "type": "ancient",
+      "note": "天辉远古（中左）"
     },
     {
       "id": 10,
       "x": 4352,
       "y": 48,
-      "type": null,
-      "note": ""
+      "type": "ancient",
+      "note": "夜魇远古（中右）"
     },
     {
       "id": 11,
       "x": -1983,
       "y": -4815,
-      "type": null,
-      "note": ""
+      "type": "medium",
+      "note": "夜魇野区"
     },
     {
       "id": 12,
       "x": 1224,
       "y": 4176,
-      "type": null,
-      "note": ""
+      "type": "medium",
+      "note": "天辉野区"
     },
     {
       "id": 13,
       "x": -4013,
       "y": 992,
-      "type": null,
-      "note": ""
+      "type": "medium",
+      "note": "天辉左侧"
     },
     {
       "id": 14,
       "x": -785,
       "y": -7593,
-      "type": null,
-      "note": ""
+      "type": "large",
+      "note": "夜魇下方"
     },
     {
       "id": 15,
       "x": 171,
       "y": 8255,
-      "type": null,
-      "note": ""
+      "type": "large",
+      "note": "天辉上方"
     },
     {
       "id": 16,
       "x": -4724,
       "y": 8368,
-      "type": null,
-      "note": ""
+      "type": "ancient",
+      "note": "天辉远古（左上）"
     },
     {
       "id": 17,
       "x": 1064,
       "y": 2580,
-      "type": null,
-      "note": ""
+      "type": "large",
+      "note": "河道上方"
     },
     {
       "id": 18,
       "x": 8430,
       "y": 1263,
-      "type": null,
-      "note": ""
+      "type": "medium",
+      "note": "夜魇右边缘"
     },
     {
       "id": 19,
       "x": -8313,
       "y": -553,
-      "type": null,
-      "note": ""
+      "type": "large",
+      "note": "天辉左边缘"
     },
     {
       "id": 20,
       "x": -3200,
       "y": 7484,
-      "type": null,
-      "note": ""
+      "type": "small",
+      "note": "天辉上野区"
     },
     {
       "id": 21,
       "x": -2596,
       "y": 3850,
-      "type": null,
-      "note": ""
+      "type": "medium",
+      "note": "天辉上三角"
     },
     {
       "id": 22,
       "x": 3200,
       "y": -8256,
-      "type": null,
-      "note": ""
+      "type": "small",
+      "note": "夜魇下野区"
     },
     {
       "id": 23,
       "x": 1922,
       "y": -3975,
-      "type": null,
-      "note": ""
+      "type": "medium",
+      "note": "夜魇中野区"
     },
     {
       "id": 24,
       "x": -3911,
       "y": 4829,
-      "type": null,
-      "note": ""
+      "type": "small",
+      "note": "天辉上三角"
     },
     {
       "id": 25,
       "x": 4895,
       "y": -8341,
-      "type": null,
-      "note": ""
+      "type": "ancient",
+      "note": "夜魇远古（下）"
     },
     {
       "id": 26,
       "x": -8023,
       "y": -1838,
-      "type": null,
-      "note": ""
+      "type": "medium",
+      "note": "天辉左下"
     },
     {
       "id": 27,
       "x": 2016,
       "y": 7896,
-      "type": null,
-      "note": ""
+      "type": "medium",
+      "note": "天辉上方"
     },
     {
       "id": 28,
       "x": -2415,
       "y": -8402,
-      "type": null,
-      "note": ""
+      "type": "medium",
+      "note": "夜魇下方"
     }
   ]
 }

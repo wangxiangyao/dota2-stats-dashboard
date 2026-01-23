@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
+import { VisionSimulation, xy2key, key2pt } from '@/utils/vision'
 
 // ===== 类型定义 =====
 interface Point {
@@ -33,6 +34,35 @@ interface MapData {
   npc_dota_fort?: MapEntity[]
   dota_item_rune_spawner_powerup?: MapEntity[]
   dota_item_rune_spawner_bounty?: MapEntity[]
+}
+
+// 营地类型配置
+interface CampTypeConfig {
+  id: number
+  x: number
+  y: number
+  type: 'small' | 'medium' | 'large' | 'ancient' | null
+  note: string
+}
+
+// 野怪属性
+interface CreepStats {
+  id: string
+  hp: number
+  goldMin: number
+  goldMax: number
+  xp: number
+  level: number
+}
+
+// 选中的实体
+type EntityType = 'camp' | 'tower' | 'fountain' | 'fort' | 'outpost'
+interface SelectedEntity {
+  type: EntityType
+  data: MapEntity
+  campType?: 'small' | 'medium' | 'large' | 'ancient' | null
+  campNote?: string
+  index?: number
 }
 
 // ===== 常量定义（官方参数） =====
@@ -100,6 +130,109 @@ let navGridCache: HTMLCanvasElement | null = null
 let treeLayerCache: HTMLCanvasElement | null = null
 let needsTreeCacheUpdate = true
 
+// 详情面板状态
+const selectedEntity = ref<SelectedEntity | null>(null)
+const popupPosition = ref<{ x: number, y: number } | null>(null)
+const campTypes = ref<CampTypeConfig[]>([])
+const neutralsData = ref<any>(null)
+const buildingsData = ref<any>(null)
+
+// 图标配置和雪碧图
+interface IconConfig {
+  col: number
+  row: number
+  subCol: number
+  subRow: number
+  size: number
+  note: string
+}
+interface IconsData {
+  meta: { spriteSheet: string, cellSize: number }
+  icons: Record<string, IconConfig>
+}
+const iconsConfig = ref<IconsData | null>(null)
+const spriteSheet = ref<HTMLImageElement | null>(null)
+
+// ===== 右键菜单系统 =====
+interface ContextMenuItem {
+  label: string
+  icon: string
+  action: () => void
+  disabled?: boolean
+}
+
+interface ContextMenuState {
+  visible: boolean
+  x: number
+  y: number
+  items: ContextMenuItem[]
+  worldPoint?: Point  // 右键点击的世界坐标
+}
+
+const contextMenu = ref<ContextMenuState>({
+  visible: false,
+  x: 0,
+  y: 0,
+  items: []
+})
+
+// ===== 游戏时间系统 =====
+const gameTime = ref(0)  // 秒，0 ~ 3600
+const isPlaying = ref(false)
+const playSpeed = ref(1)  // 1x, 2x, 4x
+
+// 日夜状态（每 5 分钟切换）
+const isDaytime = computed(() => Math.floor(gameTime.value / 300) % 2 === 0)
+
+// 野怪死亡时间记录（营地索引 -> 死亡时的游戏时间）
+const campDeathTime = ref<Map<number, number>>(new Map())
+
+// ===== 眼位系统 =====
+// 眼位类型
+type WardType = 'observer' | 'sentry'
+
+// 眼位数据结构
+interface Ward {
+  id: number
+  type: WardType
+  worldX: number
+  worldY: number
+  gridX: number
+  gridY: number
+  placedAt: number  // 放置时的游戏时间
+}
+
+// 眼位列表
+const wards = ref<Ward[]>([])
+let wardIdCounter = 0
+
+// 当前放置模式
+const currentWardMode = ref<WardType | null>(null)
+
+// 视野控制
+const showFogOfWar = ref(true)
+const showVisionCircles = ref(true)
+
+// 视野模拟器实例
+let visionSimulator: VisionSimulation | null = null
+let visionReady = ref(false)
+
+// 视野缓存（每次眼位变化时重新计算）
+const combinedVision = ref<Set<string>>(new Set())
+
+// 眼位视野半径（游戏单位）
+const OBSERVER_VISION_RADIUS_DAY = 1600
+const OBSERVER_VISION_RADIUS_NIGHT = 800
+const SENTRY_VISION_RADIUS = 150  // 真眼不提供视野，只反隐
+const SENTRY_TRUE_SIGHT_RADIUS = 900
+
+// 眼位持续时间（秒）
+const OBSERVER_DURATION = 360  // 6 分钟
+const SENTRY_DURATION = Infinity  // 永久（直到被摧毁）
+
+// 视野网格大小（与 map_data.png 一致，generate_images.py 中 GRID_CELL_SIZE = 8）
+const VISION_GRID_SIZE = 64  // 视野计算使用 64 单位网格（301×301），渲染时缩放到画布
+
 // ===== 计算属性 =====
 // 路径长度（游戏单位）
 const pathLength = computed(() => {
@@ -127,6 +260,210 @@ const formattedTime = computed(() => {
   const secs = (seconds % 60).toFixed(1)
   return `${mins} 分 ${secs} 秒`
 })
+
+// 格式化游戏时间（秒 -> mm:ss）
+const formatGameTime = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60)
+  const secs = Math.floor(seconds % 60)
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+}
+
+// 播放/暂停游戏时间
+let animationFrameId: number | null = null
+let lastFrameTime = 0
+
+const togglePlay = () => {
+  isPlaying.value = !isPlaying.value
+  if (isPlaying.value) {
+    lastFrameTime = performance.now()
+    animationFrameId = requestAnimationFrame(updateGameTime)
+  } else if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId)
+    animationFrameId = null
+  }
+}
+
+const updateGameTime = (currentTime: number) => {
+  if (!isPlaying.value) return
+  
+  const deltaTime = (currentTime - lastFrameTime) / 1000  // 秒
+  lastFrameTime = currentTime
+  
+  gameTime.value = Math.min(3600, gameTime.value + deltaTime * playSpeed.value)
+  
+  if (gameTime.value >= 3600) {
+    isPlaying.value = false
+    return
+  }
+  
+  draw()
+  animationFrameId = requestAnimationFrame(updateGameTime)
+}
+
+// ===== 详情面板辅助函数 =====
+// 获取营地类型名称
+const getCampTypeName = (type: string | null | undefined): string => {
+  const names: Record<string, string> = {
+    small: '小野',
+    medium: '中野',
+    large: '大野',
+    ancient: '远古'
+  }
+  return type ? names[type] || type : '未标注'
+}
+
+// 获取营地金币范围
+const getCampGoldRange = (type: string): string => {
+  const campData = neutralsData.value?.camps?.[type]
+  if (!campData?.creeps) return '-'
+  
+  let minGold = 0, maxGold = 0
+  for (const creep of Object.values(campData.creeps) as any[]) {
+    minGold += creep.goldMin || 0
+    maxGold += creep.goldMax || 0
+  }
+  return `${minGold}-${maxGold}`
+}
+
+// 获取营地经验范围
+const getCampXpRange = (type: string): string => {
+  const campData = neutralsData.value?.camps?.[type]
+  if (!campData?.creeps) return '-'
+  
+  let totalXp = 0
+  for (const creep of Object.values(campData.creeps) as any[]) {
+    totalXp += creep.xp || 0
+  }
+  return totalXp.toString()
+}
+
+// 获取塔等级
+const getTowerTier = (name: string | undefined): string => {
+  if (!name) return '未知'
+  if (name.includes('tower1')) return '一塔'
+  if (name.includes('tower2')) return '二塔'
+  if (name.includes('tower3')) return '高地塔'
+  if (name.includes('tower4')) return '门塔'
+  return '未知'
+}
+
+// ===== 眼位系统函数 =====
+
+// 初始化视野模拟器
+const initVisionSimulator = async () => {
+  if (visionSimulator) return
+  
+  const worlddata = {
+    worldMinX: WORLD_MIN,
+    worldMinY: WORLD_MIN,
+    worldMaxX: WORLD_MAX,
+    worldMaxY: WORLD_MAX
+  }
+  
+  visionSimulator = new VisionSimulation(worlddata, { gridCellSize: VISION_GRID_SIZE })
+  
+  try {
+    await visionSimulator.initialize(`/data/map/${MAP_VERSION}/vision_data.json`)
+    visionReady.value = true
+    console.log('视野模拟器初始化完成')
+  } catch (err) {
+    console.error('视野模拟器初始化失败:', err)
+    visionReady.value = false
+  }
+}
+
+// 放置眼位
+const placeWard = (worldX: number, worldY: number, type: WardType) => {
+  if (!visionSimulator || !visionReady.value) return false
+  
+  const gridPt = visionSimulator.WorldXYtoGridXY(worldX, worldY)
+  
+  // 检查是否可以放眼（不能放在不可行走区域和禁眼区）
+  if (!visionSimulator.isValidXY(gridPt.x, gridPt.y, true, true, true)) {
+    console.log('无法在此位置放眼')
+    return false
+  }
+  
+  const ward: Ward = {
+    id: wardIdCounter++,
+    type,
+    worldX,
+    worldY,
+    gridX: gridPt.x,
+    gridY: gridPt.y,
+    placedAt: gameTime.value
+  }
+  
+  wards.value.push(ward)
+  updateCombinedVision()
+  return true
+}
+
+// 移除眼位
+const removeWard = (wardId: number) => {
+  const idx = wards.value.findIndex(w => w.id === wardId)
+  if (idx !== -1) {
+    wards.value.splice(idx, 1)
+    updateCombinedVision()
+  }
+}
+
+// 清除所有眼位
+const clearAllWards = () => {
+  wards.value = []
+  combinedVision.value.clear()
+}
+
+// 更新合并视野
+const updateCombinedVision = () => {
+  if (!visionSimulator || !visionReady.value) return
+  
+  combinedVision.value.clear()
+  
+  // 过滤掉过期的假眼
+  const now = gameTime.value
+  const activeWards = wards.value.filter(w => {
+    if (w.type === 'sentry') return true
+    return (now - w.placedAt) < OBSERVER_DURATION
+  })
+  
+  // 更新眼位列表（移除过期眼位）
+  if (activeWards.length !== wards.value.length) {
+    wards.value = activeWards
+  }
+  
+  // 计算每个假眼的视野并合并
+  for (const ward of activeWards) {
+    if (ward.type !== 'observer') continue
+    
+    // 计算视野半径（考虑日夜）
+    const visionRadius = isDaytime.value ? OBSERVER_VISION_RADIUS_DAY : OBSERVER_VISION_RADIUS_NIGHT
+    const gridRadius = Math.ceil(visionRadius / VISION_GRID_SIZE)
+    
+    visionSimulator.updateVisibility(ward.gridX, ward.gridY, gridRadius)
+    
+    // 合并到总视野
+    for (const key in visionSimulator.lights) {
+      combinedVision.value.add(key)
+    }
+  }
+}
+
+// 获取眼位显示半径（画布像素）
+const getWardDisplayRadius = (ward: Ward): number => {
+  if (ward.type === 'sentry') {
+    return SENTRY_TRUE_SIGHT_RADIUS / (WORLD_SIZE / navWidth.value)
+  }
+  const visionRadius = isDaytime.value ? OBSERVER_VISION_RADIUS_DAY : OBSERVER_VISION_RADIUS_NIGHT
+  return visionRadius / (WORLD_SIZE / navWidth.value)
+}
+
+// 检查眼位是否即将过期（闪烁提示）
+const isWardExpiring = (ward: Ward): boolean => {
+  if (ward.type === 'sentry') return false
+  const remaining = OBSERVER_DURATION - (gameTime.value - ward.placedAt)
+  return remaining > 0 && remaining < 30  // 最后 30 秒闪烁
+}
 
 // ===== 坐标转换（官方公式） =====
 // 世界坐标 -> 画布坐标（Y轴翻转）
@@ -224,6 +561,52 @@ const heuristic = (ax: number, ay: number, bx: number, by: number): number => {
   return Math.sqrt((ax - bx) ** 2 + (ay - by) ** 2)
 }
 
+// 二叉堆（最小堆）实现优先队列
+class MinHeap {
+  private heap: { x: number, y: number, f: number }[] = []
+  
+  push(node: { x: number, y: number, f: number }) {
+    this.heap.push(node)
+    this.bubbleUp(this.heap.length - 1)
+  }
+  
+  pop(): { x: number, y: number, f: number } | undefined {
+    if (this.heap.length === 0) return undefined
+    const min = this.heap[0]
+    const last = this.heap.pop()!
+    if (this.heap.length > 0) {
+      this.heap[0] = last
+      this.bubbleDown(0)
+    }
+    return min
+  }
+  
+  get length() { return this.heap.length }
+  
+  private bubbleUp(idx: number) {
+    while (idx > 0) {
+      const parentIdx = Math.floor((idx - 1) / 2)
+      if (this.heap[idx].f >= this.heap[parentIdx].f) break
+      ;[this.heap[idx], this.heap[parentIdx]] = [this.heap[parentIdx], this.heap[idx]]
+      idx = parentIdx
+    }
+  }
+  
+  private bubbleDown(idx: number) {
+    const len = this.heap.length
+    while (true) {
+      const left = 2 * idx + 1
+      const right = 2 * idx + 2
+      let smallest = idx
+      if (left < len && this.heap[left].f < this.heap[smallest].f) smallest = left
+      if (right < len && this.heap[right].f < this.heap[smallest].f) smallest = right
+      if (smallest === idx) break
+      ;[this.heap[idx], this.heap[smallest]] = [this.heap[smallest], this.heap[idx]]
+      idx = smallest
+    }
+  }
+}
+
 const findPath = (start: Point, end: Point): Point[] => {
   const startNav = worldToNav(start.x, start.y)
   const endNav = worldToNav(end.x, end.y)
@@ -232,59 +615,59 @@ const findPath = (start: Point, end: Point): Point[] => {
     return []
   }
 
-  const openList: PathNode[] = []
+  // 使用步长降采样：在速度和精度间平衡
+  const STEP = 4
+  const sX = Math.round(startNav.x / STEP) * STEP
+  const sY = Math.round(startNav.y / STEP) * STEP
+  const eX = Math.round(endNav.x / STEP) * STEP
+  const eY = Math.round(endNav.y / STEP) * STEP
+
+  const gScore = new Map<string, number>()
+  const parent = new Map<string, string | null>()
   const closedSet = new Set<string>()
+  const openHeap = new MinHeap()
   
   const directions = [
-    { dx: 1, dy: 0, cost: 1 },
-    { dx: -1, dy: 0, cost: 1 },
-    { dx: 0, dy: 1, cost: 1 },
-    { dx: 0, dy: -1, cost: 1 },
-    { dx: 1, dy: 1, cost: Math.SQRT2 },
-    { dx: 1, dy: -1, cost: Math.SQRT2 },
-    { dx: -1, dy: 1, cost: Math.SQRT2 },
-    { dx: -1, dy: -1, cost: Math.SQRT2 }
+    { dx: STEP, dy: 0, cost: STEP },
+    { dx: -STEP, dy: 0, cost: STEP },
+    { dx: 0, dy: STEP, cost: STEP },
+    { dx: 0, dy: -STEP, cost: STEP },
+    { dx: STEP, dy: STEP, cost: STEP * Math.SQRT2 },
+    { dx: STEP, dy: -STEP, cost: STEP * Math.SQRT2 },
+    { dx: -STEP, dy: STEP, cost: STEP * Math.SQRT2 },
+    { dx: -STEP, dy: -STEP, cost: STEP * Math.SQRT2 }
   ]
 
-  const startNode: PathNode = {
-    x: startNav.x, y: startNav.y,
-    g: 0,
-    h: heuristic(startNav.x, startNav.y, endNav.x, endNav.y),
-    f: 0,
-    parent: null
-  }
-  startNode.f = startNode.g + startNode.h
-  openList.push(startNode)
+  const startKey = `${sX},${sY}`
+  gScore.set(startKey, 0)
+  parent.set(startKey, null)
+  openHeap.push({ x: sX, y: sY, f: heuristic(sX, sY, eX, eY) })
 
   let iterations = 0
-  const maxIterations = 100000
+  const maxIterations = 200000
 
-  while (openList.length > 0 && iterations < maxIterations) {
+  while (openHeap.length > 0 && iterations < maxIterations) {
     iterations++
+    const current = openHeap.pop()!
+    const currentKey = `${current.x},${current.y}`
 
-    // 找 f 值最小的节点
-    let lowestIdx = 0
-    for (let i = 1; i < openList.length; i++) {
-      if (openList[i].f < openList[lowestIdx].f) lowestIdx = i
-    }
-    const current = openList.splice(lowestIdx, 1)[0]
-
-    // 到达终点
-    if (current.x === endNav.x && current.y === endNav.y) {
+    if (current.x === eX && current.y === eY) {
       const result: Point[] = []
-      let node: PathNode | null = current
-      while (node) {
-        result.unshift(navToWorld(node.x, node.y))
-        node = node.parent
+      let key: string | null = currentKey
+      while (key) {
+        const [x, y] = key.split(',').map(Number)
+        result.unshift(navToWorld(x, y))
+        key = parent.get(key) || null
       }
+      console.log(`寻路完成: ${iterations} 次迭代, ${result.length} 个路径点`)
       return result
     }
 
-    const key = `${current.x},${current.y}`
-    if (closedSet.has(key)) continue
-    closedSet.add(key)
+    if (closedSet.has(currentKey)) continue
+    closedSet.add(currentKey)
 
-    // 探索邻居
+    const currentG = gScore.get(currentKey) || 0
+
     for (const dir of directions) {
       const nx = current.x + dir.dx
       const ny = current.y + dir.dy
@@ -292,28 +675,18 @@ const findPath = (start: Point, end: Point): Point[] => {
 
       if (closedSet.has(neighborKey) || !isWalkable(nx, ny)) continue
 
-      // 对角线检查
-      if (dir.dx !== 0 && dir.dy !== 0) {
-        if (!isWalkable(current.x + dir.dx, current.y) ||
-            !isWalkable(current.x, current.y + dir.dy)) continue
-      }
-
-      const g = current.g + dir.cost
-      const h = heuristic(nx, ny, endNav.x, endNav.y)
-      const existingIdx = openList.findIndex(n => n.x === nx && n.y === ny)
+      const tentativeG = currentG + dir.cost
+      const existingG = gScore.get(neighborKey)
       
-      if (existingIdx !== -1) {
-        if (g < openList[existingIdx].g) {
-          openList[existingIdx].g = g
-          openList[existingIdx].f = g + h
-          openList[existingIdx].parent = current
-        }
-      } else {
-        openList.push({ x: nx, y: ny, g, h, f: g + h, parent: current })
+      if (existingG === undefined || tentativeG < existingG) {
+        gScore.set(neighborKey, tentativeG)
+        parent.set(neighborKey, currentKey)
+        openHeap.push({ x: nx, y: ny, f: tentativeG + heuristic(nx, ny, eX, eY) })
       }
     }
   }
 
+  console.log(`寻路失败: ${iterations} 次迭代`)
   return []
 }
 
@@ -355,6 +728,28 @@ const draw = () => {
   
   // 4. 绘制路径和起终点
   drawOverlay(ctx)
+  
+  // 5. 绘制眼位和视野
+  if (visionReady.value && wards.value.length > 0) {
+    // 绘制视野区域
+    if (showVisionCircles.value) {
+      drawVisionArea(ctx, canvasSize)
+    }
+    
+    // 绘制眼位图标
+    drawWards(ctx)
+  }
+  
+  // 6. 绘制战争迷雾
+  if (showFogOfWar.value && visionReady.value && wards.value.length > 0) {
+    drawFogOfWar(ctx, canvasSize)
+  }
+  
+  // 7. 夜间遮罩（在所有内容之上）
+  if (!isDaytime.value) {
+    ctx.fillStyle = 'rgba(20, 30, 60, 0.3)'
+    ctx.fillRect(0, 0, canvasSize, canvasSize)
+  }
   
   ctx.restore()
   
@@ -437,21 +832,123 @@ const drawTrees = (ctx: CanvasRenderingContext2D) => {
     ctx.drawImage(treeLayerCache, 0, 0)
   }
 }
+// 着色图标缓存（key: iconName_color）
+const tintedIconCache = new Map<string, HTMLCanvasElement>()
+
+// 绘制雪碧图图标（支持颜色叠加，带缓存）
+const drawIcon = (ctx: CanvasRenderingContext2D, iconName: string, worldX: number, worldY: number, displaySize: number = 32, tintColor?: string) => {
+  if (!spriteSheet.value || !iconsConfig.value) return false
+  
+  const icon = iconsConfig.value.icons[iconName]
+  if (!icon) return false
+  
+  const cellSize = iconsConfig.value.meta.cellSize
+  const iconSize = cellSize * icon.size
+  
+  let sx = icon.col * cellSize
+  let sy = icon.row * cellSize
+  
+  if (icon.size === 0.5) {
+    sx += icon.subCol * (cellSize / 2)
+    sy += icon.subRow * (cellSize / 2)
+  }
+  
+  const pos = worldToCanvas(worldX, worldY)
+  const halfSize = displaySize / 2
+  
+  if (tintColor) {
+    // 使用缓存
+    const cacheKey = `${iconName}_${tintColor}`
+    let cachedCanvas = tintedIconCache.get(cacheKey)
+    
+    if (!cachedCanvas) {
+      // 创建并缓存着色后的图标
+      cachedCanvas = document.createElement('canvas')
+      cachedCanvas.width = iconSize
+      cachedCanvas.height = iconSize
+      const tempCtx = cachedCanvas.getContext('2d')!
+      
+      tempCtx.drawImage(spriteSheet.value, sx, sy, iconSize, iconSize, 0, 0, iconSize, iconSize)
+      tempCtx.globalCompositeOperation = 'source-atop'
+      tempCtx.fillStyle = tintColor
+      tempCtx.fillRect(0, 0, iconSize, iconSize)
+      
+      tintedIconCache.set(cacheKey, cachedCanvas)
+    }
+    
+    ctx.drawImage(cachedCanvas, pos.x - halfSize, pos.y - halfSize, displaySize, displaySize)
+  } else {
+    ctx.drawImage(spriteSheet.value, sx, sy, iconSize, iconSize, pos.x - halfSize, pos.y - halfSize, displaySize, displaySize)
+  }
+  return true
+}
 
 // 绘制野怪营地
 const drawNeutralCamps = (ctx: CanvasRenderingContext2D) => {
   const camps = mapEntities.value?.npc_dota_neutral_spawner
   if (!camps) return
   
-  ctx.fillStyle = '#ff8c00'
-  ctx.strokeStyle = '#fff'
-  ctx.lineWidth = 2
-  for (const camp of camps) {
+  // 营地类型到图标和颜色的配置
+  const CAMP_CONFIG: Record<string, { icon: string, color: string, size: number }> = {
+    small:  { icon: 'camp_small',  color: '#ffb347', size: 20 },
+    medium: { icon: 'camp_medium', color: '#ff8c00', size: 24 },
+    large:  { icon: 'camp_large',  color: '#e67300', size: 28 },
+    ancient:{ icon: 'camp_ancient',color: '#cc5500', size: 36 }
+  }
+  const DEFAULT_CONFIG = { icon: 'camp_medium', color: '#ff8c00', size: 24 }
+  const DEAD_COLOR = '#666666'  // 死亡状态颜色
+  
+  // 检查并刷新营地（整分钟刷新机制）
+  // Dota 野怪在每分钟的 :00 刷新（游戏开始后第一波在 1:00 刷新）
+  const currentMinute = Math.floor(gameTime.value / 60)
+  
+  for (let i = 0; i < camps.length; i++) {
+    const camp = camps[i]
+    const campIndex = i + 1
+    
+    // 检查是否应该刷新
+    let isDead = false
+    if (campDeathTime.value.has(campIndex)) {
+      const deathTime = campDeathTime.value.get(campIndex)!
+      const deathMinute = Math.floor(deathTime / 60)
+      // 如果当前分钟 > 死亡时的分钟，说明已经过了一个整分钟刷新点
+      if (currentMinute > deathMinute) {
+        campDeathTime.value.delete(campIndex)
+        isDead = false
+      } else {
+        isDead = true
+      }
+    }
+    
+    const campConfig = campTypes.value.find(c => c.x === camp.x && c.y === camp.y)
+    const campType = campConfig?.type
+    const config = campType ? CAMP_CONFIG[campType] : DEFAULT_CONFIG
+    
+    // 死亡状态使用灰色
+    const color = isDead ? DEAD_COLOR : config.color
+    
+    // 设置透明度
+    if (isDead) {
+      ctx.globalAlpha = 0.5
+    }
+    
+    // 尝试用图标渲染（带颜色叠加）
+    if (drawIcon(ctx, config.icon, camp.x, camp.y, config.size, color)) {
+      ctx.globalAlpha = 1
+      continue
+    }
+    
+    // 回退到圆形
     const pos = worldToCanvas(camp.x, camp.y)
+    ctx.fillStyle = color
+    ctx.strokeStyle = isDead ? '#999' : '#fff'
+    ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.arc(pos.x, pos.y, 16, 0, Math.PI * 2)  // 放大半径
+    ctx.arc(pos.x, pos.y, config.size / 2, 0, Math.PI * 2)
     ctx.fill()
     ctx.stroke()
+    
+    ctx.globalAlpha = 1
   }
 }
 
@@ -460,50 +957,47 @@ const drawBuildings = (ctx: CanvasRenderingContext2D) => {
   const entities = mapEntities.value
   if (!entities) return
   
-  // 前哨
+  // 前哨（使用图标）
   for (const outpost of entities.npc_dota_watch_tower || []) {
+    if (drawIcon(ctx, 'outpost', outpost.x, outpost.y, 48)) continue
+    // 回退
     const pos = worldToCanvas(outpost.x, outpost.y)
     ctx.fillStyle = '#9b59b6'
     ctx.strokeStyle = '#fff'
     ctx.lineWidth = 3
     ctx.beginPath()
-    for (let i = 0; i < 6; i++) {
-      const angle = (i * Math.PI) / 3 - Math.PI / 6
-      const x = pos.x + 24 * Math.cos(angle)  // 放大
-      const y = pos.y + 24 * Math.sin(angle)
-      if (i === 0) ctx.moveTo(x, y)
-      else ctx.lineTo(x, y)
-    }
-    ctx.closePath()
+    ctx.arc(pos.x, pos.y, 24, 0, Math.PI * 2)
     ctx.fill()
     ctx.stroke()
   }
   
-  // 泉水
+  // 泉水（保持原样，用户说不需要图标）
   for (const fountain of entities.ent_dota_fountain || []) {
     const pos = worldToCanvas(fountain.x, fountain.y)
     ctx.fillStyle = fountain.team === 2 ? 'rgba(46, 204, 113, 0.8)' : 'rgba(231, 76, 60, 0.8)'
     ctx.strokeStyle = '#fff'
     ctx.lineWidth = 3
     ctx.beginPath()
-    ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2)  // 放大
+    ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2)
     ctx.fill()
     ctx.stroke()
     ctx.fillStyle = '#fff'
-    ctx.font = 'bold 30px sans-serif'  // 放大字体
+    ctx.font = 'bold 30px sans-serif'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText('⛲', pos.x, pos.y)
   }
   
-  // 遗迹
+  // 遗迹（使用图标）
   for (const fort of entities.npc_dota_fort || []) {
+    if (drawIcon(ctx, 'ancient', fort.x, fort.y, 56)) continue
+    // 回退
     const pos = worldToCanvas(fort.x, fort.y)
     ctx.fillStyle = '#f39c12'
     ctx.strokeStyle = '#fff'
     ctx.lineWidth = 3
     ctx.beginPath()
-    ctx.moveTo(pos.x, pos.y - 40)  // 放大
+    ctx.moveTo(pos.x, pos.y - 40)
     ctx.lineTo(pos.x + 35, pos.y)
     ctx.lineTo(pos.x, pos.y + 40)
     ctx.lineTo(pos.x - 35, pos.y)
@@ -519,32 +1013,36 @@ const drawTowers = (ctx: CanvasRenderingContext2D) => {
   if (!towers) return
   
   for (const tower of towers) {
-    const pos = worldToCanvas(tower.x, tower.y)
     const isRadiant = tower.team === 2
     const name = tower.name || ''
-    let r = 20  // 放大基础尺寸
-    if (name.includes('tower1')) r = 18
-    else if (name.includes('tower2')) r = 20
-    else if (name.includes('tower3')) r = 22
-    else if (name.includes('tower4')) r = 24
+    const isMid = name.includes('_mid_')
+    const color = isRadiant ? '#2ecc71' : '#e74c3c'
     
-    ctx.fillStyle = isRadiant ? 'rgba(46, 204, 113, 0.9)' : 'rgba(231, 76, 60, 0.9)'
+    // 尝试用图标渲染
+    const iconName = isMid ? 'tower_mid' : 'tower_side'
+    if (drawIcon(ctx, iconName, tower.x, tower.y, 40, color)) continue
+    
+    // 回退到方块
+    const pos = worldToCanvas(tower.x, tower.y)
+    ctx.fillStyle = color
     ctx.strokeStyle = '#fff'
     ctx.lineWidth = 2
-    ctx.fillRect(pos.x - r, pos.y - r, r * 2, r * 2)
-    ctx.strokeRect(pos.x - r, pos.y - r, r * 2, r * 2)
+    ctx.fillRect(pos.x - 20, pos.y - 20, 40, 40)
+    ctx.strokeRect(pos.x - 20, pos.y - 20, 40, 40)
   }
 }
 
 // 绘制神符
 const drawRunes = (ctx: CanvasRenderingContext2D) => {
-  // 力量神符
+  // 力量神符（使用rune_spot图标）
   for (const rune of mapEntities.value?.dota_item_rune_spawner_powerup || []) {
+    if (drawIcon(ctx, 'rune_spot', rune.x, rune.y, 32)) continue
+    // 回退
     const pos = worldToCanvas(rune.x, rune.y)
     ctx.fillStyle = 'rgba(155, 89, 182, 0.9)'
     ctx.strokeStyle = '#fff'
     ctx.lineWidth = 2
-    const s = 20  // 放大尺寸
+    const s = 20
     ctx.beginPath()
     ctx.moveTo(pos.x, pos.y - s)
     ctx.lineTo(pos.x + s, pos.y)
@@ -555,14 +1053,16 @@ const drawRunes = (ctx: CanvasRenderingContext2D) => {
     ctx.stroke()
   }
   
-  // 赏金神符
+  // 赏金神符（使用rune_bounty图标）
   for (const rune of mapEntities.value?.dota_item_rune_spawner_bounty || []) {
+    if (drawIcon(ctx, 'rune_bounty', rune.x, rune.y, 32)) continue
+    // 回退
     const pos = worldToCanvas(rune.x, rune.y)
     ctx.fillStyle = 'rgba(241, 196, 15, 0.9)'
     ctx.strokeStyle = '#fff'
     ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.arc(pos.x, pos.y, 16, 0, Math.PI * 2)  // 放大半径
+    ctx.arc(pos.x, pos.y, 16, 0, Math.PI * 2)
     ctx.fill()
     ctx.stroke()
     ctx.fillStyle = '#000'
@@ -617,6 +1117,144 @@ const drawOverlay = (ctx: CanvasRenderingContext2D) => {
   }
 }
 
+// 绘制视野区域
+const drawVisionArea = (ctx: CanvasRenderingContext2D, canvasSize: number) => {
+  if (!visionSimulator || combinedVision.value.size === 0) return
+  
+  const cellPixels = canvasSize / visionSimulator.gridWidth
+  
+  ctx.save()
+  ctx.fillStyle = 'rgba(255, 255, 100, 0.15)'
+  ctx.strokeStyle = 'rgba(255, 255, 100, 0.4)'
+  ctx.lineWidth = 1
+  
+  // 绘制每个可见网格单元
+  for (const key of combinedVision.value) {
+    const pt = key2pt(key)
+    // 网格坐标转图像坐标（Y 轴翻转）
+    const imgX = pt.x
+    const imgY = visionSimulator.gridHeight - pt.y - 1
+    
+    ctx.fillRect(
+      imgX * cellPixels,
+      imgY * cellPixels,
+      cellPixels,
+      cellPixels
+    )
+  }
+  
+  ctx.restore()
+}
+
+// 绘制眼位图标
+const drawWards = (ctx: CanvasRenderingContext2D) => {
+  for (const ward of wards.value) {
+    const pos = worldToCanvas(ward.worldX, ward.worldY)
+    const isObserver = ward.type === 'observer'
+    const expiring = isWardExpiring(ward)
+    
+    // 闪烁效果
+    if (expiring && Math.floor(gameTime.value * 2) % 2 === 0) {
+      continue // 隐藏帧
+    }
+    
+    // 绘制视野范围圈
+    ctx.save()
+    const displayRadius = getWardDisplayRadius(ward)
+    
+    if (isObserver) {
+      // 假眼视野圈
+      ctx.strokeStyle = 'rgba(255, 255, 100, 0.6)'
+      ctx.lineWidth = 2 / scale.value
+      ctx.setLineDash([5, 5])
+      ctx.beginPath()
+      ctx.arc(pos.x, pos.y, displayRadius, 0, Math.PI * 2)
+      ctx.stroke()
+    } else {
+      // 真眼反隐圈
+      ctx.strokeStyle = 'rgba(150, 100, 255, 0.6)'
+      ctx.lineWidth = 2 / scale.value
+      ctx.setLineDash([3, 3])
+      ctx.beginPath()
+      ctx.arc(pos.x, pos.y, displayRadius, 0, Math.PI * 2)
+      ctx.stroke()
+    }
+    ctx.restore()
+    
+    // 绘制眼位图标
+    const iconSize = 32 / scale.value
+    ctx.save()
+    
+    if (isObserver) {
+      // 假眼 - 黄色圆圈 + 眼睛
+      ctx.fillStyle = '#f1c40f'
+      ctx.strokeStyle = '#fff'
+      ctx.lineWidth = 2 / scale.value
+      ctx.beginPath()
+      ctx.arc(pos.x, pos.y, iconSize / 2, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.stroke()
+      
+      // 眼睛符号
+      ctx.fillStyle = '#333'
+      ctx.font = `bold ${iconSize * 0.6}px sans-serif`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText('👁', pos.x, pos.y)
+    } else {
+      // 真眼 - 蓝紫色圆圈
+      ctx.fillStyle = '#9b59b6'
+      ctx.strokeStyle = '#fff'
+      ctx.lineWidth = 2 / scale.value
+      ctx.beginPath()
+      ctx.arc(pos.x, pos.y, iconSize / 2, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.stroke()
+      
+      // 眼睛符号
+      ctx.fillStyle = '#fff'
+      ctx.font = `bold ${iconSize * 0.6}px sans-serif`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText('◉', pos.x, pos.y)
+    }
+    
+    ctx.restore()
+  }
+}
+
+// 绘制战争迷雾
+const drawFogOfWar = (ctx: CanvasRenderingContext2D, canvasSize: number) => {
+  if (!visionSimulator || combinedVision.value.size === 0) return
+  
+  const cellPixels = canvasSize / visionSimulator.gridWidth
+  
+  ctx.save()
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+  
+  // 遍历所有网格，绘制不可见区域
+  for (let gX = 0; gX < visionSimulator.gridWidth; gX++) {
+    for (let gY = 0; gY < visionSimulator.gridHeight; gY++) {
+      const key = xy2key(gX, gY)
+      
+      // 如果不在可见区域内，绘制迷雾
+      if (!combinedVision.value.has(key)) {
+        const imgX = gX
+        const imgY = visionSimulator.gridHeight - gY - 1
+        
+        ctx.fillRect(
+          imgX * cellPixels,
+          imgY * cellPixels,
+          cellPixels,
+          cellPixels
+        )
+      }
+    }
+  }
+  
+  ctx.restore()
+}
+
 // ===== 事件处理 =====
 // 获取点击的画布坐标（考虑变换）
 const getCanvasCoords = (event: MouseEvent): Point | null => {
@@ -654,13 +1292,31 @@ const handleCanvasClick = (event: MouseEvent) => {
         // 恢复树木
         destroyedTrees.value.delete(key)
       } else {
-        // 砲树
+        // 砍树
         destroyedTrees.value.add(key)
       }
       needsTreeCacheUpdate = true
       draw()
       return
     }
+  }
+  
+  // 检测实体点击（优先于寻路）
+  const hitEntity = hitTestEntity(worldPoint)
+  if (hitEntity) {
+    selectedEntity.value = hitEntity
+    // 记录屏幕点击位置用于浮窗定位
+    popupPosition.value = { x: event.clientX, y: event.clientY }
+    draw()
+    return
+  }
+  
+  // 点击空白处关闭详情面板
+  if (selectedEntity.value) {
+    selectedEntity.value = null
+    popupPosition.value = null
+    draw()
+    return
   }
   
   // 普通点击：设置起点/终点
@@ -679,6 +1335,82 @@ const handleCanvasClick = (event: MouseEvent) => {
     }
   }
   draw()
+}
+
+// 命中检测：检查点击位置是否命中实体
+const hitTestEntity = (worldPoint: Point): SelectedEntity | null => {
+  const entities = mapEntities.value
+  if (!entities) return null
+  
+  // 检测半径（世界坐标单位）
+  const HIT_RADIUS = {
+    camp: 200,
+    tower: 150,
+    fountain: 300,
+    fort: 300,
+    outpost: 200
+  }
+  
+  // 计算距离
+  const dist = (e: MapEntity) => Math.sqrt(
+    Math.pow(worldPoint.x - e.x, 2) + Math.pow(worldPoint.y - e.y, 2)
+  )
+  
+  // 检测野怪营地
+  if (showNeutralCamps.value && entities.npc_dota_neutral_spawner) {
+    for (let i = 0; i < entities.npc_dota_neutral_spawner.length; i++) {
+      const camp = entities.npc_dota_neutral_spawner[i]
+      if (dist(camp) < HIT_RADIUS.camp) {
+        // 查找营地类型配置
+        const campConfig = campTypes.value.find(c => c.x === camp.x && c.y === camp.y)
+        return {
+          type: 'camp',
+          data: camp,
+          campType: campConfig?.type || null,
+          campNote: campConfig?.note || '',
+          index: i + 1
+        }
+      }
+    }
+  }
+  
+  // 检测防御塔
+  if (showTowers.value && entities.npc_dota_tower) {
+    for (const tower of entities.npc_dota_tower) {
+      if (dist(tower) < HIT_RADIUS.tower) {
+        return { type: 'tower', data: tower }
+      }
+    }
+  }
+  
+  // 检测泉水
+  if (showBuildings.value && entities.ent_dota_fountain) {
+    for (const fountain of entities.ent_dota_fountain) {
+      if (dist(fountain) < HIT_RADIUS.fountain) {
+        return { type: 'fountain', data: fountain }
+      }
+    }
+  }
+  
+  // 检测遗迹
+  if (showBuildings.value && entities.npc_dota_fort) {
+    for (const fort of entities.npc_dota_fort) {
+      if (dist(fort) < HIT_RADIUS.fort) {
+        return { type: 'fort', data: fort }
+      }
+    }
+  }
+  
+  // 检测前哨
+  if (showBuildings.value && entities.npc_dota_watch_tower) {
+    for (const outpost of entities.npc_dota_watch_tower) {
+      if (dist(outpost) < HIT_RADIUS.outpost) {
+        return { type: 'outpost', data: outpost }
+      }
+    }
+  }
+  
+  return null
 }
 
 // 滚轮缩放（以鼠标位置为中心）
@@ -763,6 +1495,187 @@ const resetTrees = () => {
   draw()
 }
 
+// ===== 右键菜单处理 =====
+const handleContextMenu = (event: MouseEvent) => {
+  event.preventDefault()
+  
+  const canvas = canvasRef.value
+  if (!canvas) return
+  
+  // 计算点击的世界坐标
+  const rect = canvas.getBoundingClientRect()
+  const screenX = (event.clientX - rect.left) / rect.width * canvas.width
+  const screenY = (event.clientY - rect.top) / rect.height * canvas.height
+  const canvasX = (screenX - offsetX.value) / scale.value
+  const canvasY = (screenY - offsetY.value) / scale.value
+  const worldPoint = canvasToWorld(canvasX, canvasY)
+  
+  // 检测点击目标
+  const hitEntity = hitTestEntity(worldPoint)
+  const items: ContextMenuItem[] = []
+  
+  if (hitEntity?.type === 'camp') {
+    // 野怪营地菜单
+    const campIndex = hitEntity.index || 0
+    const isDead = campDeathTime.value.has(campIndex)
+    
+    if (isDead) {
+      items.push({
+        label: '恢复营地',
+        icon: '✅',
+        action: () => {
+          campDeathTime.value.delete(campIndex)
+          draw()
+        }
+      })
+    } else {
+      items.push({
+        label: '清野',
+        icon: '🗡️',
+        action: () => {
+          campDeathTime.value.set(campIndex, gameTime.value)
+          draw()
+        }
+      })
+    }
+  }
+  
+  // 检测树木
+  const gX = Math.round((worldPoint.x - WORLD_MIN) / 64)
+  const gY = Math.round((worldPoint.y - WORLD_MIN) / 64)
+  const treeKey = `${gX},${gY}`
+  
+  if (showTrees.value && treeIndex.value.has(treeKey)) {
+    const isChopped = destroyedTrees.value.has(treeKey)
+    items.push({
+      label: isChopped ? '恢复树木' : '砍树',
+      icon: isChopped ? '🌲' : '🪓',
+      action: () => {
+        if (isChopped) {
+          destroyedTrees.value.delete(treeKey)
+        } else {
+          destroyedTrees.value.add(treeKey)
+        }
+        needsTreeCacheUpdate = true
+        draw()
+      }
+    })
+  }
+  
+  // 通用菜单项（空白区域）
+  items.push({
+    label: '设为起点',
+    icon: '📍',
+    action: () => {
+      const navPos = worldToNav(worldPoint.x, worldPoint.y)
+      if (isWalkable(navPos.x, navPos.y)) {
+        startPoint.value = worldPoint
+        if (startPoint.value && endPoint.value) {
+          path.value = findPath(startPoint.value, endPoint.value)
+        }
+        draw()
+      }
+    }
+  })
+  
+  items.push({
+    label: '设为终点',
+    icon: '🎯',
+    action: () => {
+      const navPos = worldToNav(worldPoint.x, worldPoint.y)
+      if (isWalkable(navPos.x, navPos.y)) {
+        endPoint.value = worldPoint
+        if (startPoint.value && endPoint.value) {
+          path.value = findPath(startPoint.value, endPoint.value)
+        }
+        draw()
+      }
+    }
+  })
+  
+  // 眼位相关选项
+  if (visionReady.value) {
+    // 检查是否点击了眼位
+    const clickedWard = wards.value.find(w => {
+      const dx = w.worldX - worldPoint.x
+      const dy = w.worldY - worldPoint.y
+      return Math.sqrt(dx * dx + dy * dy) < 100
+    })
+    
+    if (clickedWard) {
+      items.push({
+        label: '移除眼位',
+        icon: '❌',
+        action: () => {
+          removeWard(clickedWard.id)
+          draw()
+        }
+      })
+    } else {
+      items.push({
+        label: '放置假眼',
+        icon: '👁',
+        action: () => {
+          if (placeWard(worldPoint.x, worldPoint.y, 'observer')) {
+            draw()
+          }
+        }
+      })
+      
+      items.push({
+        label: '放置真眼',
+        icon: '◉',
+        action: () => {
+          if (placeWard(worldPoint.x, worldPoint.y, 'sentry')) {
+            draw()
+          }
+        }
+      })
+    }
+    
+    if (wards.value.length > 0) {
+      items.push({
+        label: '清除所有眼位',
+        icon: '🧹',
+        action: () => {
+          clearAllWards()
+          draw()
+        }
+      })
+    }
+  }
+  
+  if (startPoint.value || endPoint.value) {
+    items.push({
+      label: '清除路径',
+      icon: '🔄',
+      action: () => {
+        resetPoints()
+      }
+    })
+  }
+  
+  // 显示菜单
+  contextMenu.value = {
+    visible: true,
+    x: event.clientX,
+    y: event.clientY,
+    items,
+    worldPoint
+  }
+}
+
+// 关闭右键菜单
+const closeContextMenu = () => {
+  contextMenu.value.visible = false
+}
+
+// 执行菜单项
+const executeMenuItem = (item: ContextMenuItem) => {
+  item.action()
+  closeContextMenu()
+}
+
 // 构建树木索引
 const buildTreeIndex = (trees: MapEntity[]) => {
   treeIndex.value.clear()
@@ -810,7 +1723,7 @@ onMounted(async () => {
     // 加载实体数据
     const loadEntities = async () => {
       try {
-        const [trees, spawners, towers, forts, fountains, outposts, powerRunes, bountyRunes] = await Promise.all([
+        const [trees, spawners, towers, forts, fountains, outposts, powerRunes, bountyRunes, campTypesData, neutrals, buildings, iconsData] = await Promise.all([
           fetch('/data/world/entities/trees.json').then(r => r.json()).catch(() => ({ data: [] })),
           fetch('/data/world/entities/neutral-spawners.json').then(r => r.json()).catch(() => ({ data: [] })),
           fetch('/data/world/entities/towers.json').then(r => r.json()).catch(() => ({ data: [] })),
@@ -818,7 +1731,11 @@ onMounted(async () => {
           fetch('/data/world/entities/fountains.json').then(r => r.json()).catch(() => ({ data: [] })),
           fetch('/data/world/entities/outposts.json').then(r => r.json()).catch(() => ({ data: [] })),
           fetch('/data/world/entities/runes-power.json').then(r => r.json()).catch(() => ({ data: [] })),
-          fetch('/data/world/entities/runes-bounty.json').then(r => r.json()).catch(() => ({ data: [] }))
+          fetch('/data/world/entities/runes-bounty.json').then(r => r.json()).catch(() => ({ data: [] })),
+          fetch('/data/world/custom/neutral-camp-types.json').then(r => r.json()).catch(() => ({ camps: [] })),
+          fetch('/data/world/neutrals.json').then(r => r.json()).catch(() => ({})),
+          fetch('/data/world/buildings.json').then(r => r.json()).catch(() => ({})),
+          fetch('/data/world/icons-config.json').then(r => r.json()).catch(() => null)
         ])
         
         mapEntities.value = {
@@ -832,6 +1749,61 @@ onMounted(async () => {
           dota_item_rune_spawner_bounty: bountyRunes.data
         }
         
+        // 加载营地类型配置和属性数据
+        campTypes.value = campTypesData.camps || []
+        neutralsData.value = neutrals
+        buildingsData.value = buildings
+        
+        // 加载图标配置和雪碧图
+        if (iconsData) {
+          iconsConfig.value = iconsData
+          const img = new Image()
+          img.onload = () => {
+            // 预处理：将特定背景色像素变成透明
+            const canvas = document.createElement('canvas')
+            canvas.width = img.width
+            canvas.height = img.height
+            const ctx = canvas.getContext('2d')!
+            ctx.drawImage(img, 0, 0)
+            
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+            const data = imageData.data
+            
+            // 需要透明化的背景色列表 [R, G, B]（可以添加更多）
+            const bgColors = [
+              [0, 0, 0],       // 纯黑
+              [32, 32, 32],    // 深灰 #202020
+              [48, 48, 48],    // 灰色 #303030
+              [64, 64, 64],    // 浅灰 #404040
+            ]
+            const tolerance = 5  // 颜色容差
+            
+            for (let i = 0; i < data.length; i += 4) {
+              const r = data[i], g = data[i + 1], b = data[i + 2]
+              // 检查是否匹配任一背景色
+              for (const [br, bg, bb] of bgColors) {
+                if (Math.abs(r - br) <= tolerance && 
+                    Math.abs(g - bg) <= tolerance && 
+                    Math.abs(b - bb) <= tolerance) {
+                  data[i + 3] = 0  // alpha = 0
+                  break
+                }
+              }
+            }
+            
+            ctx.putImageData(imageData, 0, 0)
+            
+            // 创建处理后的图像
+            const processedImg = new Image()
+            processedImg.onload = () => {
+              spriteSheet.value = processedImg
+              draw()
+            }
+            processedImg.src = canvas.toDataURL()
+          }
+          img.src = iconsData.meta.spriteSheet
+        }
+        
         if (trees.data?.length > 0) {
           buildTreeIndex(trees.data)
         }
@@ -842,6 +1814,10 @@ onMounted(async () => {
 
     await Promise.all([navPromise, mapPromise, loadEntities()])
     loading.value = false
+    
+    // 初始化视野模拟器（在后台加载，不阻塞渲染）
+    initVisionSimulator()
+    
     setTimeout(draw, 100)
   } catch (err) {
     error.value = err instanceof Error ? err.message : '加载地图数据失败'
@@ -850,6 +1826,14 @@ onMounted(async () => {
 })
 
 watch(moveSpeed, () => {})
+
+// 日夜切换时更新视野
+watch(isDaytime, () => {
+  if (wards.value.length > 0) {
+    updateCombinedVision()
+    draw()
+  }
+})
 </script>
 
 <template>
@@ -936,6 +1920,68 @@ watch(moveSpeed, () => {})
           <div class="section debug-info" v-if="showNavGrid">
             导航图: {{ navWidth }} x {{ navHeight }} px
           </div>
+
+          <!-- 时间轴控制 -->
+          <div class="section time-control">
+            <h3>⏱️ 游戏时间</h3>
+            <div class="time-bar">
+              <button class="play-btn" @click="togglePlay">
+                {{ isPlaying ? '⏸' : '▶' }}
+              </button>
+              <input 
+                type="range" 
+                class="time-slider"
+                v-model.number="gameTime" 
+                min="0" 
+                max="3600" 
+                step="1"
+                @input="draw"
+              >
+              <span class="time-display">{{ formatGameTime(gameTime) }}</span>
+              <span class="day-night-icon">{{ isDaytime ? '☀️' : '🌙' }}</span>
+            </div>
+            <div class="speed-controls">
+              <span>速度:</span>
+              <button 
+                v-for="speed in [1, 2, 4]" 
+                :key="speed"
+                :class="{ active: playSpeed === speed }"
+                @click="playSpeed = speed"
+              >{{ speed }}x</button>
+            </div>
+            <div class="time-info">
+              <span>已清营地: {{ campDeathTime.size }}</span>
+              <button class="small-btn" @click="campDeathTime.clear(); draw()" :disabled="campDeathTime.size === 0">
+                重置
+              </button>
+            </div>
+          </div>
+
+          <!-- 视野控制 -->
+          <div class="section vision-control">
+            <h3>👁 视野系统</h3>
+            <div class="vision-status" v-if="!visionReady">
+              <span class="loading-text">加载视野数据...</span>
+            </div>
+            <template v-else>
+              <label class="checkbox-item">
+                <input type="checkbox" v-model="showVisionCircles" @change="draw">
+                <span>显示视野区域</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" v-model="showFogOfWar" @change="draw">
+                <span>显示战争迷雾</span>
+              </label>
+              <div class="ward-info" v-if="wards.length > 0">
+                <span>假眼: {{ wards.filter(w => w.type === 'observer').length }}</span>
+                <span>真眼: {{ wards.filter(w => w.type === 'sentry').length }}</span>
+                <button class="small-btn" @click="clearAllWards(); draw()">清除</button>
+              </div>
+              <div class="ward-tips">
+                <small>💡 右键地图放置眼位</small>
+              </div>
+            </template>
+          </div>
         </aside>
 
         <!-- 地图区域 -->
@@ -950,7 +1996,7 @@ watch(moveSpeed, () => {})
             @mousemove="handleMouseMove"
             @mouseup="handleMouseUp"
             @mouseleave="handleMouseUp"
-            @contextmenu.prevent
+            @contextmenu="handleContextMenu"
             class="map-canvas"
             :class="{ dragging: isDragging }"
           ></canvas>
@@ -958,6 +2004,112 @@ watch(moveSpeed, () => {})
           <div class="zoom-controls" v-if="scale !== 1">
             <button @click="resetZoom">↺ 重置缩放</button>
           </div>
+
+          <!-- 实体详情浮窗 -->
+          <div 
+            class="entity-popup" 
+            v-if="selectedEntity && popupPosition"
+            :style="{ left: popupPosition.x + 'px', top: popupPosition.y + 'px' }"
+          >
+            <div class="popup-header">
+              <h3>
+                <template v-if="selectedEntity.type === 'camp'">🐺 野怪营地 #{{ selectedEntity.index }}</template>
+                <template v-else-if="selectedEntity.type === 'tower'">🗼 防御塔</template>
+                <template v-else-if="selectedEntity.type === 'fountain'">⛲ 泉水</template>
+                <template v-else-if="selectedEntity.type === 'fort'">🏰 遗迹</template>
+                <template v-else-if="selectedEntity.type === 'outpost'">🔭 前哨</template>
+              </h3>
+              <button class="close-btn" @click="selectedEntity = null; popupPosition = null">×</button>
+            </div>
+            
+            <!-- 野怪营地详情 -->
+            <template v-if="selectedEntity.type === 'camp'">
+              <div class="popup-row">
+                <span class="label">类型</span>
+                <span class="value" :class="selectedEntity.campType || 'unknown'">
+                  {{ getCampTypeName(selectedEntity.campType) }}
+                </span>
+              </div>
+              <div class="popup-row" v-if="selectedEntity.campType && neutralsData?.camps?.[selectedEntity.campType]">
+                <span class="label">💰 金币</span>
+                <span class="value">{{ getCampGoldRange(selectedEntity.campType) }}</span>
+              </div>
+              <div class="popup-row" v-if="selectedEntity.campType && neutralsData?.camps?.[selectedEntity.campType]">
+                <span class="label">⭐ 经验</span>
+                <span class="value">{{ getCampXpRange(selectedEntity.campType) }}</span>
+              </div>
+              <div class="popup-row">
+                <span class="label">🔄 刷新</span>
+                <span class="value">60 秒</span>
+              </div>
+              <div class="popup-row note" v-if="selectedEntity.campNote">
+                <span class="value">{{ selectedEntity.campNote }}</span>
+              </div>
+              <div class="popup-row coords">
+                <span class="label">📍</span>
+                <span class="value">({{ selectedEntity.data.x }}, {{ selectedEntity.data.y }})</span>
+              </div>
+            </template>
+            
+            <!-- 防御塔详情 -->
+            <template v-else-if="selectedEntity.type === 'tower'">
+              <div class="popup-row">
+                <span class="label">阵营</span>
+                <span class="value" :class="selectedEntity.data.team === 2 ? 'radiant' : 'dire'">
+                  {{ selectedEntity.data.team === 2 ? '天辉' : '夜魇' }}
+                </span>
+              </div>
+              <div class="popup-row">
+                <span class="label">等级</span>
+                <span class="value">{{ getTowerTier(selectedEntity.data.name) }}</span>
+              </div>
+              <div class="popup-row coords">
+                <span class="label">📍</span>
+                <span class="value">({{ Math.round(selectedEntity.data.x) }}, {{ Math.round(selectedEntity.data.y) }})</span>
+              </div>
+            </template>
+            
+            <!-- 泉水/遗迹/前哨详情 -->
+            <template v-else>
+              <div class="popup-row" v-if="selectedEntity.data.team">
+                <span class="label">阵营</span>
+                <span class="value" :class="selectedEntity.data.team === 2 ? 'radiant' : 'dire'">
+                  {{ selectedEntity.data.team === 2 ? '天辉' : '夜魇' }}
+                </span>
+              </div>
+              <div class="popup-row coords">
+                <span class="label">📍</span>
+                <span class="value">({{ Math.round(selectedEntity.data.x) }}, {{ Math.round(selectedEntity.data.y) }})</span>
+              </div>
+            </template>
+          </div>
+
+          <!-- 右键菜单 -->
+          <div 
+            class="context-menu" 
+            v-if="contextMenu.visible"
+            :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }"
+            @click.stop
+          >
+            <div 
+              class="context-menu-item"
+              v-for="(item, index) in contextMenu.items"
+              :key="index"
+              :class="{ disabled: item.disabled }"
+              @click="!item.disabled && executeMenuItem(item)"
+            >
+              <span class="icon">{{ item.icon }}</span>
+              <span class="label">{{ item.label }}</span>
+            </div>
+          </div>
+
+          <!-- 点击其他区域关闭菜单的遮罩 -->
+          <div 
+            class="context-menu-overlay" 
+            v-if="contextMenu.visible"
+            @click="closeContextMenu"
+            @contextmenu.prevent="closeContextMenu"
+          ></div>
         </main>
       </div>
     </template>
@@ -1258,5 +2410,285 @@ watch(moveSpeed, () => {})
   color: #e74c3c;
   background: rgba(231, 76, 60, 0.1);
   border-radius: 8px;
+}
+
+/* 实体详情浮窗 */
+.entity-popup {
+  position: fixed;
+  z-index: 1000;
+  min-width: 180px;
+  max-width: 240px;
+  padding: 0.75rem;
+  background: rgba(20, 25, 35, 0.95);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transform: translate(10px, -50%);
+  backdrop-filter: blur(8px);
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.popup-header h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: #e74c3c;
+}
+
+.popup-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+  font-size: 0.8rem;
+}
+
+.popup-row .label {
+  color: var(--text-secondary);
+}
+
+.popup-row .value {
+  font-weight: 600;
+}
+
+.popup-row .value.small { color: #87ceeb; }
+.popup-row .value.medium { color: #90ee90; }
+.popup-row .value.large { color: #ffa500; }
+.popup-row .value.ancient { color: #ff6b6b; }
+.popup-row .value.unknown { color: var(--text-secondary); font-style: italic; }
+.popup-row .value.radiant { color: #2ecc71; }
+.popup-row .value.dire { color: #e74c3c; }
+
+.popup-row.coords {
+  margin-top: 0.3rem;
+  padding-top: 0.3rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.popup-row.note {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* ===== 右键菜单样式 ===== */
+.context-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+}
+
+.context-menu {
+  position: fixed;
+  z-index: 1000;
+  background: var(--bg-secondary, #2a2a2a);
+  border: 1px solid var(--border, #444);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  min-width: 140px;
+  padding: 4px 0;
+  animation: contextMenuFadeIn 0.1s ease-out;
+}
+
+@keyframes contextMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 0.9rem;
+}
+
+.context-menu-item:hover {
+  background: var(--accent, #4a90d9);
+  color: white;
+}
+
+.context-menu-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.context-menu-item.disabled:hover {
+  background: transparent;
+}
+
+.context-menu-item .icon {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+}
+
+.context-menu-item .label {
+  flex: 1;
+}
+
+/* ===== 时间控制样式 ===== */
+.time-control h3 {
+  margin-bottom: 0.5rem;
+}
+
+.time-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.play-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent, #4a90d9);
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.play-btn:hover {
+  background: var(--accent-hover, #3a7bc8);
+}
+
+.time-slider {
+  flex: 1;
+  height: 6px;
+  -webkit-appearance: none;
+  background: var(--border, #444);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.time-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent, #4a90d9);
+  cursor: pointer;
+}
+
+.time-display {
+  font-family: monospace;
+  font-size: 0.9rem;
+  min-width: 40px;
+}
+
+.day-night-icon {
+  font-size: 1.2rem;
+}
+
+.speed-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.speed-controls button {
+  padding: 2px 8px;
+  border: 1px solid var(--border, #444);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.speed-controls button:hover {
+  border-color: var(--accent, #4a90d9);
+}
+
+.speed-controls button.active {
+  background: var(--accent, #4a90d9);
+  border-color: var(--accent, #4a90d9);
+  color: white;
+}
+
+.time-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* ===== 视野控制样式 ===== */
+.vision-control h3 {
+  margin-bottom: 0.5rem;
+}
+
+.vision-status {
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.loading-text {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.ward-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: var(--bg-secondary, #1e1e1e);
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.ward-tips {
+  margin-top: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.ward-tips small {
+  font-size: 0.8rem;
 }
 </style>

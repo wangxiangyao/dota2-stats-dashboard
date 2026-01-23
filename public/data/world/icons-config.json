@@ -1,0 +1,283 @@
+{
+    "meta": {
+        "spriteSheet": "/images/world/icon.png",
+        "totalSize": 704,
+        "gridSize": 11,
+        "cellSize": 64,
+        "note": "col/row: 网格坐标(0-10)。size: 占用格子数(2/1/0.5)。subCol/subRow: size=0.5时的子区域(0或1)"
+    },
+    "icons": {
+        "tower_mid": {
+            "col": 7,
+            "row": 0,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "中路防御塔（含4塔）"
+        },
+        "tower_side": {
+            "col": 6,
+            "row": 0,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "边路防御塔"
+        },
+        "ancient": {
+            "col": 1,
+            "row": 2,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "遗迹（天辉夜魇共用）"
+        },
+        "outpost": {
+            "col": 2,
+            "row": 2,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "前哨"
+        },
+        "rune_spot": {
+            "col": 7,
+            "row": 5,
+            "subCol": 1,
+            "subRow": 1,
+            "size": 0.5,
+            "note": "神符地点（占位）"
+        },
+        "rune_invis": {
+            "col": 7,
+            "row": 4,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 0.5,
+            "note": "隐身神符"
+        },
+        "rune_haste": {
+            "col": 7,
+            "row": 4,
+            "subCol": 1,
+            "subRow": 0,
+            "size": 0.5,
+            "note": "急速神符"
+        },
+        "rune_illusion": {
+            "col": 7,
+            "row": 4,
+            "subCol": 0,
+            "subRow": 1,
+            "size": 0.5,
+            "note": "分身神符"
+        },
+        "rune_dd": {
+            "col": 7,
+            "row": 4,
+            "subCol": 1,
+            "subRow": 1,
+            "size": 0.5,
+            "note": "双倍神符"
+        },
+        "rune_regen": {
+            "col": 7,
+            "row": 5,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 0.5,
+            "note": "恢复神符"
+        },
+        "rune_bounty": {
+            "col": 7,
+            "row": 5,
+            "subCol": 1,
+            "subRow": 0,
+            "size": 0.5,
+            "note": "赏金神符"
+        },
+        "rune_arcane": {
+            "col": 7,
+            "row": 5,
+            "subCol": 0,
+            "subRow": 1,
+            "size": 0.5,
+            "note": "奥术神符"
+        },
+        "rune_shield": {
+            "col": 8,
+            "row": 7,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 0.5,
+            "note": "护盾神符"
+        },
+        "camp_small": {
+            "col": 0,
+            "row": 0,
+            "subCol": 0,
+            "subRow": 1,
+            "size": 0.5,
+            "note": "小野营地"
+        },
+        "camp_medium": {
+            "col": 0,
+            "row": 6,
+            "subCol": 0,
+            "subRow": 1,
+            "size": 0.5,
+            "note": "中野营地"
+        },
+        "camp_large": {
+            "col": 0,
+            "row": 6,
+            "subCol": 1,
+            "subRow": 0,
+            "size": 0.5,
+            "note": "大野营地"
+        },
+        "camp_ancient": {
+            "col": 0,
+            "row": 6,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 0.5,
+            "note": "远古营地"
+        },
+        "lotus_pool": {
+            "col": 5,
+            "row": 9,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "莲花池"
+        },
+        "twin_gate": {
+            "col": 4,
+            "row": 9,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "传送门"
+        },
+        "tormentor": {
+            "col": 2,
+            "row": 0,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "观察者/Tormentor"
+        },
+        "pain_cube": {
+            "col": 8,
+            "row": 7,
+            "subCol": 0,
+            "subRow": 1,
+            "size": 1,
+            "note": "痛苦魔方"
+        },
+        "wisdom_shrine": {
+            "col": 8,
+            "row": 7,
+            "subCol": 1,
+            "subRow": 0,
+            "size": 1,
+            "note": "经验神龛"
+        },
+        "shop_base": {
+            "col": 5,
+            "row": 0,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "泉水商店"
+        },
+        "shop_secret": {
+            "col": 3,
+            "row": 5,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "神秘商店"
+        },
+        "courier_radiant": {
+            "col": 0,
+            "row": 0,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 0.5,
+            "note": "天辉信使（普通）"
+        },
+        "courier_radiant_flying": {
+            "col": 7,
+            "row": 2,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "天辉信使（飞行）"
+        },
+        "courier_dire": {
+            "col": 4,
+            "row": 0,
+            "subCol": 1,
+            "subRow": 1,
+            "size": 0.5,
+            "note": "夜魇信使（普通）"
+        },
+        "courier_dire_flying": {
+            "col": 6,
+            "row": 4,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "夜魇信使（飞行）"
+        },
+        "roshan": {
+            "col": 6,
+            "row": 9,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "肉山"
+        },
+        "barracks_mid": {
+            "col": 0,
+            "row": 2,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "中路兵营"
+        },
+        "barracks_side": {
+            "col": 0,
+            "row": 1,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "边路兵营"
+        },
+        "building_base": {
+            "col": 4,
+            "row": 1,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "高地普通建筑"
+        },
+        "ward_observer": {
+            "col": 9,
+            "row": 7,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 0.5,
+            "note": "侦察守卫"
+        },
+        "ward_sentry": {
+            "col": 9,
+            "row": 8,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 0.5,
+            "note": "岗哨守卫"
+        }
+    }
+}
