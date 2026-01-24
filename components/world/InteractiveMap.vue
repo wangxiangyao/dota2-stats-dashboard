@@ -120,6 +120,7 @@ const showNeutralCamps = ref(true)
 const showBuildings = ref(true)
 const showTowers = ref(true)
 const showRunes = ref(true)
+const showFowBlockers = ref(false)  // 调试：显示视野阻挡点
 
 // 缩放和拖拽
 const scale = ref(1)
@@ -200,8 +201,11 @@ const isDaytime = computed(() => Math.floor(gameTime.value / 300) % 2 === 0)
 const campDeathTime = ref<Map<number, number>>(new Map())
 
 // ===== 眼位系统 =====
-// 阵营类型
+// 阵营类型（用于眼位归属）
 type Team = 'radiant' | 'dire'
+
+// 阵营视角类型（用于视野显示）
+type TeamView = 'radiant' | 'dire' | 'both'
 
 // 眼位类型
 type WardType = 'observer' | 'sentry'
@@ -225,8 +229,11 @@ let wardIdCounter = 0
 // 当前放置模式
 const currentWardMode = ref<WardType | null>(null)
 
-// 当前操作阵营
+// 当前操作阵营（放眼时的阵营）
 const currentTeam = ref<Team>('radiant')
+
+// 当前视野视角（查看哪方的视野）
+const currentView = ref<TeamView>('both')
 
 // 视野控制
 const showFogOfWar = ref(true)
@@ -235,6 +242,10 @@ const showVisionCircles = ref(true)
 // 眼位选中和拖拽状态
 const selectedWardId = ref<number | null>(null)
 const isDraggingWard = ref(false)
+
+// 防御塔选中状态和视野
+const selectedTower = ref<MapEntity | null>(null)
+const selectedTowerVision = ref<Set<string>>(new Set())
 
 // 视野模拟器实例
 let visionSimulator: VisionSimulation | null = null
@@ -247,7 +258,7 @@ const combinedVision = ref<Set<string>>(new Set())
 const OBSERVER_VISION_RADIUS_DAY = 1600
 const OBSERVER_VISION_RADIUS_NIGHT = 1600
 const SENTRY_VISION_RADIUS = 150  // 真眼不提供视野，只反隐
-const SENTRY_TRUE_SIGHT_RADIUS = 900
+const SENTRY_TRUE_SIGHT_RADIUS = 1050
 
 // 眼位持续时间（秒）
 const OBSERVER_DURATION = 360  // 6 分钟
@@ -414,10 +425,21 @@ const placeWard = (worldX: number, worldY: number, type: WardType) => {
   if (!visionSimulator || !visionReady.value) return false
   
   const gridPt = visionSimulator.WorldXYtoGridXY(worldX, worldY)
+  const key = `${gridPt.x},${gridPt.y}`
+  
+  // 调试：检查禁眼区数据
+  console.log('放眼调试:', {
+    worldX, worldY,
+    gridX: gridPt.x, gridY: gridPt.y,
+    key,
+    toolsNoWardsCount: Object.keys(visionSimulator.toolsNoWards).length,
+    isInNoWards: !!visionSimulator.toolsNoWards[key],
+    isValidXY: visionSimulator.isValidXY(gridPt.x, gridPt.y, true, true, true)
+  })
   
   // 检查是否可以放眼（不能放在不可行走区域和禁眼区）
   if (!visionSimulator.isValidXY(gridPt.x, gridPt.y, true, true, true)) {
-    console.log('无法在此位置放眼')
+    console.log('无法在此位置放眼 - 被禁眼区或不可行走区域阻止')
     return false
   }
   
@@ -452,12 +474,19 @@ const clearAllWards = () => {
   combinedVision.value.clear()
 }
 
-// 建筑视野缓存（日/夜分别缓存）
-let buildingVisionCacheDay: Set<string> | null = null
-let buildingVisionCacheNight: Set<string> | null = null
+// 建筑视野缓存（阵营+日夜分别缓存）
+// 结构：{ radiant: { day: Set, night: Set }, dire: { day: Set, night: Set } }
+interface BuildingVisionCache {
+  radiant: { day: Set<string> | null, night: Set<string> | null }
+  dire: { day: Set<string> | null, night: Set<string> | null }
+}
+let buildingVisionCache: BuildingVisionCache = {
+  radiant: { day: null, night: null },
+  dire: { day: null, night: null }
+}
 
-// 计算并缓存建筑视野（性能优化：抑制 console.log）
-const computeBuildingVision = (isDay: boolean): Set<string> => {
+// 计算并缓存建筑视野（按阵营分离）
+const computeBuildingVision = (team: Team, isDay: boolean): Set<string> => {
   if (!visionSimulator) return new Set()
   
   const result = new Set<string>()
@@ -467,9 +496,13 @@ const computeBuildingVision = (isDay: boolean): Set<string> => {
   console.log = () => {}
   
   try {
-    // 计算防御塔视野
+    // 计算防御塔视野（根据阵营过滤）
     const towers = mapEntities.value?.npc_dota_tower || []
     for (const tower of towers) {
+      // 根据 team 属性过滤：2=天辉, 3=夜魇
+      const isRadiant = tower.team === 2
+      if ((team === 'radiant' && !isRadiant) || (team === 'dire' && isRadiant)) continue
+      
       const name = tower.name || ''
       let visionRadius: number
       if (name.includes('_tower1_')) {
@@ -481,18 +514,20 @@ const computeBuildingVision = (isDay: boolean): Set<string> => {
       const gridRadius = Math.ceil(visionRadius / VISION_GRID_SIZE)
       const gridPt = visionSimulator.WorldXYtoGridXY(tower.x, tower.y)
       
-      // 调用视野计算（lights 每次会被清空并重新填充）
       visionSimulator.updateVisibility(gridPt.x, gridPt.y, gridRadius)
       
-      // 立即收集本次计算的结果
       for (const key in visionSimulator.lights) {
         result.add(key)
       }
     }
     
-    // 计算基地视野
+    // 计算基地视野（根据阵营过滤）
     const ancients = mapEntities.value?.npc_dota_fort || []
     for (const ancient of ancients) {
+      // 根据 team 属性过滤
+      const isRadiant = ancient.team === 2
+      if ((team === 'radiant' && !isRadiant) || (team === 'dire' && isRadiant)) continue
+      
       const gridRadius = Math.ceil(ANCIENT_VISION_RADIUS / VISION_GRID_SIZE)
       const gridPt = visionSimulator.WorldXYtoGridXY(ancient.x, ancient.y)
       
@@ -503,27 +538,45 @@ const computeBuildingVision = (isDay: boolean): Set<string> => {
       }
     }
   } finally {
-    // 恢复 console.log
     console.log = originalLog
   }
   
-  console.log(`建筑视野计算完成 (${isDay ? '日间' : '夜间'}): ${result.size} 个视野点`)
   return result
 }
 
-// 获取建筑视野（使用缓存）
+// 获取建筑视野（使用缓存，支持阵营过滤）
 const getBuildingVision = (): Set<string> => {
-  if (isDaytime.value) {
-    if (!buildingVisionCacheDay) {
-      buildingVisionCacheDay = computeBuildingVision(true)
+  const isDay = isDaytime.value
+  const view = currentView.value
+  
+  const result = new Set<string>()
+  
+  // 根据视角获取相应阵营的建筑视野
+  const addTeamVision = (team: Team) => {
+    const cache = buildingVisionCache[team]
+    let teamVision: Set<string> | null
+    
+    if (isDay) {
+      if (!cache.day) cache.day = computeBuildingVision(team, true)
+      teamVision = cache.day
+    } else {
+      if (!cache.night) cache.night = computeBuildingVision(team, false)
+      teamVision = cache.night
     }
-    return buildingVisionCacheDay
-  } else {
-    if (!buildingVisionCacheNight) {
-      buildingVisionCacheNight = computeBuildingVision(false)
+    
+    for (const key of teamVision) {
+      result.add(key)
     }
-    return buildingVisionCacheNight
   }
+  
+  if (view === 'both' || view === 'radiant') {
+    addTeamVision('radiant')
+  }
+  if (view === 'both' || view === 'dire') {
+    addTeamVision('dire')
+  }
+  
+  return result
 }
 
 // 更新合并视野（眼位 + 缓存的建筑视野）
@@ -538,8 +591,9 @@ const updateCombinedVision = () => {
     combinedVision.value.add(key)
   }
   
-  // 2. 计算眼位视野
+  // 2. 计算眼位视野（根据阵营视角过滤）
   const now = gameTime.value
+  const view = currentView.value
   const activeWards = wards.value.filter(w => {
     if (w.type === 'sentry') return true
     return (now - w.placedAt) < OBSERVER_DURATION
@@ -551,6 +605,9 @@ const updateCombinedVision = () => {
   
   for (const ward of activeWards) {
     if (ward.type !== 'observer') continue
+    
+    // 根据阵营视角过滤眼位
+    if (view !== 'both' && ward.team !== view) continue
     
     const visionRadius = isDaytime.value ? OBSERVER_VISION_RADIUS_DAY : OBSERVER_VISION_RADIUS_NIGHT
     const gridRadius = Math.ceil(visionRadius / VISION_GRID_SIZE)
@@ -876,9 +933,19 @@ const draw = () => {
       drawVisionArea(ctx, canvasSize)
     }
     
+    // 绘制选中防御塔的视野区域
+    if (showVisionCircles.value && selectedTower.value) {
+      drawTowerVision(ctx, canvasSize)
+    }
+    
     // 绘制眼位图标
     if (wards.value.length > 0) {
       drawWards(ctx)
+    }
+    
+    // 调试：绘制 FOW 阻挡点
+    if (showFowBlockers.value) {
+      drawFowBlockers(ctx)
     }
   }
   
@@ -1310,6 +1377,37 @@ const drawVisionArea = (ctx: CanvasRenderingContext2D, canvasSize: number) => {
   ctx.restore()
 }
 
+// 绘制选中防御塔的真视范围（虚线圆）
+const drawTowerVision = (ctx: CanvasRenderingContext2D, canvasSize: number) => {
+  if (!selectedTower.value) return
+  
+  const tower = selectedTower.value
+  // 防御塔真视范围700单位 + 塔的碰撞半径144单位 = 844单位（从中心算起）
+  const TOWER_BOUND_RADIUS = 144  // 塔的碰撞半径
+  const TOWER_TRUE_SIGHT_RANGE = 700  // 真视范围（从塔边缘开始）
+  const TOWER_TRUE_SIGHT_RADIUS = TOWER_TRUE_SIGHT_RANGE + TOWER_BOUND_RADIUS  // 从中心算起的总半径
+  
+  // 将塔坐标转换为画布坐标
+  const pos = worldToCanvas(tower.x, tower.y)
+  
+  // 计算画布上的真视半径（与眼位使用相同的公式）
+  // 来自 getWardDisplayRadius: visionRadius / (WORLD_SIZE / navWidth.value)
+  const radiusPixels = TOWER_TRUE_SIGHT_RADIUS / (WORLD_SIZE / navWidth.value)
+  
+  ctx.save()
+  
+  // 绘制淡蓝色虚线圆
+  ctx.setLineDash([6, 4])
+  ctx.strokeStyle = 'rgba(100, 180, 255, 0.8)'  // 淡蓝色
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.arc(pos.x, pos.y, radiusPixels, 0, Math.PI * 2)
+  ctx.stroke()
+  
+  ctx.setLineDash([])
+  ctx.restore()
+}
+
 // 绘制眼位图标
 const drawWards = (ctx: CanvasRenderingContext2D) => {
   // 使用全局阵营颜色
@@ -1388,7 +1486,7 @@ const drawWards = (ctx: CanvasRenderingContext2D) => {
 
 // 构建迷雾图层缓存
 const buildFogOfWarCache = (canvasSize: number) => {
-  if (!visionSimulator || combinedVision.value.size === 0) return
+  if (!visionSimulator) return
   
   // 创建或重用离屏Canvas
   if (!fogOfWarCache) {
@@ -1410,7 +1508,7 @@ const buildFogOfWarCache = (canvasSize: number) => {
   ctx.globalCompositeOperation = 'destination-out'
   ctx.fillStyle = 'rgba(0, 0, 0, 1)'
   
-  // 绘制 ImageData 更高效（避免逐个绘制矩形）
+  // 绘制 combinedVision 区域
   for (const key of combinedVision.value) {
     const pt = key2pt(key)
     const imgX = pt.x
@@ -1440,6 +1538,25 @@ const drawFogOfWar = (ctx: CanvasRenderingContext2D, canvasSize: number) => {
   // 直接绘制缓存图像
   if (fogOfWarCache) {
     ctx.drawImage(fogOfWarCache, 0, 0, canvasSize, canvasSize)
+  }
+}
+
+// 绘制 FOW 阻挡点（调试用）
+const drawFowBlockers = (ctx: CanvasRenderingContext2D) => {
+  if (!visionSimulator?.entFowBlockerNode) return
+  
+  const VISION_GRID = 64  // 64 单位网格
+  const scale64 = (navWidth.value || 2401) / ((WORLD_MAX - WORLD_MIN) / VISION_GRID + 1)
+  const blockSize = Math.max(2, Math.ceil(scale64))
+  
+  ctx.fillStyle = 'rgba(255, 0, 255, 0.6)'  // 紫色半透明
+  
+  for (const key in visionSimulator.entFowBlockerNode) {
+    const [gX, gY] = key.split(',').map(Number)
+    // 转换到画布坐标（Y 轴翻转）
+    const canvasX = gX * scale64
+    const canvasY = (navHeight.value || 2401) - (gY + 1) * scale64
+    ctx.fillRect(canvasX, canvasY, blockSize, blockSize)
   }
 }
 
@@ -1485,6 +1602,32 @@ const handleCanvasClick = (event: MouseEvent) => {
   const hitEntity = hitTestEntity(worldPoint)
   if (hitEntity) {
     selectedWardId.value = null  // 取消眼位选中
+    
+    // 如果点击的是防御塔，计算其视野
+    if (hitEntity.type === 'tower' && visionSimulator && visionReady.value) {
+      const tower = hitEntity.data
+      // 切换选中状态
+      if (selectedTower.value && selectedTower.value.x === tower.x && selectedTower.value.y === tower.y) {
+        selectedTower.value = null
+        selectedTowerVision.value = new Set()
+      } else {
+        selectedTower.value = tower
+        // 计算视野
+        const tier = getTowerTier(tower.name)
+        const radiusWorld = (TOWER_VISION as any)[tier]?.[isDaytime.value ? 'day' : 'night'] || 1900
+        const radiusGrid = Math.floor(radiusWorld / VISION_GRID_SIZE)  // 游戏单位 -> 网格单位
+        const gX = Math.floor((tower.x - WORLD_MIN) / VISION_GRID_SIZE)
+        const gY = Math.floor((tower.y - WORLD_MIN) / VISION_GRID_SIZE)
+        visionSimulator.updateVisibility(gX, gY, radiusGrid)
+        selectedTowerVision.value = new Set(Object.keys(visionSimulator.lights))
+      }
+      draw()
+      return
+    } else {
+      selectedTower.value = null
+      selectedTowerVision.value = new Set()
+    }
+    
     selectedEntity.value = hitEntity
     popupPosition.value = { x: event.clientX, y: event.clientY }
     draw()
@@ -1492,10 +1635,12 @@ const handleCanvasClick = (event: MouseEvent) => {
   }
   
   // 3. 点击空白处关闭详情面板和眼位选中
-  if (selectedEntity.value || selectedWardId.value !== null) {
+  if (selectedEntity.value || selectedWardId.value !== null || selectedTower.value) {
     selectedEntity.value = null
     popupPosition.value = null
     selectedWardId.value = null
+    selectedTower.value = null
+    selectedTowerVision.value = new Set()
     draw()
   }
 }
@@ -2046,6 +2191,14 @@ watch(isDaytime, () => {
     draw()
   }
 })
+
+// 阵营视角切换时更新视野
+watch(currentView, () => {
+  if (visionReady.value) {
+    updateCombinedVision()
+    draw()
+  }
+})
 </script>
 
 <template>
@@ -2061,156 +2214,95 @@ watch(isDaytime, () => {
       <div class="layout">
         <!-- 左侧控制面板 -->
         <aside class="panel">
-          <!-- 寻路 -->
-          <div class="section">
-            <h3>🗺️ 寻路</h3>
-            <div class="point-status">
-              <div class="point-item" :class="{ active: isSettingStart }">
-                <span class="marker start">起</span>
-                <span>{{ startPoint ? `(${Math.round(startPoint.x)}, ${Math.round(startPoint.y)})` : '点击地图设置' }}</span>
-              </div>
-              <div class="point-item" :class="{ active: !isSettingStart && startPoint }">
-                <span class="marker end">终</span>
-                <span>{{ endPoint ? `(${Math.round(endPoint.x)}, ${Math.round(endPoint.y)})` : '点击地图设置' }}</span>
-              </div>
-            </div>
-            <button class="btn" @click="resetPoints">🔄 重置起终点</button>
-          </div>
-
-          <!-- 计算结果 -->
-          <div class="section" v-if="path.length > 0">
-            <h3>📏 计算结果</h3>
-            <div class="result-row">
-              <span>路径长度</span>
-              <span class="value">{{ pathLength.toLocaleString() }} 单位</span>
-            </div>
-            <div class="result-row highlight">
-              <span>移动时间</span>
-              <span class="value">{{ formattedTime }}</span>
-            </div>
-          </div>
-
-          <div class="section warning" v-else-if="startPoint && endPoint">
-            ⚠️ 未找到有效路径
-          </div>
-
-          <!-- 移速 -->
-          <div class="section">
-            <h3>🏃 移动速度</h3>
-            <div class="speed-input">
-              <input type="number" v-model.number="moveSpeed" min="100" max="700" step="10">
-              <span class="unit">单位/秒</span>
-            </div>
-            <div class="speed-presets">
-              <button @click="moveSpeed = 280">280</button>
-              <button @click="moveSpeed = 325">325</button>
-              <button @click="moveSpeed = 370">370</button>
-              <button @click="moveSpeed = 400">400</button>
-              <button @click="moveSpeed = 550">550</button>
-            </div>
-          </div>
-
-          <!-- 图层 -->
-          <div class="section">
-            <h3>📊 图层</h3>
-            <div class="layer-list">
-              <label><input type="checkbox" v-model="showTowers" @change="draw"> 🗼 防御塔</label>
-              <label><input type="checkbox" v-model="showRunes" @change="draw"> 💎 神符</label>
-              <label><input type="checkbox" v-model="showNeutralCamps" @change="draw"> 🐺 野怪营地</label>
-              <label><input type="checkbox" v-model="showBuildings" @change="draw"> 🏰 建筑</label>
-              <label><input type="checkbox" v-model="showTrees" @change="draw"> 🌲 树木</label>
-              <div class="tree-controls" v-if="showTrees">
-                <small>Shift+点击砍树</small>
-                <button class="small-btn" @click="resetTrees" :disabled="destroyedTrees.size === 0">
-                  重置 ({{ destroyedTrees.size }})
-                </button>
-              </div>
-              <label class="debug"><input type="checkbox" v-model="showNavGrid" @change="draw"> 📐 导航网格</label>
-            </div>
-          </div>
-
-          <div class="section debug-info" v-if="showNavGrid">
-            导航图: {{ navWidth }} x {{ navHeight }} px
-          </div>
-
-          <!-- 时间轴控制 -->
-          <div class="section time-control">
-            <h3>⏱️ 游戏时间</h3>
-            <div class="time-bar">
-              <button class="play-btn" @click="togglePlay">
-                {{ isPlaying ? '⏸' : '▶' }}
-              </button>
-              <input 
-                type="range" 
-                class="time-slider"
-                v-model.number="gameTime" 
-                min="0" 
-                max="3600" 
-                step="1"
-                @input="draw"
-              >
-              <span class="time-display">{{ formatGameTime(gameTime) }}</span>
-              <span class="day-night-icon">{{ isDaytime ? '☀️' : '🌙' }}</span>
-            </div>
-            <div class="speed-controls">
-              <span>速度:</span>
-              <button 
-                v-for="speed in [1, 2, 4]" 
-                :key="speed"
-                :class="{ active: playSpeed === speed }"
-                @click="playSpeed = speed"
-              >{{ speed }}x</button>
-            </div>
-            <div class="time-info">
-              <span>已清营地: {{ campDeathTime.size }}</span>
-              <button class="small-btn" @click="campDeathTime.clear(); draw()" :disabled="campDeathTime.size === 0">
-                重置
-              </button>
-            </div>
-          </div>
-
-          <!-- 视野控制 -->
+          <!-- 视野系统 (放在最上面) -->
           <div class="section vision-control">
             <h3>👁 视野系统</h3>
             <div class="vision-status" v-if="!visionReady">
               <span class="loading-text">加载视野数据...</span>
             </div>
             <template v-else>
-              <label class="checkbox-item">
-                <input type="checkbox" v-model="showVisionCircles" @change="draw">
-                <span>显示视野区域</span>
-              </label>
-              <label class="checkbox-item">
-                <input type="checkbox" v-model="showFogOfWar" @change="draw">
-                <span>显示战争迷雾</span>
-              </label>
-              <div class="ward-info" v-if="wards.length > 0">
-                <span>假眼: {{ wards.filter(w => w.type === 'observer').length }}</span>
-                <span>真眼: {{ wards.filter(w => w.type === 'sentry').length }}</span>
-                <button class="small-btn" @click="clearAllWards(); draw()">清除</button>
-              </div>
-              <div class="team-selector">
-                <span>当前阵营:</span>
+              <!-- 视角切换 -->
+              <div class="view-switch">
                 <button 
-                  class="team-btn radiant" 
-                  :class="{ active: currentTeam === 'radiant' }"
-                  @click="currentTeam = 'radiant'"
-                >
-                  天辉
-                </button>
-                <button 
-                  class="team-btn dire" 
-                  :class="{ active: currentTeam === 'dire' }"
-                  @click="currentTeam = 'dire'"
-                >
-                  夜魇
-                </button>
+                  v-for="view in [{key: 'both', label: '双方'}, {key: 'radiant', label: '天辉'}, {key: 'dire', label: '夜魇'}]"
+                  :key="view.key"
+                  class="view-btn" 
+                  :class="[view.key, { active: currentView === view.key }]"
+                  @click="currentView = view.key as TeamView"
+                >{{ view.label }}</button>
               </div>
-              <div class="ward-tips">
-                <small>💡 右键地图放置眼位</small>
+              <!-- 显示选项 -->
+              <div class="vision-options">
+                <label><input type="checkbox" v-model="showFogOfWar" @change="draw"> 战争迷雾</label>
+                <label><input type="checkbox" v-model="showVisionCircles" @change="draw"> 视野圈</label>
               </div>
+              <!-- 眼位信息 -->
+              <div class="ward-row">
+                <span class="team-indicator" :class="currentTeam">{{ currentTeam === 'radiant' ? '天辉' : '夜魇' }}</span>
+                <span class="ward-count" v-if="wards.length > 0">
+                  假眼×{{ wards.filter(w => w.type === 'observer').length }}
+                  真眼×{{ wards.filter(w => w.type === 'sentry').length }}
+                </span>
+                <button v-if="wards.length > 0" class="link-btn" @click="clearAllWards(); draw()">清除</button>
+                <button class="link-btn" @click="currentTeam = currentTeam === 'radiant' ? 'dire' : 'radiant'">切换阵营</button>
+              </div>
+              <small class="hint">右键放眼 • 拖动调整位置</small>
             </template>
           </div>
+
+          <!-- 时间轴 -->
+          <div class="section time-control compact">
+            <div class="time-header">
+              <span class="day-night">{{ isDaytime ? '☀️' : '🌙' }}</span>
+              <span class="time-display">{{ formatGameTime(gameTime) }}</span>
+              <button class="icon-btn" @click="togglePlay">{{ isPlaying ? '⏸' : '▶' }}</button>
+              <select v-model.number="playSpeed" class="speed-select">
+                <option :value="1">1×</option>
+                <option :value="2">2×</option>
+                <option :value="4">4×</option>
+              </select>
+            </div>
+            <input type="range" class="time-slider" v-model.number="gameTime" min="0" max="3600" step="1" @input="draw">
+          </div>
+
+          <!-- 图层 -->
+          <div class="section layers-compact">
+            <div class="layer-grid">
+              <label><input type="checkbox" v-model="showTowers" @change="draw"> 🗼 塔</label>
+              <label><input type="checkbox" v-model="showRunes" @change="draw"> 💎 符</label>
+              <label><input type="checkbox" v-model="showNeutralCamps" @change="draw"> 🐺 野</label>
+              <label><input type="checkbox" v-model="showBuildings" @change="draw"> 🏰 建筑</label>
+              <label><input type="checkbox" v-model="showTrees" @change="draw"> 🌲 树</label>
+              <label class="debug"><input type="checkbox" v-model="showNavGrid" @change="draw"> 📐 网格</label>
+              <label class="debug"><input type="checkbox" v-model="showFowBlockers" @change="draw"> 🚫 FOW阻挡</label>
+            </div>
+            <div class="tree-actions" v-if="showTrees && destroyedTrees.size > 0">
+              <small>已砍: {{ destroyedTrees.size }}</small>
+              <button class="link-btn" @click="resetTrees">重置</button>
+            </div>
+          </div>
+
+          <!-- 寻路 (折叠样式) -->
+          <details class="section collapsible">
+            <summary>🗺️ 寻路工具</summary>
+            <div class="pathfind-content">
+              <div class="point-row">
+                <span class="marker start">起</span>
+                <span>{{ startPoint ? `(${Math.round(startPoint.x)}, ${Math.round(startPoint.y)})` : '点击设置' }}</span>
+              </div>
+              <div class="point-row">
+                <span class="marker end">终</span>
+                <span>{{ endPoint ? `(${Math.round(endPoint.x)}, ${Math.round(endPoint.y)})` : '点击设置' }}</span>
+              </div>
+              <div class="result-row" v-if="path.length > 0">
+                <span>距离 {{ pathLength.toLocaleString() }} • {{ formattedTime }}</span>
+              </div>
+              <div class="pathfind-actions">
+                <input type="number" v-model.number="moveSpeed" min="100" max="700" step="10" class="speed-input-small">
+                <button class="link-btn" @click="resetPoints">重置</button>
+              </div>
+            </div>
+          </details>
         </aside>
 
         <!-- 地图区域 -->
@@ -2963,7 +3055,280 @@ watch(isDaytime, () => {
   opacity: 1;
 }
 
+.team-btn.both {
+  background: #2d3d4a;
+  color: #4a90d9;
+  border-color: #3d4d5a;
+}
+
+.team-btn.both.active {
+  background: #3d5d7a;
+  border-color: #4a90d9;
+  opacity: 1;
+}
+
 .team-btn:hover {
   opacity: 0.9;
+}
+
+/* ===== 新紧凑布局样式 ===== */
+
+/* 视角切换按钮组 */
+.view-switch {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.view-btn {
+  flex: 1;
+  padding: 6px 0;
+  border: 2px solid;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  background: white;
+}
+
+/* 未选中状态：镂空按钮（透明背景+彩色边框文字） */
+.view-btn.both {
+  color: #6ca0dc;
+  border-color: #6ca0dc;
+}
+
+.view-btn.radiant {
+  color: #7ed321;
+  border-color: #7ed321;
+}
+
+.view-btn.dire {
+  color: #e74c3c;
+  border-color: #e74c3c;
+}
+
+/* 选中状态：填充颜色 */
+.view-btn.both.active {
+  background: #4a90d9;
+  color: white;
+  border-color: #4a90d9;
+}
+
+.view-btn.radiant.active {
+  background: #4caf50;
+  color: white;
+  border-color: #4caf50;
+}
+
+.view-btn.dire.active {
+  background: #e74c3c;
+  color: white;
+  border-color: #e74c3c;
+}
+
+.view-btn:hover:not(.active) {
+  opacity: 0.7;
+}
+
+/* 视野选项行 */
+.vision-options {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.vision-options label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+/* 眼位信息行 */
+.ward-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.team-indicator {
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.team-indicator.radiant {
+  background: #2d4a2d;
+  color: #7ed321;
+}
+
+.team-indicator.dire {
+  background: #4a2d2d;
+  color: #e74c3c;
+}
+
+.ward-count {
+  color: var(--text-secondary);
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--accent, #4a90d9);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.link-btn:hover {
+  opacity: 0.8;
+}
+
+.hint {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* 紧凑时间控制 */
+.time-control.compact {
+  padding: 0.5rem;
+}
+
+.time-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.time-header .day-night {
+  font-size: 1.1rem;
+}
+
+.time-header .time-display {
+  font-family: monospace;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.icon-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: var(--bg-secondary, #1e1e1e);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  background: var(--accent, #4a90d9);
+}
+
+.speed-select {
+  padding: 2px 4px;
+  border: 1px solid var(--border, #444);
+  border-radius: 3px;
+  background: var(--bg-secondary, #1e1e1e);
+  color: var(--text);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+/* 图层网格 */
+.layers-compact {
+  padding: 0.5rem;
+}
+
+.layer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 8px;
+  font-size: 0.75rem;
+}
+
+.layer-grid label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tree-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* 折叠区块 */
+.collapsible {
+  padding: 0.5rem;
+}
+
+.collapsible summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  user-select: none;
+  list-style: none;
+}
+
+.collapsible summary::-webkit-details-marker {
+  display: none;
+}
+
+.collapsible summary::before {
+  content: '▸ ';
+}
+
+.collapsible[open] summary::before {
+  content: '▾ ';
+}
+
+.pathfind-content {
+  margin-top: 0.5rem;
+  padding-left: 1rem;
+}
+
+.point-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.pathfind-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.speed-input-small {
+  width: 60px;
+  padding: 3px 6px;
+  border: 1px solid var(--border, #444);
+  border-radius: 3px;
+  background: var(--bg-secondary, #1e1e1e);
+  color: var(--text);
+  font-size: 0.8rem;
 }
 </style>
