@@ -81,6 +81,16 @@ const HERO_COLLISION_RADIUS = 24
 // 碰撞半径对应的导航图像素数（向上取整）
 const COLLISION_CELLS = Math.ceil(HERO_COLLISION_RADIUS / NAV_CELL_SIZE)  // = 3
 
+// ===== 颜色常量 =====
+// 阵营颜色（统一应用到防御塔、基地、眼等）
+const TEAM_COLORS = {
+  radiant: '#32cd32',  // 天辉：鲜艳绿色（lime green）
+  dire: '#dc143c'      // 夜魇：猩红色（crimson）
+}
+// 树木颜色（青绿色/翠绿色，与阵营的鲜绿区分）
+const TREE_COLOR = 'rgba(50, 160, 140, 0.8)'  // 青绿色
+const TREE_DESTROYED_COLOR = 'rgba(90, 90, 95, 0.5)'
+
 // ===== 状态 =====
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const loading = ref(true)
@@ -188,6 +198,9 @@ const isDaytime = computed(() => Math.floor(gameTime.value / 300) % 2 === 0)
 const campDeathTime = ref<Map<number, number>>(new Map())
 
 // ===== 眼位系统 =====
+// 阵营类型
+type Team = 'radiant' | 'dire'
+
 // 眼位类型
 type WardType = 'observer' | 'sentry'
 
@@ -195,6 +208,7 @@ type WardType = 'observer' | 'sentry'
 interface Ward {
   id: number
   type: WardType
+  team: Team  // 所属阵营
   worldX: number
   worldY: number
   gridX: number
@@ -209,9 +223,16 @@ let wardIdCounter = 0
 // 当前放置模式
 const currentWardMode = ref<WardType | null>(null)
 
+// 当前操作阵营
+const currentTeam = ref<Team>('radiant')
+
 // 视野控制
 const showFogOfWar = ref(true)
 const showVisionCircles = ref(true)
+
+// 眼位选中和拖拽状态
+const selectedWardId = ref<number | null>(null)
+const isDraggingWard = ref(false)
 
 // 视野模拟器实例
 let visionSimulator: VisionSimulation | null = null
@@ -387,6 +408,7 @@ const placeWard = (worldX: number, worldY: number, type: WardType) => {
   const ward: Ward = {
     id: wardIdCounter++,
     type,
+    team: currentTeam.value,
     worldX,
     worldY,
     gridX: gridPt.x,
@@ -463,6 +485,19 @@ const isWardExpiring = (ward: Ward): boolean => {
   if (ward.type === 'sentry') return false
   const remaining = OBSERVER_DURATION - (gameTime.value - ward.placedAt)
   return remaining > 0 && remaining < 30  // 最后 30 秒闪烁
+}
+
+// 眼位命中检测
+const hitTestWard = (worldPoint: Point): Ward | null => {
+  const hitRadius = 100 // 游戏单位
+  for (const ward of wards.value) {
+    const dx = worldPoint.x - ward.worldX
+    const dy = worldPoint.y - ward.worldY
+    if (dx * dx + dy * dy < hitRadius * hitRadius) {
+      return ward
+    }
+  }
+  return null
 }
 
 // ===== 坐标转换（官方公式） =====
@@ -717,38 +752,36 @@ const draw = () => {
     drawNavGrid(ctx, canvasSize)
   }
   
-  // 3. 绘制实体图层
+  // 3. 绘制树木（在迷雾之前）
+  if (mapEntities.value && showTrees.value) {
+    drawTrees(ctx)
+  }
+  
+  // 4. 绘制战争迷雾（只影响底图和树木，不影响后续图标）
+  if (showFogOfWar.value && visionReady.value && wards.value.length > 0) {
+    drawFogOfWar(ctx, canvasSize)
+  }
+  
+  // 5. 绘制其他实体图层（不受迷雾影响）
   if (mapEntities.value) {
-    if (showTrees.value) drawTrees(ctx)
     if (showBuildings.value) drawBuildings(ctx)
     if (showTowers.value) drawTowers(ctx)
     if (showNeutralCamps.value) drawNeutralCamps(ctx)
     if (showRunes.value) drawRunes(ctx)
   }
   
-  // 4. 绘制路径和起终点
+  // 6. 绘制路径和起终点
   drawOverlay(ctx)
   
-  // 5. 绘制眼位和视野
+  // 7. 绘制眼位和视野
   if (visionReady.value && wards.value.length > 0) {
-    // 绘制视野区域
-    if (showVisionCircles.value) {
+    // 绘制选中眼位的视野区域
+    if (showVisionCircles.value && selectedWardId.value !== null) {
       drawVisionArea(ctx, canvasSize)
     }
     
     // 绘制眼位图标
     drawWards(ctx)
-  }
-  
-  // 6. 绘制战争迷雾
-  if (showFogOfWar.value && visionReady.value && wards.value.length > 0) {
-    drawFogOfWar(ctx, canvasSize)
-  }
-  
-  // 7. 夜间遮罩（在所有内容之上）
-  if (!isDaytime.value) {
-    ctx.fillStyle = 'rgba(20, 30, 60, 0.3)'
-    ctx.fillRect(0, 0, canvasSize, canvasSize)
   }
   
   ctx.restore()
@@ -816,7 +849,7 @@ const buildTreeCache = () => {
     const key = `${gX},${gY}`
     const destroyed = destroyedTrees.value.has(key)
     
-    ctx.fillStyle = destroyed ? 'rgba(100, 100, 100, 0.3)' : 'rgba(34, 139, 34, 0.7)'
+    ctx.fillStyle = destroyed ? TREE_DESTROYED_COLOR : TREE_COLOR
     const pos = worldToCanvas(tree.x, tree.y)
     ctx.beginPath()
     ctx.arc(pos.x, pos.y, 8, 0, Math.PI * 2)  // 放大半径
@@ -869,9 +902,13 @@ const drawIcon = (ctx: CanvasRenderingContext2D, iconName: string, worldX: numbe
       const tempCtx = cachedCanvas.getContext('2d')!
       
       tempCtx.drawImage(spriteSheet.value, sx, sy, iconSize, iconSize, 0, 0, iconSize, iconSize)
-      tempCtx.globalCompositeOperation = 'source-atop'
+      // 使用 multiply 混合模式保留图标细节
+      tempCtx.globalCompositeOperation = 'multiply'
       tempCtx.fillStyle = tintColor
       tempCtx.fillRect(0, 0, iconSize, iconSize)
+      // 恢复透明度
+      tempCtx.globalCompositeOperation = 'destination-in'
+      tempCtx.drawImage(spriteSheet.value, sx, sy, iconSize, iconSize, 0, 0, iconSize, iconSize)
       
       tintedIconCache.set(cacheKey, cachedCanvas)
     }
@@ -932,8 +969,11 @@ const drawNeutralCamps = (ctx: CanvasRenderingContext2D) => {
       ctx.globalAlpha = 0.5
     }
     
+    // 图标随缩放变化，但有最小尺寸限制
+    const displaySize = Math.max(config.size * 1.5, 16 / scale.value)
+    
     // 尝试用图标渲染（带颜色叠加）
-    if (drawIcon(ctx, config.icon, camp.x, camp.y, config.size, color)) {
+    if (drawIcon(ctx, config.icon, camp.x, camp.y, displaySize, color)) {
       ctx.globalAlpha = 1
       continue
     }
@@ -988,55 +1028,74 @@ const drawBuildings = (ctx: CanvasRenderingContext2D) => {
     ctx.fillText('⛲', pos.x, pos.y)
   }
   
-  // 遗迹（使用图标）
+  // 遗迹/基地（按阵营着色，尺寸约1000游戏单位）
+  const ANCIENT_SIZE = 1000
+  const canvasSize = navWidth.value || 2401
+  const ancientDisplaySize = ANCIENT_SIZE / WORLD_SIZE * canvasSize
+  
   for (const fort of entities.npc_dota_fort || []) {
-    if (drawIcon(ctx, 'ancient', fort.x, fort.y, 56)) continue
-    // 回退
+    const isRadiant = fort.team === 2
+    // 天辉用鲜艳绿色，夜魇用猩红色
+    const color = isRadiant ? TEAM_COLORS.radiant : TEAM_COLORS.dire
+    
+    if (drawIcon(ctx, 'ancient', fort.x, fort.y, ancientDisplaySize, color)) continue
+    // 回退到菱形
     const pos = worldToCanvas(fort.x, fort.y)
-    ctx.fillStyle = '#f39c12'
+    const halfSize = ancientDisplaySize / 2
+    ctx.fillStyle = color
     ctx.strokeStyle = '#fff'
     ctx.lineWidth = 3
     ctx.beginPath()
-    ctx.moveTo(pos.x, pos.y - 40)
-    ctx.lineTo(pos.x + 35, pos.y)
-    ctx.lineTo(pos.x, pos.y + 40)
-    ctx.lineTo(pos.x - 35, pos.y)
+    ctx.moveTo(pos.x, pos.y - halfSize)
+    ctx.lineTo(pos.x + halfSize * 0.875, pos.y)
+    ctx.lineTo(pos.x, pos.y + halfSize)
+    ctx.lineTo(pos.x - halfSize * 0.875, pos.y)
     ctx.closePath()
     ctx.fill()
     ctx.stroke()
   }
 }
 
-// 绘制防御塔
+// 绘制防御塔（按实际体积显示，随缩放变化）
 const drawTowers = (ctx: CanvasRenderingContext2D) => {
   const towers = mapEntities.value?.npc_dota_tower
   if (!towers) return
+  
+  // 防御塔碰撞半径: 144 游戏单位
+  const TOWER_RADIUS = 144
+  const canvasSize = navWidth.value || 2401
+  // 游戏单位转画布像素
+  const towerSize = (TOWER_RADIUS * 2) / WORLD_SIZE * canvasSize
   
   for (const tower of towers) {
     const isRadiant = tower.team === 2
     const name = tower.name || ''
     const isMid = name.includes('_mid_')
-    const color = isRadiant ? '#2ecc71' : '#e74c3c'
+    const color = isRadiant ? TEAM_COLORS.radiant : TEAM_COLORS.dire
     
     // 尝试用图标渲染
     const iconName = isMid ? 'tower_mid' : 'tower_side'
-    if (drawIcon(ctx, iconName, tower.x, tower.y, 40, color)) continue
+    if (drawIcon(ctx, iconName, tower.x, tower.y, towerSize, color)) continue
     
     // 回退到方块
     const pos = worldToCanvas(tower.x, tower.y)
+    const halfSize = towerSize / 2
     ctx.fillStyle = color
     ctx.strokeStyle = '#fff'
     ctx.lineWidth = 2
-    ctx.fillRect(pos.x - 20, pos.y - 20, 40, 40)
-    ctx.strokeRect(pos.x - 20, pos.y - 20, 40, 40)
+    ctx.fillRect(pos.x - halfSize, pos.y - halfSize, towerSize, towerSize)
+    ctx.strokeRect(pos.x - halfSize, pos.y - halfSize, towerSize, towerSize)
   }
 }
 
-// 绘制神符
+// 绘制神符（图标随缩放变化，有最小尺寸限制）
 const drawRunes = (ctx: CanvasRenderingContext2D) => {
+  // 神符图标大小：随缩放变化，最小16像素
+  const runeSize = Math.max(36, 16 / scale.value)
+  
   // 力量神符（使用rune_spot图标）
   for (const rune of mapEntities.value?.dota_item_rune_spawner_powerup || []) {
-    if (drawIcon(ctx, 'rune_spot', rune.x, rune.y, 32)) continue
+    if (drawIcon(ctx, 'rune_spot', rune.x, rune.y, runeSize)) continue
     // 回退
     const pos = worldToCanvas(rune.x, rune.y)
     ctx.fillStyle = 'rgba(155, 89, 182, 0.9)'
@@ -1055,7 +1114,7 @@ const drawRunes = (ctx: CanvasRenderingContext2D) => {
   
   // 赏金神符（使用rune_bounty图标）
   for (const rune of mapEntities.value?.dota_item_rune_spawner_bounty || []) {
-    if (drawIcon(ctx, 'rune_bounty', rune.x, rune.y, 32)) continue
+    if (drawIcon(ctx, 'rune_bounty', rune.x, rune.y, runeSize)) continue
     // 回退
     const pos = worldToCanvas(rune.x, rune.y)
     ctx.fillStyle = 'rgba(241, 196, 15, 0.9)'
@@ -1117,21 +1176,28 @@ const drawOverlay = (ctx: CanvasRenderingContext2D) => {
   }
 }
 
-// 绘制视野区域
+// 绘制视野区域（只绘制选中眼位的视野）
 const drawVisionArea = (ctx: CanvasRenderingContext2D, canvasSize: number) => {
-  if (!visionSimulator || combinedVision.value.size === 0) return
+  if (!visionSimulator || selectedWardId.value === null) return
+  
+  // 找到选中的眼位
+  const selectedWard = wards.value.find(w => w.id === selectedWardId.value)
+  if (!selectedWard || selectedWard.type !== 'observer') return
+  
+  // 计算选中眼位的视野
+  const visionRadius = isDaytime.value ? OBSERVER_VISION_RADIUS_DAY : OBSERVER_VISION_RADIUS_NIGHT
+  const gridRadius = Math.ceil(visionRadius / VISION_GRID_SIZE)
+  
+  visionSimulator.updateVisibility(selectedWard.gridX, selectedWard.gridY, gridRadius)
   
   const cellPixels = canvasSize / visionSimulator.gridWidth
   
   ctx.save()
-  ctx.fillStyle = 'rgba(255, 255, 100, 0.15)'
-  ctx.strokeStyle = 'rgba(255, 255, 100, 0.4)'
-  ctx.lineWidth = 1
+  ctx.fillStyle = 'rgba(255, 215, 0, 0.12)'  // 金黄色，更淡
   
   // 绘制每个可见网格单元
-  for (const key of combinedVision.value) {
+  for (const key in visionSimulator.lights) {
     const pt = key2pt(key)
-    // 网格坐标转图像坐标（Y 轴翻转）
     const imgX = pt.x
     const imgY = visionSimulator.gridHeight - pt.y - 1
     
@@ -1148,109 +1214,110 @@ const drawVisionArea = (ctx: CanvasRenderingContext2D, canvasSize: number) => {
 
 // 绘制眼位图标
 const drawWards = (ctx: CanvasRenderingContext2D) => {
+  // 使用全局阵营颜色
+  const WARD_COLORS = {
+    radiant: {
+      observer: { fill: TEAM_COLORS.radiant, stroke: '#fff', circleColor: `${TEAM_COLORS.radiant}99` },
+      sentry: { fill: TEAM_COLORS.radiant, stroke: '#fff', circleColor: `${TEAM_COLORS.radiant}99` }
+    },
+    dire: {
+      observer: { fill: TEAM_COLORS.dire, stroke: '#fff', circleColor: `${TEAM_COLORS.dire}99` },
+      sentry: { fill: TEAM_COLORS.dire, stroke: '#fff', circleColor: `${TEAM_COLORS.dire}99` }
+    }
+  }
+  
+  // 选中高亮颜色
+  const SELECTED_COLOR = '#ffd700'  // 金黄色
+  
   for (const ward of wards.value) {
     const pos = worldToCanvas(ward.worldX, ward.worldY)
     const isObserver = ward.type === 'observer'
     const expiring = isWardExpiring(ward)
+    const colors = WARD_COLORS[ward.team][ward.type]
+    const isSelected = selectedWardId.value === ward.id
     
     // 闪烁效果
     if (expiring && Math.floor(gameTime.value * 2) % 2 === 0) {
       continue // 隐藏帧
     }
     
-    // 绘制视野范围圈
-    ctx.save()
-    const displayRadius = getWardDisplayRadius(ward)
-    
-    if (isObserver) {
-      // 假眼视野圈
-      ctx.strokeStyle = 'rgba(255, 255, 100, 0.6)'
-      ctx.lineWidth = 2 / scale.value
-      ctx.setLineDash([5, 5])
+    // 只有选中的眼位显示视野范围圈
+    if (isSelected) {
+      ctx.save()
+      const displayRadius = getWardDisplayRadius(ward)
+      
+      // 选中时使用金黄色
+      ctx.strokeStyle = SELECTED_COLOR
+      ctx.lineWidth = 3 / scale.value
+      ctx.setLineDash(isObserver ? [5, 5] : [3, 3])
       ctx.beginPath()
       ctx.arc(pos.x, pos.y, displayRadius, 0, Math.PI * 2)
       ctx.stroke()
-    } else {
-      // 真眼反隐圈
-      ctx.strokeStyle = 'rgba(150, 100, 255, 0.6)'
-      ctx.lineWidth = 2 / scale.value
-      ctx.setLineDash([3, 3])
-      ctx.beginPath()
-      ctx.arc(pos.x, pos.y, displayRadius, 0, Math.PI * 2)
-      ctx.stroke()
+      ctx.restore()
     }
-    ctx.restore()
     
-    // 绘制眼位图标
-    const iconSize = 32 / scale.value
-    ctx.save()
+    // 绘制眼位图标（使用雪碧图）
+    const iconSize = 40 / scale.value
+    const iconName = isObserver ? 'ward_observer' : 'ward_sentry'
     
-    if (isObserver) {
-      // 假眼 - 黄色圆圈 + 眼睛
-      ctx.fillStyle = '#f1c40f'
-      ctx.strokeStyle = '#fff'
+    // 尝试使用雪碧图图标（带阵营颜色叠加）
+    if (!drawIcon(ctx, iconName, ward.worldX, ward.worldY, iconSize, colors.fill)) {
+      // 回退到圆圈绘制
+      ctx.save()
+      ctx.fillStyle = colors.fill
+      ctx.strokeStyle = colors.stroke
       ctx.lineWidth = 2 / scale.value
       ctx.beginPath()
       ctx.arc(pos.x, pos.y, iconSize / 2, 0, Math.PI * 2)
       ctx.fill()
       ctx.stroke()
-      
-      // 眼睛符号
-      ctx.fillStyle = '#333'
-      ctx.font = `bold ${iconSize * 0.6}px sans-serif`
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.fillText('👁', pos.x, pos.y)
-    } else {
-      // 真眼 - 蓝紫色圆圈
-      ctx.fillStyle = '#9b59b6'
-      ctx.strokeStyle = '#fff'
-      ctx.lineWidth = 2 / scale.value
-      ctx.beginPath()
-      ctx.arc(pos.x, pos.y, iconSize / 2, 0, Math.PI * 2)
-      ctx.fill()
-      ctx.stroke()
-      
-      // 眼睛符号
-      ctx.fillStyle = '#fff'
-      ctx.font = `bold ${iconSize * 0.6}px sans-serif`
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.fillText('◉', pos.x, pos.y)
+      ctx.restore()
     }
     
-    ctx.restore()
+    // 选中高亮环
+    if (isSelected) {
+      ctx.save()
+      ctx.strokeStyle = SELECTED_COLOR
+      ctx.lineWidth = 3 / scale.value
+      ctx.setLineDash([])  // 实线
+      ctx.beginPath()
+      ctx.arc(pos.x, pos.y, (iconSize / 2) + 6 / scale.value, 0, Math.PI * 2)
+      ctx.stroke()
+      ctx.restore()
+    }
   }
 }
 
-// 绘制战争迷雾
+// 绘制战争迷雾（优化版：使用 clip 遮罩）
 const drawFogOfWar = (ctx: CanvasRenderingContext2D, canvasSize: number) => {
   if (!visionSimulator || combinedVision.value.size === 0) return
   
   const cellPixels = canvasSize / visionSimulator.gridWidth
   
   ctx.save()
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
   
-  // 遍历所有网格，绘制不可见区域
-  for (let gX = 0; gX < visionSimulator.gridWidth; gX++) {
-    for (let gY = 0; gY < visionSimulator.gridHeight; gY++) {
-      const key = xy2key(gX, gY)
-      
-      // 如果不在可见区域内，绘制迷雾
-      if (!combinedVision.value.has(key)) {
-        const imgX = gX
-        const imgY = visionSimulator.gridHeight - gY - 1
-        
-        ctx.fillRect(
-          imgX * cellPixels,
-          imgY * cellPixels,
-          cellPixels,
-          cellPixels
-        )
-      }
-    }
+  // 创建可见区域的 clip path
+  ctx.beginPath()
+  // 先绘制整个画布作为外边界（逆时针）
+  ctx.rect(0, 0, canvasSize, canvasSize)
+  
+  // 然后绘制可见区域（顺时针，形成洞）
+  for (const key of combinedVision.value) {
+    const pt = key2pt(key)
+    const imgX = pt.x
+    const imgY = visionSimulator.gridHeight - pt.y - 1
+    
+    // 顺时针绘制矩形
+    ctx.moveTo(imgX * cellPixels, imgY * cellPixels)
+    ctx.lineTo((imgX + 1) * cellPixels, imgY * cellPixels)
+    ctx.lineTo((imgX + 1) * cellPixels, (imgY + 1) * cellPixels)
+    ctx.lineTo(imgX * cellPixels, (imgY + 1) * cellPixels)
+    ctx.closePath()
   }
+  
+  // 使用 evenodd 填充规则，可见区域会变成透明的"洞"
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'
+  ctx.fill('evenodd')
   
   ctx.restore()
 }
@@ -1273,7 +1340,7 @@ const getCanvasCoords = (event: MouseEvent): Point | null => {
 
 // 点击处理
 const handleCanvasClick = (event: MouseEvent) => {
-  if (!navData.value || isDragging.value) return
+  if (!navData.value || isDragging.value || isDraggingWard.value) return
   
   const coords = getCanvasCoords(event)
   if (!coords) return
@@ -1281,40 +1348,34 @@ const handleCanvasClick = (event: MouseEvent) => {
   const worldPoint = canvasToWorld(coords.x, coords.y)
   console.log(coords, worldPoint)
   
-  // Shift+点击：砍树/恢复树木
-  if (event.shiftKey && showTrees.value) {
-    const gX = Math.round((worldPoint.x - WORLD_MIN) / 64)
-    const gY = Math.round((worldPoint.y - WORLD_MIN) / 64)
-    const key = `${gX},${gY}`
-    
-    if (treeIndex.value.has(key)) {
-      if (destroyedTrees.value.has(key)) {
-        // 恢复树木
-        destroyedTrees.value.delete(key)
-      } else {
-        // 砍树
-        destroyedTrees.value.add(key)
-      }
-      needsTreeCacheUpdate = true
-      draw()
-      return
+  // 1. 优先检测眼位点击
+  const hitWard = hitTestWard(worldPoint)
+  if (hitWard) {
+    // 点击已选中的眼位 -> 取消选中
+    if (selectedWardId.value === hitWard.id) {
+      selectedWardId.value = null
+    } else {
+      selectedWardId.value = hitWard.id
     }
+    draw()
+    return
   }
   
-  // 检测实体点击（优先于寻路）
+  // 2. 检测实体点击
   const hitEntity = hitTestEntity(worldPoint)
   if (hitEntity) {
+    selectedWardId.value = null  // 取消眼位选中
     selectedEntity.value = hitEntity
-    // 记录屏幕点击位置用于浮窗定位
     popupPosition.value = { x: event.clientX, y: event.clientY }
     draw()
     return
   }
   
-  // 点击空白处关闭详情面板
-  if (selectedEntity.value) {
+  // 3. 点击空白处关闭详情面板和眼位选中
+  if (selectedEntity.value || selectedWardId.value !== null) {
     selectedEntity.value = null
     popupPosition.value = null
+    selectedWardId.value = null
     draw()
     return
   }
@@ -1440,35 +1501,79 @@ const handleWheel = (event: WheelEvent) => {
   draw()
 }
 
-// 中键拖拽
+// 中键拖拽 & 眼位拖拽
 const handleMouseDown = (event: MouseEvent) => {
+  // 中键地图拖拽
   if (event.button === 1) {
     event.preventDefault()
     isDragging.value = true
     lastMousePos.value = { x: event.clientX, y: event.clientY }
+    return
+  }
+  
+  // 左键眼位拖拽（需先选中眼位）
+  if (event.button === 0 && selectedWardId.value !== null) {
+    const coords = getCanvasCoords(event)
+    if (!coords) return
+    
+    const worldPoint = canvasToWorld(coords.x, coords.y)
+    const hitWard = hitTestWard(worldPoint)
+    
+    // 在选中的眼位上按下才开始拖拽
+    if (hitWard && hitWard.id === selectedWardId.value) {
+      isDraggingWard.value = true
+      lastMousePos.value = { x: event.clientX, y: event.clientY }
+    }
   }
 }
 
 const handleMouseMove = (event: MouseEvent) => {
-  if (!isDragging.value) return
+  // 中键地图拖拽
+  if (isDragging.value) {
+    const canvas = canvasRef.value
+    if (!canvas) return
+    
+    const rect = canvas.getBoundingClientRect()
+    const deltaX = (event.clientX - lastMousePos.value.x) / rect.width * canvas.width
+    const deltaY = (event.clientY - lastMousePos.value.y) / rect.height * canvas.height
+    
+    offsetX.value += deltaX
+    offsetY.value += deltaY
+    lastMousePos.value = { x: event.clientX, y: event.clientY }
+    
+    draw()
+    return
+  }
   
-  const canvas = canvasRef.value
-  if (!canvas) return
-  
-  const rect = canvas.getBoundingClientRect()
-  const deltaX = (event.clientX - lastMousePos.value.x) / rect.width * canvas.width
-  const deltaY = (event.clientY - lastMousePos.value.y) / rect.height * canvas.height
-  
-  offsetX.value += deltaX
-  offsetY.value += deltaY
-  lastMousePos.value = { x: event.clientX, y: event.clientY }
-  
-  draw()
+  // 眼位拖拽
+  if (isDraggingWard.value && selectedWardId.value !== null && visionSimulator) {
+    const coords = getCanvasCoords(event)
+    if (!coords) return
+    
+    const worldPoint = canvasToWorld(coords.x, coords.y)
+    const ward = wards.value.find(w => w.id === selectedWardId.value)
+    if (!ward) return
+    
+    const gridPt = visionSimulator.WorldXYtoGridXY(worldPoint.x, worldPoint.y)
+    
+    // 检查新位置是否可放眼
+    if (visionSimulator.isValidXY(gridPt.x, gridPt.y, true, true, true)) {
+      ward.worldX = worldPoint.x
+      ward.worldY = worldPoint.y
+      ward.gridX = gridPt.x
+      ward.gridY = gridPt.y
+      updateCombinedVision()
+      draw()
+    }
+  }
 }
 
 const handleMouseUp = (event: MouseEvent) => {
   if (event.button === 1) {
     isDragging.value = false
+  }
+  if (event.button === 0) {
+    isDraggingWard.value = false
   }
 }
 
@@ -1555,6 +1660,11 @@ const handleContextMenu = (event: MouseEvent) => {
           destroyedTrees.value.delete(treeKey)
         } else {
           destroyedTrees.value.add(treeKey)
+        }
+        // 同步更新视野系统中的树木状态
+        if (visionSimulator && visionReady.value) {
+          visionSimulator.toggleTree(gX, gY)
+          updateCombinedVision()
         }
         needsTreeCacheUpdate = true
         draw()
@@ -1717,7 +1827,7 @@ onMounted(async () => {
     const mapPromise = new Promise<void>((resolve) => {
       mapImage.value!.onload = () => resolve()
       mapImage.value!.onerror = () => resolve()
-      mapImage.value!.src = `/images/map/${MAP_VERSION}/elevation.png`
+      mapImage.value!.src = `/images/map/${MAP_VERSION}/minimap_accurate.png`
     })
 
     // 加载实体数据
@@ -1976,6 +2086,23 @@ watch(isDaytime, () => {
                 <span>假眼: {{ wards.filter(w => w.type === 'observer').length }}</span>
                 <span>真眼: {{ wards.filter(w => w.type === 'sentry').length }}</span>
                 <button class="small-btn" @click="clearAllWards(); draw()">清除</button>
+              </div>
+              <div class="team-selector">
+                <span>当前阵营:</span>
+                <button 
+                  class="team-btn radiant" 
+                  :class="{ active: currentTeam === 'radiant' }"
+                  @click="currentTeam = 'radiant'"
+                >
+                  天辉
+                </button>
+                <button 
+                  class="team-btn dire" 
+                  :class="{ active: currentTeam === 'dire' }"
+                  @click="currentTeam = 'dire'"
+                >
+                  夜魇
+                </button>
               </div>
               <div class="ward-tips">
                 <small>💡 右键地图放置眼位</small>
@@ -2690,5 +2817,51 @@ watch(isDaytime, () => {
 
 .ward-tips small {
   font-size: 0.8rem;
+}
+
+.team-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.team-btn {
+  padding: 0.25rem 0.75rem;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+  opacity: 0.6;
+}
+
+.team-btn.radiant {
+  background: #2d4a2d;
+  color: #7ed321;
+  border-color: #3d5a3d;
+}
+
+.team-btn.radiant.active {
+  background: #3d6a3d;
+  border-color: #7ed321;
+  opacity: 1;
+}
+
+.team-btn.dire {
+  background: #4a2d2d;
+  color: #e74c3c;
+  border-color: #5a3d3d;
+}
+
+.team-btn.dire.active {
+  background: #6a3d3d;
+  border-color: #e74c3c;
+  opacity: 1;
+}
+
+.team-btn:hover {
+  opacity: 0.9;
 }
 </style>

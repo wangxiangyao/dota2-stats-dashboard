@@ -20,22 +20,22 @@ const DEFAULT_CONFIG = {
     defaultVersion: '7.40b'
 };
 
-// 需要拉取的文件
+// 需要拉取的文件（只拉取实际使用的）
 const FILES_TO_PULL = {
+    // 从 data/<version>/ 根目录拉取的 JSON 文件
+    root: [
+        'vision_data.json'   // 视野系统数据（高度、树木、阻挡点）
+    ],
     // 从 data/<version>/parsed/ 拉取的 JSON 文件
     parsed: [
-        'mapdata.json',
-        'worlddata.json',
-        'gridnavdata.json',
-        'elevationdata.json'
+        'mapdata.json',      // 地图实体数据（树木坐标、建筑等）
+        'worlddata.json'     // 世界边界数据
     ],
     // 从 img/<version>/ 拉取的图片文件
     images: [
-        'map.png',
-        'gridnav.png',
-        'elevation.png',
-        'tree_elevation.png',
-        'map_data.png'
+        'elevation.png',       // 地势图
+        'gridnav.png',         // 导航网格（可行走检测）
+        'minimap_accurate.png' // 精确风格化小地图（底图）
     ]
 };
 
@@ -86,8 +86,23 @@ function main() {
 
     // 拉取 JSON 数据文件
     console.log('拉取 JSON 数据文件...');
-    const srcParsedDir = path.join(config.mapCoordinatesPath, 'data', version, 'parsed');
+    const srcDataDir = path.join(config.mapCoordinatesPath, 'data', version);
+    const srcParsedDir = path.join(srcDataDir, 'parsed');
 
+    // 从根目录拉取
+    for (const file of FILES_TO_PULL.root) {
+        const srcPath = path.join(srcDataDir, file);
+        const dstPath = path.join(targetDataDir, file);
+
+        if (fs.existsSync(srcPath)) {
+            copyFile(srcPath, dstPath);
+            console.log(`  ✓ ${file}`);
+        } else {
+            console.log(`  ✗ ${file} (不存在)`);
+        }
+    }
+
+    // 从 parsed 目录拉取
     for (const file of FILES_TO_PULL.parsed) {
         const srcPath = path.join(srcParsedDir, file);
         const dstPath = path.join(targetDataDir, file);
