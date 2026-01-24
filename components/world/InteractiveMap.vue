@@ -139,6 +139,8 @@ const destroyedTrees = ref<Set<string>>(new Set())
 let navGridCache: HTMLCanvasElement | null = null
 let treeLayerCache: HTMLCanvasElement | null = null
 let needsTreeCacheUpdate = true
+let fogOfWarCache: HTMLCanvasElement | null = null
+let needsFogCacheUpdate = true
 
 // 详情面板状态
 const selectedEntity = ref<SelectedEntity | null>(null)
@@ -243,13 +245,24 @@ const combinedVision = ref<Set<string>>(new Set())
 
 // 眼位视野半径（游戏单位）
 const OBSERVER_VISION_RADIUS_DAY = 1600
-const OBSERVER_VISION_RADIUS_NIGHT = 800
+const OBSERVER_VISION_RADIUS_NIGHT = 1600
 const SENTRY_VISION_RADIUS = 150  // 真眼不提供视野，只反隐
 const SENTRY_TRUE_SIGHT_RADIUS = 900
 
 // 眼位持续时间（秒）
 const OBSERVER_DURATION = 360  // 6 分钟
 const SENTRY_DURATION = Infinity  // 永久（直到被摧毁）
+
+// 防御塔视野半径（游戏单位）
+const TOWER_VISION = {
+  tier1: { day: 1900, night: 600 },
+  tier2: { day: 1900, night: 1100 },
+  tier3: { day: 1900, night: 1100 },
+  tier4: { day: 1900, night: 1100 }
+}
+
+// 基地视野半径（游戏单位，日夜相同）
+const ANCIENT_VISION_RADIUS = 2600
 
 // 视野网格大小（与 map_data.png 一致，generate_images.py 中 GRID_CELL_SIZE = 8）
 const VISION_GRID_SIZE = 64  // 视野计算使用 64 单位网格（301×301），渲染时缩放到画布
@@ -387,6 +400,9 @@ const initVisionSimulator = async () => {
     await visionSimulator.initialize(`/data/map/${MAP_VERSION}/vision_data.json`)
     visionReady.value = true
     console.log('视野模拟器初始化完成')
+    // 初始化建筑视野（防御塔、基地）
+    updateCombinedVision()
+    draw()
   } catch (err) {
     console.error('视野模拟器初始化失败:', err)
     visionReady.value = false
@@ -436,39 +452,118 @@ const clearAllWards = () => {
   combinedVision.value.clear()
 }
 
-// 更新合并视野
+// 建筑视野缓存（日/夜分别缓存）
+let buildingVisionCacheDay: Set<string> | null = null
+let buildingVisionCacheNight: Set<string> | null = null
+
+// 计算并缓存建筑视野（性能优化：抑制 console.log）
+const computeBuildingVision = (isDay: boolean): Set<string> => {
+  if (!visionSimulator) return new Set()
+  
+  const result = new Set<string>()
+  
+  // 临时禁用 console.log 以避免建筑视野计算时的大量日志输出
+  const originalLog = console.log
+  console.log = () => {}
+  
+  try {
+    // 计算防御塔视野
+    const towers = mapEntities.value?.npc_dota_tower || []
+    for (const tower of towers) {
+      const name = tower.name || ''
+      let visionRadius: number
+      if (name.includes('_tower1_')) {
+        visionRadius = isDay ? TOWER_VISION.tier1.day : TOWER_VISION.tier1.night
+      } else {
+        visionRadius = isDay ? TOWER_VISION.tier2.day : TOWER_VISION.tier2.night
+      }
+      
+      const gridRadius = Math.ceil(visionRadius / VISION_GRID_SIZE)
+      const gridPt = visionSimulator.WorldXYtoGridXY(tower.x, tower.y)
+      
+      // 调用视野计算（lights 每次会被清空并重新填充）
+      visionSimulator.updateVisibility(gridPt.x, gridPt.y, gridRadius)
+      
+      // 立即收集本次计算的结果
+      for (const key in visionSimulator.lights) {
+        result.add(key)
+      }
+    }
+    
+    // 计算基地视野
+    const ancients = mapEntities.value?.npc_dota_fort || []
+    for (const ancient of ancients) {
+      const gridRadius = Math.ceil(ANCIENT_VISION_RADIUS / VISION_GRID_SIZE)
+      const gridPt = visionSimulator.WorldXYtoGridXY(ancient.x, ancient.y)
+      
+      visionSimulator.updateVisibility(gridPt.x, gridPt.y, gridRadius)
+      
+      for (const key in visionSimulator.lights) {
+        result.add(key)
+      }
+    }
+  } finally {
+    // 恢复 console.log
+    console.log = originalLog
+  }
+  
+  console.log(`建筑视野计算完成 (${isDay ? '日间' : '夜间'}): ${result.size} 个视野点`)
+  return result
+}
+
+// 获取建筑视野（使用缓存）
+const getBuildingVision = (): Set<string> => {
+  if (isDaytime.value) {
+    if (!buildingVisionCacheDay) {
+      buildingVisionCacheDay = computeBuildingVision(true)
+    }
+    return buildingVisionCacheDay
+  } else {
+    if (!buildingVisionCacheNight) {
+      buildingVisionCacheNight = computeBuildingVision(false)
+    }
+    return buildingVisionCacheNight
+  }
+}
+
+// 更新合并视野（眼位 + 缓存的建筑视野）
 const updateCombinedVision = () => {
   if (!visionSimulator || !visionReady.value) return
   
   combinedVision.value.clear()
   
-  // 过滤掉过期的假眼
+  // 1. 添加缓存的建筑视野
+  const buildingVision = getBuildingVision()
+  for (const key of buildingVision) {
+    combinedVision.value.add(key)
+  }
+  
+  // 2. 计算眼位视野
   const now = gameTime.value
   const activeWards = wards.value.filter(w => {
     if (w.type === 'sentry') return true
     return (now - w.placedAt) < OBSERVER_DURATION
   })
   
-  // 更新眼位列表（移除过期眼位）
   if (activeWards.length !== wards.value.length) {
     wards.value = activeWards
   }
   
-  // 计算每个假眼的视野并合并
   for (const ward of activeWards) {
     if (ward.type !== 'observer') continue
     
-    // 计算视野半径（考虑日夜）
     const visionRadius = isDaytime.value ? OBSERVER_VISION_RADIUS_DAY : OBSERVER_VISION_RADIUS_NIGHT
     const gridRadius = Math.ceil(visionRadius / VISION_GRID_SIZE)
     
     visionSimulator.updateVisibility(ward.gridX, ward.gridY, gridRadius)
     
-    // 合并到总视野
     for (const key in visionSimulator.lights) {
       combinedVision.value.add(key)
     }
   }
+  
+  // 标记迷雾缓存需要更新
+  needsFogCacheUpdate = true
 }
 
 // 获取眼位显示半径（画布像素）
@@ -758,7 +853,8 @@ const draw = () => {
   }
   
   // 4. 绘制战争迷雾（只影响底图和树木，不影响后续图标）
-  if (showFogOfWar.value && visionReady.value && wards.value.length > 0) {
+  // 条件：开启迷雾 + 视野模拟器就绪 + 有任何视野点（建筑或眼位）
+  if (showFogOfWar.value && visionReady.value && combinedVision.value.size > 0) {
     drawFogOfWar(ctx, canvasSize)
   }
   
@@ -774,14 +870,16 @@ const draw = () => {
   drawOverlay(ctx)
   
   // 7. 绘制眼位和视野
-  if (visionReady.value && wards.value.length > 0) {
+  if (visionReady.value) {
     // 绘制选中眼位的视野区域
     if (showVisionCircles.value && selectedWardId.value !== null) {
       drawVisionArea(ctx, canvasSize)
     }
     
     // 绘制眼位图标
-    drawWards(ctx)
+    if (wards.value.length > 0) {
+      drawWards(ctx)
+    }
   }
   
   ctx.restore()
@@ -1288,38 +1386,61 @@ const drawWards = (ctx: CanvasRenderingContext2D) => {
   }
 }
 
-// 绘制战争迷雾（优化版：使用 clip 遮罩）
-const drawFogOfWar = (ctx: CanvasRenderingContext2D, canvasSize: number) => {
+// 构建迷雾图层缓存
+const buildFogOfWarCache = (canvasSize: number) => {
   if (!visionSimulator || combinedVision.value.size === 0) return
+  
+  // 创建或重用离屏Canvas
+  if (!fogOfWarCache) {
+    fogOfWarCache = document.createElement('canvas')
+  }
+  fogOfWarCache.width = canvasSize
+  fogOfWarCache.height = canvasSize
+  
+  const ctx = fogOfWarCache.getContext('2d')
+  if (!ctx) return
   
   const cellPixels = canvasSize / visionSimulator.gridWidth
   
-  ctx.save()
+  // 先填充整个画布为迷雾颜色
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.45)'
+  ctx.fillRect(0, 0, canvasSize, canvasSize)
   
-  // 创建可见区域的 clip path
-  ctx.beginPath()
-  // 先绘制整个画布作为外边界（逆时针）
-  ctx.rect(0, 0, canvasSize, canvasSize)
+  // 使用 destination-out 模式清除可见区域
+  ctx.globalCompositeOperation = 'destination-out'
+  ctx.fillStyle = 'rgba(0, 0, 0, 1)'
   
-  // 然后绘制可见区域（顺时针，形成洞）
+  // 绘制 ImageData 更高效（避免逐个绘制矩形）
   for (const key of combinedVision.value) {
     const pt = key2pt(key)
     const imgX = pt.x
     const imgY = visionSimulator.gridHeight - pt.y - 1
     
-    // 顺时针绘制矩形
-    ctx.moveTo(imgX * cellPixels, imgY * cellPixels)
-    ctx.lineTo((imgX + 1) * cellPixels, imgY * cellPixels)
-    ctx.lineTo((imgX + 1) * cellPixels, (imgY + 1) * cellPixels)
-    ctx.lineTo(imgX * cellPixels, (imgY + 1) * cellPixels)
-    ctx.closePath()
+    ctx.fillRect(
+      imgX * cellPixels,
+      imgY * cellPixels,
+      cellPixels,
+      cellPixels
+    )
   }
   
-  // 使用 evenodd 填充规则，可见区域会变成透明的"洞"
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'
-  ctx.fill('evenodd')
+  ctx.globalCompositeOperation = 'source-over'
+  needsFogCacheUpdate = false
+}
+
+// 绘制战争迷雾（使用缓存）
+const drawFogOfWar = (ctx: CanvasRenderingContext2D, canvasSize: number) => {
+  if (!visionSimulator || combinedVision.value.size === 0) return
   
-  ctx.restore()
+  // 需要更新缓存时重建
+  if (needsFogCacheUpdate || !fogOfWarCache) {
+    buildFogOfWarCache(canvasSize)
+  }
+  
+  // 直接绘制缓存图像
+  if (fogOfWarCache) {
+    ctx.drawImage(fogOfWarCache, 0, 0, canvasSize, canvasSize)
+  }
 }
 
 // ===== 事件处理 =====
@@ -1346,7 +1467,6 @@ const handleCanvasClick = (event: MouseEvent) => {
   if (!coords) return
   
   const worldPoint = canvasToWorld(coords.x, coords.y)
-  console.log(coords, worldPoint)
   
   // 1. 优先检测眼位点击
   const hitWard = hitTestWard(worldPoint)
@@ -1377,25 +1497,7 @@ const handleCanvasClick = (event: MouseEvent) => {
     popupPosition.value = null
     selectedWardId.value = null
     draw()
-    return
   }
-  
-  // 普通点击：设置起点/终点
-  const navPos = worldToNav(worldPoint.x, worldPoint.y)
-  if (!isWalkable(navPos.x, navPos.y)) return
-  
-  if (isSettingStart.value) {
-    startPoint.value = worldPoint
-    isSettingStart.value = false
-    path.value = []
-  } else {
-    endPoint.value = worldPoint
-    isSettingStart.value = true
-    if (startPoint.value && endPoint.value) {
-      path.value = findPath(startPoint.value, endPoint.value)
-    }
-  }
-  draw()
 }
 
 // 命中检测：检查点击位置是否命中实体
@@ -1937,9 +2039,9 @@ onMounted(async () => {
 
 watch(moveSpeed, () => {})
 
-// 日夜切换时更新视野
+// 日夜切换时更新视野（建筑视野也会变化）
 watch(isDaytime, () => {
-  if (wards.value.length > 0) {
+  if (visionReady.value) {
     updateCombinedVision()
     draw()
   }

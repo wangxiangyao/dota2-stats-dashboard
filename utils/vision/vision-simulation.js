@@ -201,25 +201,29 @@ export class VisionSimulation {
         this.elevation = 0
 
         // 初始化 FOV 算法
+        // 注意：elevWall（高度墙）不在这里检查！
+        // 高度差只影响"那个点是否可见"，不影响"光线是否能穿过"
+        // 真正阻挡光线传播的只有：FOW遮挡物、树木
         this._lightBlockCounts = { elevWall: 0, fowNode: 0, treeWall: 0, pass: 0 }
+        this._blockedSamples = []  // 采样记录被阻挡的点
         this.lightPassesCallback = (x, y) => {
             const key = x + ',' + y
-            const elevWalls = this.elevationWalls[this.elevation]
             const treeWalls = this.treeWalls[this.elevation]
 
-            // 检查是否被高度差阻挡
-            if (elevWalls && key in elevWalls) {
-                this._lightBlockCounts.elevWall++
-                return false
-            }
-            // 检查是否被 FOW 遮挡物阻挡
+            // 检查是否被 FOW 遮挡物阻挡（这些是真正的视野阻挡物）
             if (key in this.entFowBlockerNode) {
                 this._lightBlockCounts.fowNode++
+                if (this._blockedSamples.length < 20) {
+                    this._blockedSamples.push({ x, y, reason: 'fowNode' })
+                }
                 return false
             }
-            // 检查是否被树木阻挡
+            // 检查是否被树木阻挡（树木阻挡光线传播）
             if (treeWalls && treeWalls[key] && treeWalls[key].length > 0) {
                 this._lightBlockCounts.treeWall++
+                if (this._blockedSamples.length < 20) {
+                    this._blockedSamples.push({ x, y, reason: 'treeWall', treeCount: treeWalls[key].length })
+                }
                 return false
             }
 
@@ -483,6 +487,9 @@ export class VisionSimulation {
             this.elevationWalls[this.elevation] = generateElevationWalls(this.elevationGrid, this.elevation)
         }
 
+        // 记录被阴影遮挡的同高度点
+        this._shadowedSamples = []
+
         this.fov.walls = this.walls
         this.lights = {}
 
@@ -491,10 +498,9 @@ export class VisionSimulation {
             // 调试：检查多少点被跳过
             if (!this._debugSkipCount) this._debugSkipCount = 0
             if (!this._debugHitCount) this._debugHitCount = 0
-            if (!this.elevationGrid[key]) {
-                this._debugSkipCount++
-                return
-            }
+
+            // 注意：即使没有 elevationGrid 数据，也不跳过
+            // 因为这些点可能只是数据缺失，但仍然是有效的可视区域
             this._debugHitCount++
 
             // 检查树木遮挡
@@ -516,8 +522,27 @@ export class VisionSimulation {
                 }
             }
 
+            // 采样记录被阴影遮挡的同高度点（vis=false 且高度相同）
+            if (!vis && this._shadowedSamples.length < 20) {
+                const ptZ = this.elevationGrid[key]?.z
+                if (ptZ === this.elevation || ptZ === undefined) {
+                    this._shadowedSamples.push({
+                        x: x2, y: y2,
+                        pointElevation: ptZ,
+                        eyeElevation: this.elevation,
+                        distance: r,
+                        reason: 'shadowcast'
+                    })
+                }
+            }
+
+            // 检查高度阻挡：高于眼位的点不可见（但光线可以穿过）
+            const ptZ = this.elevationGrid[key]?.z
+            const elevBlocking = (ptZ !== undefined && ptZ > this.elevation)
+
             // vis 可能是 true（布尔）或 1（数字），用 !!vis 统一转换
-            if (vis && !this.entFowBlockerNode[key] && !treeBlocking) {
+            // 条件：1. FOV算法认为可见  2. 不被FOW阻挡  3. 不被树木阻挡  4. 不高于眼位
+            if (vis && !this.entFowBlockerNode[key] && !treeBlocking && !elevBlocking) {
                 this.lights[key] = 255
             }
         })
@@ -526,10 +551,18 @@ export class VisionSimulation {
         console.log(`updateVisibility: skip=${this._debugSkipCount}, hit=${this._debugHitCount}, lights=${this.lightArea}`)
         console.log(`lightPassesCallback: elevWall=${this._lightBlockCounts.elevWall}, fowNode=${this._lightBlockCounts.fowNode}, treeWall=${this._lightBlockCounts.treeWall}, pass=${this._lightBlockCounts.pass}`)
         console.log(`treeBlocking: checked=${this._treeBlockDebug?.checked || 0}, blocked=${this._treeBlockDebug?.blocked || 0}`)
+        if (this._blockedSamples.length > 0) {
+            console.log('被阻挡点采样 (前20个):', JSON.stringify(this._blockedSamples, null, 2))
+        }
+        if (this._shadowedSamples.length > 0) {
+            console.log('被阴影遮挡的同高度点 (前20个):', JSON.stringify(this._shadowedSamples, null, 2))
+        }
         this._debugSkipCount = 0
         this._debugHitCount = 0
         this._lightBlockCounts = { elevWall: 0, fowNode: 0, treeWall: 0, pass: 0 }
         this._treeBlockDebug = { checked: 0, blocked: 0 }
+        this._blockedSamples = []
+        this._shadowedSamples = []
     }
 
     /**
