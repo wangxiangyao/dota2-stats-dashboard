@@ -150,6 +150,14 @@ const speedPresets = [300, 350, 420, 550]
           step="25"
         >
       </div>
+      <div class="speed-presets">
+        <button 
+          v-for="speed in speedPresets" 
+          :key="speed"
+          :class="{ active: moveSpeed === speed }"
+          @click="emit('update:moveSpeed', speed)"
+        >{{ speed }}</button>
+      </div>
       <div class="info-row" v-if="hasPath">
         <span>距离: {{ pathLength }} 单位</span>
         <span>时间: {{ formattedTime }}</span>
@@ -322,6 +330,25 @@ button:hover {
   margin-top: 0.5rem;
   font-size: 0.75rem;
   color: #666;
+}
+
+/* 移速预设 */
+.speed-presets {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.speed-presets button {
+  flex: 1;
+  min-width: 45px;
+  padding: 0.3rem;
+  font-size: 0.75rem;
+}
+
+.speed-presets button.active {
+  background: #3498db;
+  border-color: #3498db;
 }
 
 /* 时间轴 */

@@ -77,7 +77,7 @@ export interface MapEntity {
 /**
  * 实体类型枚举
  */
-export type EntityType = 'camp' | 'tower' | 'fountain' | 'fort' | 'outpost' | 'ward' | 'hero' | 'creep'
+export type EntityType = 'camp' | 'tower' | 'fountain' | 'fort' | 'outpost' | 'rune' | 'ward' | 'hero' | 'creep'
 
 /**
  * 选中的实体信息

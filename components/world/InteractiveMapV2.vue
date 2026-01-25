@@ -34,6 +34,7 @@ import { useVision } from '@/composables/useVision'
 // 子组件导入
 import MapControlPanel from './MapControlPanel.vue'
 import MapContextMenu from './MapContextMenu.vue'
+import EntityPopup from './EntityPopup.vue'
 
 // 解构常量
 const {
@@ -519,6 +520,20 @@ function handleCanvasClick(event: MouseEvent) {
     return
   }
   
+  // 检测是否点击实体
+  const clickedEntity = hitTestEntity(worldCoords, event)
+  if (clickedEntity) {
+    selectedEntity.value = clickedEntity
+    popupPosition.value = { x: event.clientX + 10, y: event.clientY + 10 }
+    return
+  }
+  
+  // 关闭已打开的浮窗
+  if (selectedEntity.value) {
+    selectedEntity.value = null
+    popupPosition.value = null
+  }
+  
   if (isSettingStart.value) {
     startPoint.value = worldCoords
     isSettingStart.value = false
@@ -541,6 +556,41 @@ function handleCanvasClick(event: MouseEvent) {
   }
   
   draw()
+}
+
+// 实体点击检测
+function hitTestEntity(worldCoords: Point, event: MouseEvent): SelectedEntity | null {
+  const hitRadius = 80 // 世界坐标的点击半径
+  
+  // 检测防御塔
+  if (showTowers.value) {
+    for (const tower of mapData.towers.value) {
+      const dx = tower.x - worldCoords.x
+      const dy = tower.y - worldCoords.y
+      if (dx * dx + dy * dy < hitRadius * hitRadius) {
+        return { type: 'tower', data: tower }
+      }
+    }
+  }
+  
+  // 检测野怪营地
+  if (showNeutralCamps.value) {
+    for (let i = 0; i < mapData.neutralSpawners.value.length; i++) {
+      const camp = mapData.neutralSpawners.value[i]
+      const dx = camp.x - worldCoords.x
+      const dy = camp.y - worldCoords.y
+      if (dx * dx + dy * dy < hitRadius * hitRadius) {
+        return { 
+          type: 'camp', 
+          data: camp, 
+          index: i,
+          campType: camp.type || camp.targetname?.includes('ancient') ? 'ancient' : undefined
+        }
+      }
+    }
+  }
+  
+  return null
 }
 
 function handleContextMenu(event: MouseEvent) {
@@ -797,6 +847,13 @@ onMounted(() => {
         :y="contextMenu.y"
         :items="contextMenu.items"
         @close="contextMenu.visible = false"
+      />
+
+      <!-- 实体详情浮窗 -->
+      <EntityPopup
+        :entity="selectedEntity"
+        :position="popupPosition"
+        @close="selectedEntity = null; popupPosition = null"
       />
     </template>
   </div>
