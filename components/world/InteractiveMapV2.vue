@@ -248,6 +248,11 @@ function draw() {
     drawTowers(ctx)
   }
   
+  // 绘制建筑（基地、泉水等）
+  if (showBuildings.value) {
+    drawBuildings(ctx)
+  }
+  
   // 绘制神符
   if (showRunes.value) {
     drawRunes(ctx)
@@ -407,6 +412,69 @@ function drawPath(ctx: CanvasRenderingContext2D) {
   }
 }
 
+function drawBuildings(ctx: CanvasRenderingContext2D) {
+  // 绘制基地（遗迹）
+  for (const ancient of mapData.ancients.value) {
+    const pos = coords.value.worldToCanvas(ancient.x, ancient.y)
+    const isRadiant = ancient.team === 2
+    
+    // 基地图标：大圆 + 内部图案
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2)
+    ctx.fillStyle = isRadiant ? 'rgba(100, 200, 100, 0.8)' : 'rgba(200, 100, 100, 0.8)'
+    ctx.fill()
+    ctx.strokeStyle = isRadiant ? '#2ecc71' : '#e74c3c'
+    ctx.lineWidth = 3
+    ctx.stroke()
+    
+    // 画城堡图标
+    ctx.fillStyle = '#fff'
+    ctx.font = '16px sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('🏰', pos.x, pos.y)
+  }
+  
+  // 绘制泉水
+  for (const fountain of mapData.fountains.value) {
+    const pos = coords.value.worldToCanvas(fountain.x, fountain.y)
+    const isRadiant = fountain.team === 2
+    
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, 14, 0, Math.PI * 2)
+    ctx.fillStyle = isRadiant ? 'rgba(100, 200, 255, 0.7)' : 'rgba(255, 150, 100, 0.7)'
+    ctx.fill()
+    ctx.strokeStyle = isRadiant ? '#3498db' : '#e67e22'
+    ctx.lineWidth = 2
+    ctx.stroke()
+    
+    ctx.fillStyle = '#fff'
+    ctx.font = '12px sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('⛲', pos.x, pos.y)
+  }
+  
+  // 绘制前哨
+  for (const outpost of mapData.outposts.value) {
+    const pos = coords.value.worldToCanvas(outpost.x, outpost.y)
+    
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, 10, 0, Math.PI * 2)
+    ctx.fillStyle = 'rgba(150, 150, 150, 0.7)'
+    ctx.fill()
+    ctx.strokeStyle = '#95a5a6'
+    ctx.lineWidth = 2
+    ctx.stroke()
+    
+    ctx.fillStyle = '#fff'
+    ctx.font = '12px sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('🔭', pos.x, pos.y)
+  }
+}
+
 // ===== 迷雾和眼位渲染 =====
 function drawFogOfWar(ctx: CanvasRenderingContext2D, canvasSize: number) {
   if (!vision || !vision.visionReady.value) return
@@ -454,17 +522,31 @@ function drawWards(ctx: CanvasRenderingContext2D) {
     const pos = coords.value.worldToCanvas(ward.worldX, ward.worldY)
     const isRadiant = ward.team === 'radiant'
     const isObserver = ward.type === 'observer'
+    const isExpiring = vision.isWardExpiring(ward)
+    
+    // 检查假眼是否已过期
+    const timeElapsed = gameTime.value - ward.placedAt
+    const isExpired = isObserver && timeElapsed >= vision.OBSERVER_DURATION
+    
+    if (isExpired) continue // 过期眼位不显示
     
     // 眼位圆圈
     ctx.beginPath()
     ctx.arc(pos.x, pos.y, isObserver ? 8 : 6, 0, Math.PI * 2)
-    ctx.fillStyle = isObserver 
-      ? (isRadiant ? 'rgba(50, 205, 50, 0.9)' : 'rgba(220, 20, 60, 0.9)')
-      : (isRadiant ? 'rgba(100, 149, 237, 0.9)' : 'rgba(255, 140, 0, 0.9)')
+    
+    // 过期提醒：变色（橙色闪烁）
+    if (isExpiring) {
+      const blink = Math.sin(Date.now() / 200) > 0 ? 0.9 : 0.5
+      ctx.fillStyle = `rgba(255, 165, 0, ${blink})`
+    } else {
+      ctx.fillStyle = isObserver 
+        ? (isRadiant ? 'rgba(50, 205, 50, 0.9)' : 'rgba(220, 20, 60, 0.9)')
+        : (isRadiant ? 'rgba(100, 149, 237, 0.9)' : 'rgba(255, 140, 0, 0.9)')
+    }
     ctx.fill()
     
     // 边框
-    ctx.strokeStyle = '#fff'
+    ctx.strokeStyle = isExpiring ? '#ff6600' : '#fff'
     ctx.lineWidth = 2
     ctx.stroke()
     
