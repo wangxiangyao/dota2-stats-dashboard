@@ -29,6 +29,7 @@ import {
 import { useMapData } from '@/composables/useMapData'
 import { useCoordinates } from '@/composables/useCoordinates'
 import { usePathfinding } from '@/composables/usePathfinding'
+import { useVision } from '@/composables/useVision'
 
 // 解构常量
 const {
@@ -40,7 +41,8 @@ const {
   HERO_COLLISION_RADIUS,
   VISION_GRID_SIZE,
   TEAM_COLORS,
-  OBSERVER_DURATION
+  OBSERVER_DURATION,
+  SENTRY_TRUE_SIGHT_RADIUS
 } = MAP_CONSTANTS
 
 // ===== Composables 初始化 =====
@@ -86,8 +88,12 @@ const isPlaying = ref(false)
 const playSpeed = ref(1)
 const isDaytime = computed(() => Math.floor(gameTime.value / 300) % 2 === 0)
 
-// 眼位系统（简化版，后续接入 useVision）
-const wards = ref<any[]>([])
+// ===== 视野系统（使用 useVision） =====
+// 延迟初始化：需要等待 mapData 加载完成
+let vision: ReturnType<typeof useVision> | null = null
+
+// 眼位放置模式
+const currentWardMode = ref<WardType | null>(null)
 const currentTeam = ref<Team>('radiant')
 const currentView = ref<TeamView>('both')
 const showFogOfWar = ref(true)
@@ -105,6 +111,8 @@ const contextMenu = ref<ContextMenuState>({
 let navGridCache: HTMLCanvasElement | null = null
 let treeLayerCache: HTMLCanvasElement | null = null
 let needsTreeCacheUpdate = true
+let fogOfWarCache: HTMLCanvasElement | null = null
+let needsFogCacheUpdate = true
 
 // ===== 计算属性 =====
 const pathLength = computed(() => {
@@ -167,6 +175,16 @@ function draw() {
   // 绘制树木
   if (showTrees.value) {
     drawTrees(ctx, canvasSize)
+  }
+  
+  // 绘制迷雾（在实体之前，半透明覆盖）
+  if (showFogOfWar.value && vision) {
+    drawFogOfWar(ctx, canvasSize)
+  }
+  
+  // 绘制眼位
+  if (vision) {
+    drawWards(ctx)
   }
   
   // 绘制野怪营地
@@ -338,6 +356,79 @@ function drawPath(ctx: CanvasRenderingContext2D) {
   }
 }
 
+// ===== 迷雾和眼位渲染 =====
+function drawFogOfWar(ctx: CanvasRenderingContext2D, canvasSize: number) {
+  if (!vision || !vision.visionReady.value) return
+  
+  // 使用缓存
+  if (needsFogCacheUpdate || !fogOfWarCache) {
+    fogOfWarCache = document.createElement('canvas')
+    fogOfWarCache.width = canvasSize
+    fogOfWarCache.height = canvasSize
+    const cacheCtx = fogOfWarCache.getContext('2d')!
+    
+    // 填充迷雾（半透明黑色）
+    cacheCtx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+    cacheCtx.fillRect(0, 0, canvasSize, canvasSize)
+    
+    // 挖空可见区域
+    cacheCtx.globalCompositeOperation = 'destination-out'
+    cacheCtx.fillStyle = 'rgba(0, 0, 0, 1)'
+    
+    const gridCellSize = VISION_GRID_SIZE
+    const cellPixels = canvasSize / ((WORLD_MAX - WORLD_MIN) / gridCellSize)
+    
+    for (const key of vision.combinedVision.value) {
+      const [gX, gY] = key.split(',').map(Number)
+      const worldX = gX * gridCellSize + WORLD_MIN
+      const worldY = gY * gridCellSize + WORLD_MIN
+      const pos = coords.value.worldToCanvas(worldX, worldY)
+      
+      cacheCtx.beginPath()
+      cacheCtx.arc(pos.x, pos.y, cellPixels * 0.6, 0, Math.PI * 2)
+      cacheCtx.fill()
+    }
+    
+    cacheCtx.globalCompositeOperation = 'source-over'
+    needsFogCacheUpdate = false
+  }
+  
+  ctx.drawImage(fogOfWarCache, 0, 0)
+}
+
+function drawWards(ctx: CanvasRenderingContext2D) {
+  if (!vision) return
+  
+  for (const ward of vision.wards.value) {
+    const pos = coords.value.worldToCanvas(ward.worldX, ward.worldY)
+    const isRadiant = ward.team === 'radiant'
+    const isObserver = ward.type === 'observer'
+    
+    // 眼位圆圈
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, isObserver ? 8 : 6, 0, Math.PI * 2)
+    ctx.fillStyle = isObserver 
+      ? (isRadiant ? 'rgba(50, 205, 50, 0.9)' : 'rgba(220, 20, 60, 0.9)')
+      : (isRadiant ? 'rgba(100, 149, 237, 0.9)' : 'rgba(255, 140, 0, 0.9)')
+    ctx.fill()
+    
+    // 边框
+    ctx.strokeStyle = '#fff'
+    ctx.lineWidth = 2
+    ctx.stroke()
+    
+    // 视野圈（如果启用）
+    if (showVisionCircles.value && isObserver) {
+      const visionRadius = vision.getWardDisplayRadius(ward, mapData.navWidth.value)
+      ctx.beginPath()
+      ctx.arc(pos.x, pos.y, visionRadius, 0, Math.PI * 2)
+      ctx.strokeStyle = isRadiant ? 'rgba(50, 205, 50, 0.4)' : 'rgba(220, 20, 60, 0.4)'
+      ctx.lineWidth = 2
+      ctx.stroke()
+    }
+  }
+}
+
 // ===== 事件处理 =====
 function getCanvasCoords(event: MouseEvent): Point | null {
   const canvas = canvasRef.value
@@ -368,6 +459,16 @@ function handleCanvasClick(event: MouseEvent) {
   
   const worldCoords = coords.value.canvasToWorld(canvasCoords.x, canvasCoords.y)
   
+  // 检查是否在眼位放置模式
+  if (currentWardMode.value && vision) {
+    const success = vision.placeWard(worldCoords.x, worldCoords.y, currentWardMode.value)
+    if (success) {
+      needsFogCacheUpdate = true
+      draw()
+    }
+    return
+  }
+  
   if (isSettingStart.value) {
     startPoint.value = worldCoords
     isSettingStart.value = false
@@ -390,6 +491,56 @@ function handleCanvasClick(event: MouseEvent) {
   }
   
   draw()
+}
+
+function handleContextMenu(event: MouseEvent) {
+  event.preventDefault()
+  
+  const canvasCoords = getCanvasCoords(event)
+  if (!canvasCoords) return
+  
+  const worldCoords = coords.value.canvasToWorld(canvasCoords.x, canvasCoords.y)
+  
+  contextMenu.value = {
+    visible: true,
+    x: event.clientX,
+    y: event.clientY,
+    items: [
+      {
+        label: '放置假眼 (Observer)',
+        icon: '👁',
+        action: () => {
+          if (vision) {
+            vision.placeWard(worldCoords.x, worldCoords.y, 'observer')
+            needsFogCacheUpdate = true
+            draw()
+          }
+        }
+      },
+      {
+        label: '放置真眼 (Sentry)',
+        icon: '🔮',
+        action: () => {
+          if (vision) {
+            vision.placeWard(worldCoords.x, worldCoords.y, 'sentry')
+            draw()
+          }
+        }
+      },
+      {
+        label: '清除所有眼位',
+        icon: '🗑',
+        action: () => {
+          if (vision) {
+            vision.clearAllWards()
+            needsFogCacheUpdate = true
+            draw()
+          }
+        }
+      }
+    ],
+    worldPoint: worldCoords
+  }
 }
 
 function handleWheel(event: WheelEvent) {
@@ -457,6 +608,11 @@ function resetTrees() {
 onMounted(async () => {
   try {
     await mapData.initialize()
+    
+    // 初始化视野系统
+    vision = useVision(mapData.towers, mapData.ancients)
+    await vision.initialize()
+    
     setTimeout(draw, 100)
   } catch (err) {
     console.error('地图初始化失败:', err)
@@ -532,6 +688,7 @@ onMounted(() => {
           <canvas
             ref="canvasRef"
             @click="handleCanvasClick"
+            @contextmenu="handleContextMenu"
             @wheel="handleWheel"
             @mousedown="handleMouseDown"
             @mousemove="handleMouseMove"
@@ -539,6 +696,24 @@ onMounted(() => {
             @mouseleave="handleMouseUp"
           ></canvas>
         </main>
+      </div>
+
+      <!-- 右键菜单 -->
+      <div 
+        v-if="contextMenu.visible" 
+        class="context-menu"
+        :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }"
+      >
+        <div 
+          v-for="(item, index) in contextMenu.items" 
+          :key="index"
+          class="menu-item"
+          :class="{ disabled: item.disabled }"
+          @click="item.action(); contextMenu.visible = false"
+        >
+          <span class="icon">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </div>
       </div>
     </template>
   </div>
@@ -682,5 +857,39 @@ canvas {
   max-width: 100%;
   max-height: 100%;
   cursor: crosshair;
+}
+
+/* 右键菜单 */
+.context-menu {
+  position: fixed;
+  background: #1e2a3a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 0.5rem 0;
+  min-width: 180px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.menu-item.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.menu-item .icon {
+  font-size: 1rem;
 }
 </style>
