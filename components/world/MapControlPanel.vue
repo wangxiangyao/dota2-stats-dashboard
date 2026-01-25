@@ -2,19 +2,26 @@
 /**
  * MapControlPanel.vue - 地图控制面板
  * 
- * 包含：图层控制、寻路控制、树木管理、视野控制
+ * 包含：时间轴、图层控制、寻路控制、树木管理、视野控制
  */
 
 import type { Team, TeamView, WardType } from '@/types/map'
 
 // Props
 interface Props {
+  // 时间系统
+  gameTime: number
+  isPlaying: boolean
+  playSpeed: number
+  isDaytime: boolean
+  
   // 图层控制
   showTowers: boolean
   showNeutralCamps: boolean
   showRunes: boolean
   showTrees: boolean
   showNavGrid: boolean
+  showBuildings: boolean
   showFogOfWar: boolean
   showVisionCircles: boolean
   
@@ -32,7 +39,6 @@ interface Props {
   currentTeam: Team
   currentView: TeamView
   wardCount: number
-  isDaytime: boolean
   visionReady: boolean
 }
 
@@ -40,11 +46,17 @@ const props = defineProps<Props>()
 
 // Emits
 const emit = defineEmits<{
+  // 时间系统
+  'update:gameTime': [value: number]
+  'update:playSpeed': [value: number]
+  'togglePlay': []
+  // 图层
   'update:showTowers': [value: boolean]
   'update:showNeutralCamps': [value: boolean]
   'update:showRunes': [value: boolean]
   'update:showTrees': [value: boolean]
   'update:showNavGrid': [value: boolean]
+  'update:showBuildings': [value: boolean]
   'update:showFogOfWar': [value: boolean]
   'update:showVisionCircles': [value: boolean]
   'update:moveSpeed': [value: number]
@@ -53,13 +65,46 @@ const emit = defineEmits<{
   'resetPath': []
   'resetZoom': []
   'resetTrees': []
-  'toggleDayNight': []
   'clearWards': []
 }>()
+
+// 格式化游戏时间
+function formatGameTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60)
+  const secs = Math.floor(seconds % 60)
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+}
+
+// 移速预设
+const speedPresets = [300, 350, 420, 550]
 </script>
+
 
 <template>
   <aside class="panel">
+    <!-- 时间轴 -->
+    <div class="section time-control">
+      <div class="time-header">
+        <span class="day-night">{{ isDaytime ? '☀️' : '🌙' }}</span>
+        <span class="time-display">{{ formatGameTime(gameTime) }}</span>
+        <button class="icon-btn" @click="emit('togglePlay')">{{ isPlaying ? '⏸' : '▶' }}</button>
+        <select :value="playSpeed" @change="emit('update:playSpeed', Number(($event.target as HTMLSelectElement).value))" class="speed-select">
+          <option :value="1">1×</option>
+          <option :value="2">2×</option>
+          <option :value="4">4×</option>
+        </select>
+      </div>
+      <input 
+        type="range" 
+        class="time-slider" 
+        :value="gameTime" 
+        @input="emit('update:gameTime', Number(($event.target as HTMLInputElement).value))"
+        min="0" 
+        max="3600" 
+        step="1"
+      >
+    </div>
+
     <!-- 图层控制 -->
     <div class="section">
       <h3>🗂 图层</h3>
@@ -75,6 +120,10 @@ const emit = defineEmits<{
         <label>
           <input type="checkbox" :checked="showRunes" @change="emit('update:showRunes', !showRunes)">
           ✨ 神符
+        </label>
+        <label>
+          <input type="checkbox" :checked="showBuildings" @change="emit('update:showBuildings', !showBuildings)">
+          🏰 建筑
         </label>
         <label>
           <input type="checkbox" :checked="showTrees" @change="emit('update:showTrees', !showTrees)">
@@ -160,7 +209,6 @@ const emit = defineEmits<{
       </div>
       
       <div class="button-row">
-        <button @click="emit('toggleDayNight')">切换日夜</button>
         <button @click="emit('clearWards')">清除眼位</button>
       </div>
       
@@ -275,4 +323,66 @@ button:hover {
   font-size: 0.75rem;
   color: #666;
 }
+
+/* 时间轴 */
+.time-control {
+  padding-bottom: 0.75rem;
+}
+
+.time-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.day-night {
+  font-size: 1.2rem;
+}
+
+.time-display {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 1rem;
+  flex: none;
+}
+
+.speed-select {
+  width: 50px;
+  padding: 0.3rem;
+  background: #0f3460;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+.time-slider {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #333;
+  border-radius: 3px;
+  outline: none;
+}
+
+.time-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #3498db;
+  cursor: pointer;
+}
 </style>
+

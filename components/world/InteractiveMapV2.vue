@@ -86,11 +86,57 @@ const lastMousePos = ref({ x: 0, y: 0 })
 const selectedEntity = ref<SelectedEntity | null>(null)
 const popupPosition = ref<{ x: number, y: number } | null>(null)
 
-// 游戏时间
-const gameTime = ref(0)
+// 游戏时间系统
+const gameTime = ref(0)  // 秒，0 ~ 3600
 const isPlaying = ref(false)
-const playSpeed = ref(1)
+const playSpeed = ref(1)  // 1x, 2x, 4x
 const isDaytime = computed(() => Math.floor(gameTime.value / 300) % 2 === 0)
+
+// 时间播放动画
+let animationFrameId: number | null = null
+let lastFrameTime = 0
+
+function togglePlay() {
+  isPlaying.value = !isPlaying.value
+  if (isPlaying.value) {
+    lastFrameTime = performance.now()
+    animationFrameId = requestAnimationFrame(updateGameTime)
+  } else if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId)
+    animationFrameId = null
+  }
+}
+
+function updateGameTime(currentTime: number) {
+  if (!isPlaying.value) return
+  
+  const deltaTime = (currentTime - lastFrameTime) / 1000
+  lastFrameTime = currentTime
+  
+  gameTime.value = Math.min(3600, gameTime.value + deltaTime * playSpeed.value)
+  
+  if (gameTime.value >= 3600) {
+    isPlaying.value = false
+    return
+  }
+  
+  // 更新视野（日夜切换）
+  if (vision) {
+    vision.setGameTime(gameTime.value)
+  }
+  
+  draw()
+  animationFrameId = requestAnimationFrame(updateGameTime)
+}
+
+function onGameTimeChange() {
+  if (vision) {
+    vision.setGameTime(gameTime.value)
+    vision.updateCombinedVision()
+    needsFogCacheUpdate = true
+  }
+  draw()
+}
 
 // ===== 视野系统（使用 useVision） =====
 // 延迟初始化：需要等待 mapData 加载完成
@@ -687,11 +733,16 @@ onMounted(() => {
       <div class="layout">
         <!-- 左侧控制面板 -->
         <MapControlPanel
+          :game-time="gameTime"
+          :is-playing="isPlaying"
+          :play-speed="playSpeed"
+          :is-daytime="isDaytime"
           :show-towers="showTowers"
           :show-neutral-camps="showNeutralCamps"
           :show-runes="showRunes"
           :show-trees="showTrees"
           :show-nav-grid="showNavGrid"
+          :show-buildings="showBuildings"
           :show-fog-of-war="showFogOfWar"
           :show-vision-circles="showVisionCircles"
           :move-speed="moveSpeed"
@@ -703,13 +754,16 @@ onMounted(() => {
           :current-team="currentTeam"
           :current-view="currentView"
           :ward-count="vision?.wards.value.length ?? 0"
-          :is-daytime="isDaytime"
           :vision-ready="!!vision?.visionReady.value"
+          @update:game-time="v => { gameTime = v; onGameTimeChange() }"
+          @update:play-speed="v => playSpeed = v"
+          @toggle-play="togglePlay"
           @update:show-towers="v => { showTowers = v; draw() }"
           @update:show-neutral-camps="v => { showNeutralCamps = v; draw() }"
           @update:show-runes="v => { showRunes = v; draw() }"
           @update:show-trees="v => { showTrees = v; needsTreeCacheUpdate = true; draw() }"
           @update:show-nav-grid="v => { showNavGrid = v; draw() }"
+          @update:show-buildings="v => { showBuildings = v; draw() }"
           @update:show-fog-of-war="v => { showFogOfWar = v; onFogToggle() }"
           @update:show-vision-circles="v => { showVisionCircles = v; draw() }"
           @update:move-speed="v => moveSpeed = v"
@@ -718,7 +772,6 @@ onMounted(() => {
           @reset-path="resetPoints"
           @reset-zoom="resetZoom"
           @reset-trees="resetTrees"
-          @toggle-day-night="toggleDayNight"
           @clear-wards="clearWards"
         />
 
