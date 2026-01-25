@@ -194,6 +194,64 @@ const formatGameTime = (seconds: number): string => {
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
+// 着色图标缓存
+const tintedIconCache = new Map<string, HTMLCanvasElement>()
+
+// 绘制雪碧图图标
+function drawIcon(
+  ctx: CanvasRenderingContext2D, 
+  iconName: string, 
+  worldX: number, 
+  worldY: number, 
+  displaySize: number = 32, 
+  tintColor?: string
+): boolean {
+  if (!mapData.spriteSheet.value || !mapData.iconsConfig.value) return false
+  
+  const icon = mapData.iconsConfig.value.icons[iconName]
+  if (!icon) return false
+  
+  const cellSize = mapData.iconsConfig.value.meta.cellSize
+  const iconSize = cellSize * icon.size
+  
+  let sx = icon.col * cellSize
+  let sy = icon.row * cellSize
+  
+  if (icon.size === 0.5) {
+    sx += (icon.subCol ?? 0) * (cellSize / 2)
+    sy += (icon.subRow ?? 0) * (cellSize / 2)
+  }
+  
+  const pos = coords.value.worldToCanvas(worldX, worldY)
+  const halfSize = displaySize / 2
+  
+  // 如果有着色需求，使用缓存
+  if (tintColor) {
+    const cacheKey = `${iconName}_${tintColor}_${displaySize}`
+    let tintedCanvas = tintedIconCache.get(cacheKey)
+    
+    if (!tintedCanvas) {
+      tintedCanvas = document.createElement('canvas')
+      tintedCanvas.width = displaySize
+      tintedCanvas.height = displaySize
+      const tintCtx = tintedCanvas.getContext('2d')!
+      
+      tintCtx.drawImage(mapData.spriteSheet.value, sx, sy, iconSize, iconSize, 0, 0, displaySize, displaySize)
+      tintCtx.globalCompositeOperation = 'source-atop'
+      tintCtx.fillStyle = tintColor
+      tintCtx.fillRect(0, 0, displaySize, displaySize)
+      
+      tintedIconCache.set(cacheKey, tintedCanvas)
+    }
+    
+    ctx.drawImage(tintedCanvas, pos.x - halfSize, pos.y - halfSize)
+  } else {
+    ctx.drawImage(mapData.spriteSheet.value, sx, sy, iconSize, iconSize, pos.x - halfSize, pos.y - halfSize, displaySize, displaySize)
+  }
+  
+  return true
+}
+
 // ===== 绘制函数 =====
 function draw() {
   const canvas = canvasRef.value
@@ -318,7 +376,7 @@ function drawTrees(ctx: CanvasRenderingContext2D, canvasSize: number) {
       }
       
       cacheCtx.beginPath()
-      cacheCtx.arc(pos.x, pos.y, 4, 0, Math.PI * 2)
+      cacheCtx.arc(pos.x, pos.y, 8, 0, Math.PI * 2)
       cacheCtx.fill()
     }
     
@@ -329,29 +387,66 @@ function drawTrees(ctx: CanvasRenderingContext2D, canvasSize: number) {
 }
 
 function drawNeutralCamps(ctx: CanvasRenderingContext2D) {
-  ctx.fillStyle = 'rgba(255, 165, 0, 0.8)'
+  // 营地图标配置
+  const CAMP_CONFIG: Record<string, { icon: string, color: string, size: number }> = {
+    small: { icon: 'camp_small', color: '#2ecc71', size: 24 },
+    medium: { icon: 'camp_medium', color: '#f39c12', size: 28 },
+    large: { icon: 'camp_large', color: '#e74c3c', size: 32 },
+    ancient: { icon: 'camp_ancient', color: '#9b59b6', size: 36 }
+  }
+  const DEFAULT_CONFIG = { icon: 'camp_medium', color: '#ff8c00', size: 24 }
   
-  for (const camp of mapData.neutralSpawners.value) {
+  for (let i = 0; i < mapData.neutralSpawners.value.length; i++) {
+    const camp = mapData.neutralSpawners.value[i]
+    
+    // 匹配营地类型
+    const campConfig = mapData.campTypes.value.find(c => c.x === camp.x && c.y === camp.y)
+    const campType = campConfig?.type || (camp.targetname?.includes('ancient') ? 'ancient' : null)
+    const config = campType ? CAMP_CONFIG[campType] : DEFAULT_CONFIG
+    
+    // 尝试用图标渲染
+    if (drawIcon(ctx, config.icon, camp.x, camp.y, config.size, config.color)) {
+      continue
+    }
+    
+    // 回退到圆形
     const pos = coords.value.worldToCanvas(camp.x, camp.y)
+    ctx.fillStyle = config.color
+    ctx.strokeStyle = '#fff'
+    ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.arc(pos.x, pos.y, 8, 0, Math.PI * 2)
+    ctx.arc(pos.x, pos.y, config.size / 2, 0, Math.PI * 2)
     ctx.fill()
+    ctx.stroke()
   }
 }
 
 function drawTowers(ctx: CanvasRenderingContext2D) {
+  // 防御塔尺寸
+  const TOWER_RADIUS = 144
+  const canvasSize = mapData.navWidth.value || 2401
+  const towerSize = (TOWER_RADIUS * 2) / WORLD_SIZE * canvasSize
+  
   for (const tower of mapData.towers.value) {
-    const pos = coords.value.worldToCanvas(tower.x, tower.y)
     const isRadiant = tower.team === 2
+    const name = tower.name || ''
+    const isMid = name.includes('_mid_')
+    const color = isRadiant ? TEAM_COLORS.radiant : TEAM_COLORS.dire
     
-    ctx.fillStyle = isRadiant ? TEAM_COLORS.radiant : TEAM_COLORS.dire
-    ctx.beginPath()
-    ctx.arc(pos.x, pos.y, 10, 0, Math.PI * 2)
-    ctx.fill()
+    // 尝试用图标渲染
+    const iconName = isMid ? 'tower_mid' : 'tower_side'
+    if (drawIcon(ctx, iconName, tower.x, tower.y, towerSize, color)) {
+      continue
+    }
     
+    // 回退到方块
+    const pos = coords.value.worldToCanvas(tower.x, tower.y)
+    const halfSize = towerSize / 2
+    ctx.fillStyle = color
     ctx.strokeStyle = '#fff'
     ctx.lineWidth = 2
-    ctx.stroke()
+    ctx.fillRect(pos.x - halfSize, pos.y - halfSize, towerSize, towerSize)
+    ctx.strokeRect(pos.x - halfSize, pos.y - halfSize, towerSize, towerSize)
   }
 }
 
@@ -754,8 +849,10 @@ function handleMouseDown(event: MouseEvent) {
 
 function handleMouseMove(event: MouseEvent) {
   if (isDragging.value) {
-    offsetX.value += event.clientX - lastMousePos.value.x
-    offsetY.value += event.clientY - lastMousePos.value.y
+    // 拖动速度与缩放比例成反比（放大时拖动更灵敏）
+    const dragSpeed = 1 / scale.value
+    offsetX.value += (event.clientX - lastMousePos.value.x) * dragSpeed * 2
+    offsetY.value += (event.clientY - lastMousePos.value.y) * dragSpeed * 2
     lastMousePos.value = { x: event.clientX, y: event.clientY }
     draw()
   }

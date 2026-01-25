@@ -45,6 +45,28 @@ function getTeamName(team: number | undefined): string {
   if (team === 3) return '夜魇'
   return '中立'
 }
+
+// 营地金币（基于类型的估算）
+function getCampGold(type: string | null | undefined): string {
+  const goldRange: Record<string, string> = {
+    small: '75-95',
+    medium: '95-125',
+    large: '140-180',
+    ancient: '170-220'
+  }
+  return type ? goldRange[type] || '-' : '-'
+}
+
+// 营地经验（基于类型的估算）
+function getCampXp(type: string | null | undefined): string {
+  const xpValues: Record<string, string> = {
+    small: '85',
+    medium: '140',
+    large: '185',
+    ancient: '300+'
+  }
+  return type ? xpValues[type] || '-' : '-'
+}
 </script>
 
 <template>
@@ -73,6 +95,14 @@ function getTeamName(team: number | undefined): string {
           <span class="value" :class="entity.campType || 'unknown'">
             {{ getCampTypeName(entity.campType) }}
           </span>
+        </div>
+        <div class="popup-row" v-if="entity.campType">
+          <span class="label">💰 金币</span>
+          <span class="value">{{ getCampGold(entity.campType) }}</span>
+        </div>
+        <div class="popup-row" v-if="entity.campType">
+          <span class="label">⭐ 经验</span>
+          <span class="value">{{ getCampXp(entity.campType) }}</span>
         </div>
         <div class="popup-row">
           <span class="label">🔄 刷新</span>
