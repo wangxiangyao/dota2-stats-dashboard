@@ -604,6 +604,47 @@ function resetTrees() {
   draw()
 }
 
+// ===== 视野控制函数 =====
+function onTeamChange() {
+  if (vision) {
+    vision.currentTeam.value = currentTeam.value
+    needsFogCacheUpdate = true
+    draw()
+  }
+}
+
+function onViewChange() {
+  if (vision) {
+    vision.currentView.value = currentView.value
+    vision.updateCombinedVision()
+    needsFogCacheUpdate = true
+    draw()
+  }
+}
+
+function onFogToggle() {
+  needsFogCacheUpdate = true
+  draw()
+}
+
+function toggleDayNight() {
+  if (vision) {
+    vision.setDaytime(!isDaytime.value)
+    vision.clearBuildingVisionCache()
+    vision.updateCombinedVision()
+    needsFogCacheUpdate = true
+    draw()
+  }
+}
+
+function clearWards() {
+  if (vision) {
+    vision.clearAllWards()
+    needsFogCacheUpdate = true
+    draw()
+  }
+}
+
 // ===== 生命周期 =====
 onMounted(async () => {
   try {
@@ -680,6 +721,45 @@ onMounted(() => {
               <span>已砍: {{ mapData.destroyedTrees.value.size }}</span>
             </div>
             <button @click="resetTrees">重置树木</button>
+          </div>
+
+          <!-- 视野控制 -->
+          <div class="section">
+            <h3>👁 视野</h3>
+            
+            <div class="control-row">
+              <label>阵营:</label>
+              <select v-model="currentTeam" @change="onTeamChange">
+                <option value="radiant">天辉</option>
+                <option value="dire">夜魇</option>
+              </select>
+            </div>
+            
+            <div class="control-row">
+              <label>视角:</label>
+              <select v-model="currentView" @change="onViewChange">
+                <option value="radiant">天辉视野</option>
+                <option value="dire">夜魇视野</option>
+                <option value="both">双方视野</option>
+              </select>
+            </div>
+            
+            <div class="layer-grid">
+              <label><input type="checkbox" v-model="showFogOfWar" @change="onFogToggle"> 🌫 迷雾</label>
+              <label><input type="checkbox" v-model="showVisionCircles" @change="draw"> ⭕ 视野圈</label>
+            </div>
+            
+            <div class="info-row" v-if="vision">
+              <span>眼位: {{ vision.wards.value.length }}</span>
+              <span>{{ isDaytime ? '☀ 白天' : '🌙 夜晚' }}</span>
+            </div>
+            
+            <div class="button-row">
+              <button @click="toggleDayNight">切换日夜</button>
+              <button @click="clearWards">清除眼位</button>
+            </div>
+            
+            <small class="hint">右键放置眼位</small>
           </div>
         </aside>
 
@@ -791,6 +871,27 @@ onMounted(() => {
   gap: 0.5rem;
   font-size: 0.85rem;
   cursor: pointer;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.control-row label {
+  min-width: 50px;
+  font-size: 0.85rem;
+}
+
+.control-row select {
+  flex: 1;
+  padding: 0.4rem;
+  background: #0f3460;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #fff;
 }
 
 .input-row {
