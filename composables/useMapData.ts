@@ -130,7 +130,7 @@ export function useMapData() {
     async function loadEntities(): Promise<void> {
         const baseUrl = `/data/map/${VERSION}`
 
-        // 并行加载所有实体文件
+        // 并行加载实体文件（核心数据）
         const [
             treesData,
             towersData,
@@ -140,9 +140,6 @@ export function useMapData() {
             outpostsData,
             powerupData,
             bountyData,
-            campTypesData,
-            neutralsDataRes,
-            buildingsDataRes,
             iconsDataRes
         ] = await Promise.all([
             fetch(`${baseUrl}/entities/ent_dota_tree.json`).then(r => r.ok ? r.json() : []),
@@ -153,10 +150,8 @@ export function useMapData() {
             fetch(`${baseUrl}/entities/npc_dota_watch_tower.json`).then(r => r.ok ? r.json() : []),
             fetch(`${baseUrl}/entities/dota_item_rune_spawner_powerup.json`).then(r => r.ok ? r.json() : []),
             fetch(`${baseUrl}/entities/dota_item_rune_spawner_bounty.json`).then(r => r.ok ? r.json() : []),
-            fetch('/data/camp_types.json').then(r => r.ok ? r.json() : []),
-            fetch('/data/neutrals.json').then(r => r.ok ? r.json() : null),
-            fetch('/data/buildings.json').then(r => r.ok ? r.json() : null),
-            fetch('/data/icons.json').then(r => r.ok ? r.json() : null)
+            // 图标配置（用于绘制）
+            fetch('/data/world/icons-config.json').then(r => r.ok ? r.json() : null)
         ])
 
         trees.value = treesData
@@ -167,9 +162,6 @@ export function useMapData() {
         outposts.value = outpostsData
         powerupRunes.value = powerupData
         bountyRunes.value = bountyData
-        campTypes.value = campTypesData
-        neutralsData.value = neutralsDataRes
-        buildingsData.value = buildingsDataRes
         iconsConfig.value = iconsDataRes
 
         // 构建树木索引

@@ -32,11 +32,16 @@ const FILES_TO_PULL = {
     ],
     // 从 data/<version>/parsed/entities/ 拉取的实体 JSON 文件
     entities: [
-        'ent_dota_tree.json',           // 树木
-        'npc_dota_tower.json',          // 防御塔
-        'npc_dota_neutral_spawner.json', // 野怪点
-        'trigger_no_wards.json',        // 禁眼区
-        '_index.json'                   // 实体索引
+        'ent_dota_tree.json',               // 树木
+        'npc_dota_tower.json',              // 防御塔
+        'npc_dota_neutral_spawner.json',    // 野怪点
+        'trigger_no_wards.json',            // 禁眼区
+        'ent_dota_fountain.json',           // 泉水
+        'npc_dota_fort.json',               // 基地
+        'npc_dota_watch_tower.json',        // 前哨
+        'dota_item_rune_spawner_powerup.json',  // 神力符
+        'dota_item_rune_spawner_bounty.json',   // 赏金符
+        '_index.json'                       // 实体索引
     ],
     // 从 data/<version>/img/ 拉取的图片文件
     images: [

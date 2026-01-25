@@ -1,0 +1,28 @@
+[
+  {
+    "RuneTeam": "3",
+    "RunePosition": "top",
+    "targetname": "dota_item_rune_spawner_bounty",
+    "classname": "dota_item_rune_spawner_bounty",
+    "origin": "-996.481567 4431.429688 169.301758",
+    "angles": "0.000000 273.000122 0.000000",
+    "scales": "1.000000 1.000000 1.000000",
+    "hammerUniqueId": "3010:4368:2",
+    "x": -996.481567,
+    "y": 4431.429688,
+    "z": 169.301758
+  },
+  {
+    "targetname": "dota_item_rune_spawner_bounty",
+    "RunePosition": "bot",
+    "RuneTeam": "2",
+    "classname": "dota_item_rune_spawner_bounty",
+    "origin": "595.003418 -4659.990234 169.301758",
+    "angles": "0.000000 273.000122 0.000000",
+    "scales": "1.000000 1.000000 1.000000",
+    "hammerUniqueId": "3010:4374:2",
+    "x": 595.003418,
+    "y": -4659.990234,
+    "z": 169.301758
+  }
+]

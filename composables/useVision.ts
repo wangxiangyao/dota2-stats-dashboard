@@ -87,6 +87,7 @@ export function useVision(
             worldMaxY: WORLD_MAX
         }
 
+        // @ts-ignore - VisionSimulation 是 JS 模块，opts 参数是可选的
         visionSimulator = new VisionSimulation(worlddata, { gridCellSize: VISION_GRID_SIZE })
 
         try {

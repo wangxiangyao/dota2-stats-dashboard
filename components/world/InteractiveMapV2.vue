@@ -1,0 +1,686 @@
+<script setup lang="ts">
+/**
+ * InteractiveMapV2.vue - 交互式地图组件（重构版）
+ * 
+ * 使用新的 composables 架构，支持：
+ * - 模块化的数据加载
+ * - 可扩展的视野系统
+ * - 支持不同单位类型的寻路
+ */
+
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
+
+// 类型导入
+import { 
+  MAP_CONSTANTS,
+  type Point, 
+  type MapEntity, 
+  type CampTypeConfig,
+  type SelectedEntity,
+  type EntityType,
+  type WardType,
+  type Team,
+  type TeamView,
+  type ContextMenuItem,
+  type ContextMenuState
+} from '@/types/map'
+
+// Composables 导入
+import { useMapData } from '@/composables/useMapData'
+import { useCoordinates } from '@/composables/useCoordinates'
+import { usePathfinding } from '@/composables/usePathfinding'
+
+// 解构常量
+const {
+  VERSION: MAP_VERSION,
+  WORLD_MIN,
+  WORLD_MAX,
+  WORLD_SIZE,
+  NAV_CELL_SIZE,
+  HERO_COLLISION_RADIUS,
+  VISION_GRID_SIZE,
+  TEAM_COLORS,
+  OBSERVER_DURATION
+} = MAP_CONSTANTS
+
+// ===== Composables 初始化 =====
+const mapData = useMapData()
+
+// 坐标转换（在 navData 加载后更新）
+const coords = computed(() => useCoordinates(mapData.navWidth.value, mapData.navHeight.value))
+
+// ===== 本地状态 =====
+const canvasRef = ref<HTMLCanvasElement | null>(null)
+
+// 交互状态
+const startPoint = ref<Point | null>(null)
+const endPoint = ref<Point | null>(null)
+const path = ref<Point[]>([])
+const isSettingStart = ref(true)
+
+// 移速输入
+const moveSpeed = ref(300)
+
+// 图层控制
+const showNavGrid = ref(false)
+const showTrees = ref(true)
+const showNeutralCamps = ref(true)
+const showBuildings = ref(true)
+const showTowers = ref(true)
+const showRunes = ref(true)
+
+// 缩放和拖拽
+const scale = ref(1)
+const offsetX = ref(0)
+const offsetY = ref(0)
+const isDragging = ref(false)
+const lastMousePos = ref({ x: 0, y: 0 })
+
+// 详情面板
+const selectedEntity = ref<SelectedEntity | null>(null)
+const popupPosition = ref<{ x: number, y: number } | null>(null)
+
+// 游戏时间
+const gameTime = ref(0)
+const isPlaying = ref(false)
+const playSpeed = ref(1)
+const isDaytime = computed(() => Math.floor(gameTime.value / 300) % 2 === 0)
+
+// 眼位系统（简化版，后续接入 useVision）
+const wards = ref<any[]>([])
+const currentTeam = ref<Team>('radiant')
+const currentView = ref<TeamView>('both')
+const showFogOfWar = ref(true)
+const showVisionCircles = ref(true)
+
+// 右键菜单
+const contextMenu = ref<ContextMenuState>({
+  visible: false,
+  x: 0,
+  y: 0,
+  items: []
+})
+
+// 离屏缓存
+let navGridCache: HTMLCanvasElement | null = null
+let treeLayerCache: HTMLCanvasElement | null = null
+let needsTreeCacheUpdate = true
+
+// ===== 计算属性 =====
+const pathLength = computed(() => {
+  if (path.value.length < 2) return 0
+  let total = 0
+  for (let i = 1; i < path.value.length; i++) {
+    total += coords.value.distance(path.value[i - 1], path.value[i])
+  }
+  return Math.round(total)
+})
+
+const travelTime = computed(() => {
+  if (pathLength.value === 0 || moveSpeed.value <= 0) return 0
+  return pathLength.value / moveSpeed.value
+})
+
+const formattedTime = computed(() => {
+  const seconds = travelTime.value
+  if (seconds < 60) return `${seconds.toFixed(1)} 秒`
+  const mins = Math.floor(seconds / 60)
+  const secs = (seconds % 60).toFixed(1)
+  return `${mins} 分 ${secs} 秒`
+})
+
+const formatGameTime = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60)
+  const secs = Math.floor(seconds % 60)
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+}
+
+// ===== 绘制函数 =====
+function draw() {
+  const canvas = canvasRef.value
+  if (!canvas) return
+  
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+  
+  const canvasSize = mapData.navWidth.value || 2401
+  canvas.width = canvasSize
+  canvas.height = canvasSize
+  
+  ctx.clearRect(0, 0, canvasSize, canvasSize)
+  
+  // 应用变换
+  ctx.save()
+  ctx.translate(offsetX.value, offsetY.value)
+  ctx.scale(scale.value, scale.value)
+  
+  // 绘制底图
+  if (mapData.mapImage.value) {
+    ctx.drawImage(mapData.mapImage.value, 0, 0, canvasSize, canvasSize)
+  }
+  
+  // 绘制导航网格
+  if (showNavGrid.value) {
+    drawNavGrid(ctx, canvasSize)
+  }
+  
+  // 绘制树木
+  if (showTrees.value) {
+    drawTrees(ctx, canvasSize)
+  }
+  
+  // 绘制野怪营地
+  if (showNeutralCamps.value) {
+    drawNeutralCamps(ctx)
+  }
+  
+  // 绘制防御塔
+  if (showTowers.value) {
+    drawTowers(ctx)
+  }
+  
+  // 绘制神符
+  if (showRunes.value) {
+    drawRunes(ctx)
+  }
+  
+  // 绘制路径
+  drawPath(ctx)
+  
+  ctx.restore()
+}
+
+function drawNavGrid(ctx: CanvasRenderingContext2D, canvasSize: number) {
+  if (!mapData.navData.value) return
+  
+  // 使用缓存
+  if (!navGridCache) {
+    navGridCache = document.createElement('canvas')
+    navGridCache.width = canvasSize
+    navGridCache.height = canvasSize
+    const cacheCtx = navGridCache.getContext('2d')!
+    
+    const imageData = cacheCtx.createImageData(canvasSize, canvasSize)
+    const data = imageData.data
+    
+    for (let y = 0; y < canvasSize; y++) {
+      for (let x = 0; x < canvasSize; x++) {
+        const idx = (y * canvasSize + x) * 4
+        const navIdx = (y * mapData.navWidth.value + x) * 4
+        const isWalkable = mapData.navData.value[navIdx] > 128
+        
+        if (!isWalkable) {
+          data[idx] = 255
+          data[idx + 1] = 0
+          data[idx + 2] = 0
+          data[idx + 3] = 80
+        }
+      }
+    }
+    
+    cacheCtx.putImageData(imageData, 0, 0)
+  }
+  
+  ctx.drawImage(navGridCache, 0, 0)
+}
+
+function drawTrees(ctx: CanvasRenderingContext2D, canvasSize: number) {
+  if (!treeLayerCache || needsTreeCacheUpdate) {
+    treeLayerCache = document.createElement('canvas')
+    treeLayerCache.width = canvasSize
+    treeLayerCache.height = canvasSize
+    const cacheCtx = treeLayerCache.getContext('2d')!
+    
+    cacheCtx.fillStyle = 'rgba(50, 160, 140, 0.6)'
+    
+    for (const tree of mapData.trees.value) {
+      const pos = coords.value.worldToCanvas(tree.x, tree.y)
+      const key = `${Math.floor((tree.x - WORLD_MIN) / 64)},${Math.floor((tree.y - WORLD_MIN) / 64)}`
+      
+      if (mapData.destroyedTrees.value.has(key)) {
+        cacheCtx.fillStyle = 'rgba(90, 90, 95, 0.4)'
+      } else {
+        cacheCtx.fillStyle = 'rgba(50, 160, 140, 0.6)'
+      }
+      
+      cacheCtx.beginPath()
+      cacheCtx.arc(pos.x, pos.y, 4, 0, Math.PI * 2)
+      cacheCtx.fill()
+    }
+    
+    needsTreeCacheUpdate = false
+  }
+  
+  ctx.drawImage(treeLayerCache, 0, 0)
+}
+
+function drawNeutralCamps(ctx: CanvasRenderingContext2D) {
+  ctx.fillStyle = 'rgba(255, 165, 0, 0.8)'
+  
+  for (const camp of mapData.neutralSpawners.value) {
+    const pos = coords.value.worldToCanvas(camp.x, camp.y)
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, 8, 0, Math.PI * 2)
+    ctx.fill()
+  }
+}
+
+function drawTowers(ctx: CanvasRenderingContext2D) {
+  for (const tower of mapData.towers.value) {
+    const pos = coords.value.worldToCanvas(tower.x, tower.y)
+    const isRadiant = tower.team === 2
+    
+    ctx.fillStyle = isRadiant ? TEAM_COLORS.radiant : TEAM_COLORS.dire
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, 10, 0, Math.PI * 2)
+    ctx.fill()
+    
+    ctx.strokeStyle = '#fff'
+    ctx.lineWidth = 2
+    ctx.stroke()
+  }
+}
+
+function drawRunes(ctx: CanvasRenderingContext2D) {
+  // 神力符
+  ctx.fillStyle = 'rgba(255, 215, 0, 0.9)'
+  for (const rune of mapData.powerupRunes.value) {
+    const pos = coords.value.worldToCanvas(rune.x, rune.y)
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  
+  // 赏金符
+  ctx.fillStyle = 'rgba(255, 140, 0, 0.9)'
+  for (const rune of mapData.bountyRunes.value) {
+    const pos = coords.value.worldToCanvas(rune.x, rune.y)
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2)
+    ctx.fill()
+  }
+}
+
+function drawPath(ctx: CanvasRenderingContext2D) {
+  // 起点
+  if (startPoint.value) {
+    const pos = coords.value.worldToCanvas(startPoint.value.x, startPoint.value.y)
+    ctx.fillStyle = '#00ff00'
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, 8, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  
+  // 终点
+  if (endPoint.value) {
+    const pos = coords.value.worldToCanvas(endPoint.value.x, endPoint.value.y)
+    ctx.fillStyle = '#ff0000'
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, 8, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  
+  // 路径
+  if (path.value.length > 1) {
+    ctx.strokeStyle = '#ffff00'
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    
+    const first = coords.value.worldToCanvas(path.value[0].x, path.value[0].y)
+    ctx.moveTo(first.x, first.y)
+    
+    for (let i = 1; i < path.value.length; i++) {
+      const pt = coords.value.worldToCanvas(path.value[i].x, path.value[i].y)
+      ctx.lineTo(pt.x, pt.y)
+    }
+    
+    ctx.stroke()
+  }
+}
+
+// ===== 事件处理 =====
+function getCanvasCoords(event: MouseEvent): Point | null {
+  const canvas = canvasRef.value
+  if (!canvas) return null
+  
+  const rect = canvas.getBoundingClientRect()
+  const scaleX = canvas.width / rect.width
+  const scaleY = canvas.height / rect.height
+  
+  const x = (event.clientX - rect.left) * scaleX
+  const y = (event.clientY - rect.top) * scaleY
+  
+  // 逆变换
+  const canvasX = (x - offsetX.value) / scale.value
+  const canvasY = (y - offsetY.value) / scale.value
+  
+  return { x: canvasX, y: canvasY }
+}
+
+function handleCanvasClick(event: MouseEvent) {
+  if (contextMenu.value.visible) {
+    contextMenu.value.visible = false
+    return
+  }
+  
+  const canvasCoords = getCanvasCoords(event)
+  if (!canvasCoords) return
+  
+  const worldCoords = coords.value.canvasToWorld(canvasCoords.x, canvasCoords.y)
+  
+  if (isSettingStart.value) {
+    startPoint.value = worldCoords
+    isSettingStart.value = false
+  } else {
+    endPoint.value = worldCoords
+    isSettingStart.value = true
+    
+    // 执行寻路
+    if (startPoint.value && endPoint.value) {
+      const pathfinding = usePathfinding(
+        mapData.navData,
+        mapData.navWidth,
+        mapData.navHeight,
+        mapData.treeIndex,
+        mapData.destroyedTrees,
+        showTrees
+      )
+      path.value = pathfinding.findPath(startPoint.value, endPoint.value)
+    }
+  }
+  
+  draw()
+}
+
+function handleWheel(event: WheelEvent) {
+  event.preventDefault()
+  
+  const delta = event.deltaY > 0 ? 0.9 : 1.1
+  const newScale = Math.max(0.5, Math.min(5, scale.value * delta))
+  
+  const canvasCoords = getCanvasCoords(event)
+  if (canvasCoords) {
+    const worldX = (canvasCoords.x - offsetX.value) / scale.value
+    const worldY = (canvasCoords.y - offsetY.value) / scale.value
+    
+    offsetX.value = canvasCoords.x - worldX * newScale
+    offsetY.value = canvasCoords.y - worldY * newScale
+  }
+  
+  scale.value = newScale
+  draw()
+}
+
+function handleMouseDown(event: MouseEvent) {
+  if (event.button === 1) {
+    isDragging.value = true
+    lastMousePos.value = { x: event.clientX, y: event.clientY }
+    event.preventDefault()
+  }
+}
+
+function handleMouseMove(event: MouseEvent) {
+  if (isDragging.value) {
+    offsetX.value += event.clientX - lastMousePos.value.x
+    offsetY.value += event.clientY - lastMousePos.value.y
+    lastMousePos.value = { x: event.clientX, y: event.clientY }
+    draw()
+  }
+}
+
+function handleMouseUp() {
+  isDragging.value = false
+}
+
+function resetZoom() {
+  scale.value = 1
+  offsetX.value = 0
+  offsetY.value = 0
+  draw()
+}
+
+function resetPoints() {
+  startPoint.value = null
+  endPoint.value = null
+  path.value = []
+  isSettingStart.value = true
+  draw()
+}
+
+function resetTrees() {
+  mapData.resetTrees()
+  needsTreeCacheUpdate = true
+  draw()
+}
+
+// ===== 生命周期 =====
+onMounted(async () => {
+  try {
+    await mapData.initialize()
+    setTimeout(draw, 100)
+  } catch (err) {
+    console.error('地图初始化失败:', err)
+  }
+})
+
+// 监听窗口点击关闭菜单
+onMounted(() => {
+  window.addEventListener('click', () => {
+    if (contextMenu.value.visible) {
+      contextMenu.value.visible = false
+    }
+  })
+})
+</script>
+
+<template>
+  <div class="map-container">
+    <div v-if="mapData.loading.value" class="loading">
+      <div class="spinner"></div>
+      <span>加载地图数据中...</span>
+    </div>
+
+    <div v-else-if="mapData.error.value" class="error">{{ mapData.error.value }}</div>
+
+    <template v-else>
+      <div class="layout">
+        <!-- 左侧控制面板 -->
+        <aside class="panel">
+          <!-- 图层控制 -->
+          <div class="section">
+            <h3>🗂 图层</h3>
+            <div class="layer-grid">
+              <label><input type="checkbox" v-model="showTowers" @change="draw"> 🗼 塔</label>
+              <label><input type="checkbox" v-model="showNeutralCamps" @change="draw"> 🐾 野怪</label>
+              <label><input type="checkbox" v-model="showRunes" @change="draw"> ✨ 神符</label>
+              <label><input type="checkbox" v-model="showTrees" @change="draw"> 🌲 树木</label>
+              <label><input type="checkbox" v-model="showNavGrid" @change="draw"> 📐 网格</label>
+            </div>
+          </div>
+
+          <!-- 寻路控制 -->
+          <div class="section">
+            <h3>🚶 寻路</h3>
+            <div class="input-row">
+              <label>移速:</label>
+              <input type="number" v-model="moveSpeed" min="100" max="1000" step="25">
+            </div>
+            <div class="info-row" v-if="path.length > 0">
+              <span>距离: {{ pathLength }} 单位</span>
+              <span>时间: {{ formattedTime }}</span>
+            </div>
+            <div class="button-row">
+              <button @click="resetPoints">清除路径</button>
+              <button @click="resetZoom">重置视图</button>
+            </div>
+            <small class="hint">左键设置起点/终点</small>
+          </div>
+
+          <!-- 树木管理 -->
+          <div class="section">
+            <h3>🌲 树木</h3>
+            <div class="info-row">
+              <span>总数: {{ mapData.trees.value.length }}</span>
+              <span>已砍: {{ mapData.destroyedTrees.value.size }}</span>
+            </div>
+            <button @click="resetTrees">重置树木</button>
+          </div>
+        </aside>
+
+        <!-- 地图画布 -->
+        <main class="map-area">
+          <canvas
+            ref="canvasRef"
+            @click="handleCanvasClick"
+            @wheel="handleWheel"
+            @mousedown="handleMouseDown"
+            @mousemove="handleMouseMove"
+            @mouseup="handleMouseUp"
+            @mouseleave="handleMouseUp"
+          ></canvas>
+        </main>
+      </div>
+    </template>
+  </div>
+</template>
+
+<style scoped>
+.map-container {
+  width: 100%;
+  height: 100vh;
+  background: #1a1a2e;
+  color: #eee;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.loading, .error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error {
+  color: #ff6b6b;
+}
+
+.layout {
+  display: flex;
+  height: 100%;
+}
+
+.panel {
+  width: 280px;
+  padding: 1rem;
+  background: #16213e;
+  overflow-y: auto;
+  border-right: 1px solid #333;
+}
+
+.section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+.section h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.layer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.layer-grid label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.input-row input {
+  flex: 1;
+  padding: 0.4rem;
+  background: #0f3460;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-bottom: 0.5rem;
+}
+
+.button-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+button {
+  flex: 1;
+  padding: 0.5rem;
+  background: #0f3460;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #1a4a7a;
+}
+
+.hint {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.map-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #0d0d1a;
+}
+
+canvas {
+  max-width: 100%;
+  max-height: 100%;
+  cursor: crosshair;
+}
+</style>
