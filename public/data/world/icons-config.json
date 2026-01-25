@@ -7,6 +7,14 @@
         "note": "col/row: 网格坐标(0-10)。size: 占用格子数(2/1/0.5)。subCol/subRow: size=0.5时的子区域(0或1)"
     },
     "icons": {
+        "fountain": {
+            "col": 1,
+            "row": 3,
+            "subCol": 0,
+            "subRow": 0,
+            "size": 1,
+            "note": "泉水"
+        },
         "tower_mid": {
             "col": 7,
             "row": 0,

@@ -243,7 +243,7 @@ export class VisionSimulation {
         this.grid = []
         this.gridnav = {}
         this.entFowBlockerNode = {}
-        this.toolsNoWards = {}
+        this.noWardPolygons = []  // 禁眼区多边形数组 [{ vertices: [[x,y], ...] }, ...]
         this.elevationValues = []
         this.elevationGrid = {}
         this.elevationWalls = {}
@@ -285,10 +285,7 @@ export class VisionSimulation {
             this.entFowBlockerNode[key] = true
         }
 
-        // 禁眼区
-        for (const key of data.toolsNoWards || []) {
-            this.toolsNoWards[key] = true
-        }
+        // 禁眼区：不再从 vision_data.json 加载，而是通过 setNoWardPolygons() 方法加载
 
         // 树木数据：JSON 中树木坐标是 8 单位网格，需要转换到 64 单位网格
         // 转换比例：8 -> 64 = 除以 8
@@ -587,8 +584,76 @@ export class VisionSimulation {
         return x >= 0 && x < this.gridWidth &&
             y >= 0 && y < this.gridHeight &&
             (!bCheckGridnav || !this.gridnav[key]) &&
-            (!bCheckToolsNoWards || !this.toolsNoWards[key]) &&
+            (!bCheckToolsNoWards || !this.isInNoWardZone(x, y)) &&
             (!bCheckTreeState || !treeBlocking)
+    }
+
+    /**
+     * 设置禁眼区多边形数据
+     * @param {Array} triggers - trigger_no_wards.json 中的数据
+     */
+    setNoWardPolygons(triggers) {
+        this.noWardPolygons = []
+        for (const trigger of triggers) {
+            const vertices = trigger.worldVerticesXY
+            if (vertices && vertices.length >= 3) {
+                this.noWardPolygons.push({
+                    vertices: vertices,
+                    // 预计算边界框用于快速排除
+                    minX: Math.min(...vertices.map(v => v[0])),
+                    maxX: Math.max(...vertices.map(v => v[0])),
+                    minY: Math.min(...vertices.map(v => v[1])),
+                    maxY: Math.max(...vertices.map(v => v[1]))
+                })
+            }
+        }
+        console.log(`VisionSimulation: 加载 ${this.noWardPolygons.length} 个禁眼区多边形`)
+    }
+
+    /**
+     * 判断网格坐标是否在禁眼区内
+     * @param {number} gX - 网格 X 坐标
+     * @param {number} gY - 网格 Y 坐标
+     * @returns {boolean}
+     */
+    isInNoWardZone(gX, gY) {
+        if (this.noWardPolygons.length === 0) return false
+
+        // 转换为世界坐标
+        const worldX = gX * 64 + this.worldMinX
+        const worldY = gY * 64 + this.worldMinY
+
+        for (const polygon of this.noWardPolygons) {
+            // 快速边界框检查
+            if (worldX < polygon.minX || worldX > polygon.maxX ||
+                worldY < polygon.minY || worldY > polygon.maxY) {
+                continue
+            }
+            // 精确多边形检查
+            if (this._pointInPolygon(worldX, worldY, polygon.vertices)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * 射线法判断点是否在多边形内
+     */
+    _pointInPolygon(x, y, polygon) {
+        let inside = false
+        const n = polygon.length
+
+        for (let i = 0, j = n - 1; i < n; j = i++) {
+            const xi = polygon[i][0], yi = polygon[i][1]
+            const xj = polygon[j][0], yj = polygon[j][1]
+
+            if (((yi > y) !== (yj > y)) &&
+                (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+                inside = !inside
+            }
+        }
+        return inside
     }
 
     /**

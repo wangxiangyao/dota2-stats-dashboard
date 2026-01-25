@@ -140,7 +140,11 @@ export function useMapData() {
             outpostsData,
             powerupData,
             bountyData,
-            iconsDataRes
+            iconsDataRes,
+            // 新增：营地类型和建筑数据
+            campTypesData,
+            buildingsDataRes,
+            neutralsDataRes
         ] = await Promise.all([
             fetch(`${baseUrl}/entities/ent_dota_tree.json`).then(r => r.ok ? r.json() : []),
             fetch(`${baseUrl}/entities/npc_dota_tower.json`).then(r => r.ok ? r.json() : []),
@@ -150,8 +154,14 @@ export function useMapData() {
             fetch(`${baseUrl}/entities/npc_dota_watch_tower.json`).then(r => r.ok ? r.json() : []),
             fetch(`${baseUrl}/entities/dota_item_rune_spawner_powerup.json`).then(r => r.ok ? r.json() : []),
             fetch(`${baseUrl}/entities/dota_item_rune_spawner_bounty.json`).then(r => r.ok ? r.json() : []),
-            // 图标配置（用于绘制）
-            fetch('/data/world/icons-config.json').then(r => r.ok ? r.json() : null)
+            // 图标配置
+            fetch('/data/world/icons-config.json').then(r => r.ok ? r.json() : null),
+            // 营地类型（手工标注）
+            fetch('/data/world/custom/neutral-camp-types.json').then(r => r.ok ? r.json() : null),
+            // 建筑数据（防御塔属性等）
+            fetch('/data/world/buildings.json').then(r => r.ok ? r.json() : null),
+            // 野怪数据
+            fetch('/data/world/neutrals.json').then(r => r.ok ? r.json() : null)
         ])
 
         trees.value = treesData
@@ -164,6 +174,15 @@ export function useMapData() {
         bountyRunes.value = bountyData
         iconsConfig.value = iconsDataRes
 
+        // 营地类型配置（从手工标注数据）
+        if (campTypesData?.camps) {
+            campTypes.value = campTypesData.camps
+        }
+
+        // 建筑数据
+        buildingsData.value = buildingsDataRes
+        neutralsData.value = neutralsDataRes
+
         // 构建树木索引
         buildTreeIndex(trees.value)
 
@@ -172,7 +191,7 @@ export function useMapData() {
             await loadSpriteSheet(iconsConfig.value.meta.spriteSheet)
         }
 
-        console.log(`实体数据加载完成: ${trees.value.length} 树木, ${towers.value.length} 防御塔`)
+        console.log(`实体数据加载完成: ${trees.value.length} 树木, ${towers.value.length} 防御塔, ${campTypes.value.length} 营地类型`)
     }
 
     /**

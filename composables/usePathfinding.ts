@@ -163,18 +163,25 @@ export function usePathfinding(
      * @returns 路径点数组（世界坐标）
      */
     function findPath(start: Point, end: Point, options: PathfindingOptions = {}): Point[] {
+        // 默认考虑树木碰撞
+        const { ignoreTrees = false, ...restOptions } = options
+        const finalOptions = { ...restOptions, ignoreTrees }
+
         const startNav = coords.worldToNav(start.x, start.y)
         const endNav = coords.worldToNav(end.x, end.y)
 
         // 检查起终点可行走性
-        if (!isWalkable(startNav.x, startNav.y, options)) {
+        if (!isWalkable(startNav.x, startNav.y, finalOptions)) {
             console.warn('起点不可行走')
             return []
         }
-        if (!isWalkable(endNav.x, endNav.y, options)) {
+        if (!isWalkable(endNav.x, endNav.y, finalOptions)) {
             console.warn('终点不可行走')
             return []
         }
+
+        // 使用更大的步长加速寻路（每4个像素一步）
+        const STEP = 4
 
         // A* 算法
         const openSet = new MinHeap()
@@ -190,27 +197,27 @@ export function usePathfinding(
             f: heuristic(startNav.x, startNav.y, endNav.x, endNav.y)
         })
 
-        // 8 方向（含对角线）
+        // 8 方向（含对角线），使用 STEP 作为步长
         const directions = [
-            { dx: 1, dy: 0, cost: 1 },
-            { dx: -1, dy: 0, cost: 1 },
-            { dx: 0, dy: 1, cost: 1 },
-            { dx: 0, dy: -1, cost: 1 },
-            { dx: 1, dy: 1, cost: 1.414 },
-            { dx: 1, dy: -1, cost: 1.414 },
-            { dx: -1, dy: 1, cost: 1.414 },
-            { dx: -1, dy: -1, cost: 1.414 }
+            { dx: STEP, dy: 0, cost: STEP },
+            { dx: -STEP, dy: 0, cost: STEP },
+            { dx: 0, dy: STEP, cost: STEP },
+            { dx: 0, dy: -STEP, cost: STEP },
+            { dx: STEP, dy: STEP, cost: STEP * 1.414 },
+            { dx: STEP, dy: -STEP, cost: STEP * 1.414 },
+            { dx: -STEP, dy: STEP, cost: STEP * 1.414 },
+            { dx: -STEP, dy: -STEP, cost: STEP * 1.414 }
         ]
 
         let iterations = 0
-        const maxIterations = 100000
+        const maxIterations = 50000
 
         while (openSet.length > 0 && iterations++ < maxIterations) {
             const current = openSet.pop()!
             const currentKey = `${current.x},${current.y}`
 
-            // 到达终点
-            if (current.x === endNav.x && current.y === endNav.y) {
+            // 到达终点（使用距离阈值，因为步长可能导致无法精确到达）
+            if (Math.abs(current.x - endNav.x) <= STEP && Math.abs(current.y - endNav.y) <= STEP) {
                 // 重建路径
                 const path: Point[] = []
                 let curr: { x: number; y: number } | undefined = { x: current.x, y: current.y }
@@ -219,6 +226,8 @@ export function usePathfinding(
                     path.unshift(worldPos)
                     curr = cameFrom.get(`${curr.x},${curr.y}`)
                 }
+                // 添加精确终点
+                path.push(coords.navToWorld(endNav.x, endNav.y))
                 return path
             }
 
@@ -231,7 +240,7 @@ export function usePathfinding(
                 const neighborKey = `${nx},${ny}`
 
                 if (closedSet.has(neighborKey)) continue
-                if (!isWalkable(nx, ny, options)) continue
+                if (!isWalkable(nx, ny, finalOptions)) continue
 
                 const tentativeG = (gScore.get(currentKey) || 0) + cost
 

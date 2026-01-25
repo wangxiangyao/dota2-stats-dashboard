@@ -432,8 +432,8 @@ const placeWard = (worldX: number, worldY: number, type: WardType) => {
     worldX, worldY,
     gridX: gridPt.x, gridY: gridPt.y,
     key,
-    toolsNoWardsCount: Object.keys(visionSimulator.toolsNoWards).length,
-    isInNoWards: !!visionSimulator.toolsNoWards[key],
+    noWardPolygonsCount: (visionSimulator.noWardPolygons || []).length,
+    isInNoWards: visionSimulator.isInNoWardZone(gridPt.x, gridPt.y),
     isValidXY: visionSimulator.isValidXY(gridPt.x, gridPt.y, true, true, true)
   })
   

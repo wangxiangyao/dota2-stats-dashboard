@@ -10,6 +10,8 @@ import type { SelectedEntity } from '@/types/map'
 interface Props {
   entity: SelectedEntity | null
   position: { x: number, y: number } | null
+  buildingsData?: any
+  neutralsData?: any
 }
 
 const props = defineProps<Props>()
@@ -29,14 +31,38 @@ function getCampTypeName(type: string | null | undefined): string {
   return type ? names[type] || type : '未标注'
 }
 
-// 塔等级
-function getTowerTier(name: string | undefined): string {
-  if (!name) return '未知'
-  if (name.includes('tower1')) return '一塔'
-  if (name.includes('tower2')) return '二塔'
-  if (name.includes('tower3')) return '高地塔'
-  if (name.includes('tower4')) return '门塔'
-  return '未知'
+// 从防御塔数据获取等级 key
+function getTowerTierKey(data: any): string {
+  // 优先使用 MapUnitName（新数据格式）
+  const mapUnitName = data?.MapUnitName || ''
+  // 也检查 targetname
+  const targetName = data?.targetname || data?.name || ''
+  const combined = mapUnitName + targetName
+  
+  if (combined.includes('tower1')) return 'tier1'
+  if (combined.includes('tower2')) return 'tier2'
+  if (combined.includes('tower3')) return 'tier3'
+  if (combined.includes('tower4')) return 'tier4'
+  return 'tier1'
+}
+
+// 塔等级显示名
+function getTowerTier(data: any): string {
+  const tierKey = getTowerTierKey(data)
+  const tierNames: Record<string, string> = {
+    tier1: '一塔',
+    tier2: '二塔',
+    tier3: '高地塔',
+    tier4: '门塔'
+  }
+  return tierNames[tierKey] || '未知'
+}
+
+// 获取防御塔属性
+function getTowerStats(data: any) {
+  if (!props.buildingsData?.towers) return null
+  const tierKey = getTowerTierKey(data)
+  return props.buildingsData.towers[tierKey]?.stats
 }
 
 // 阵营名称
@@ -46,26 +72,20 @@ function getTeamName(team: number | undefined): string {
   return '中立'
 }
 
-// 营地金币（基于类型的估算）
-function getCampGold(type: string | null | undefined): string {
-  const goldRange: Record<string, string> = {
-    small: '75-95',
-    medium: '95-125',
-    large: '140-180',
-    ancient: '170-220'
-  }
-  return type ? goldRange[type] || '-' : '-'
+// 获取营地统计数据
+function getCampStats(type: string | null | undefined) {
+  if (!type || !props.neutralsData?.camps?.[type]) return null
+  return props.neutralsData.camps[type]
 }
 
-// 营地经验（基于类型的估算）
-function getCampXp(type: string | null | undefined): string {
-  const xpValues: Record<string, string> = {
-    small: '85',
-    medium: '140',
-    large: '185',
-    ancient: '300+'
-  }
-  return type ? xpValues[type] || '-' : '-'
+// 获取遗迹属性
+function getAncientStats() {
+  return props.buildingsData?.ancient?.stats
+}
+
+// 获取泉水属性
+function getFountainStats() {
+  return props.buildingsData?.fountain?.stats
 }
 </script>
 
@@ -96,14 +116,12 @@ function getCampXp(type: string | null | undefined): string {
             {{ getCampTypeName(entity.campType) }}
           </span>
         </div>
-        <div class="popup-row" v-if="entity.campType">
-          <span class="label">💰 金币</span>
-          <span class="value">{{ getCampGold(entity.campType) }}</span>
-        </div>
-        <div class="popup-row" v-if="entity.campType">
-          <span class="label">⭐ 经验</span>
-          <span class="value">{{ getCampXp(entity.campType) }}</span>
-        </div>
+        <template v-if="getCampStats(entity.campType)">
+          <div class="popup-row">
+            <span class="label">💰 金币</span>
+            <span class="value">{{ getCampStats(entity.campType)?.nameZh }}</span>
+          </div>
+        </template>
         <div class="popup-row">
           <span class="label">🔄 刷新</span>
           <span class="value">60 秒</span>
@@ -124,15 +142,89 @@ function getCampXp(type: string | null | undefined): string {
         </div>
         <div class="popup-row">
           <span class="label">等级</span>
-          <span class="value">{{ getTowerTier(entity.data.name) }}</span>
+          <span class="value">{{ getTowerTier(entity.data) }}</span>
         </div>
+        <template v-if="getTowerStats(entity.data)">
+          <div class="popup-row">
+            <span class="label">❤️ 血量</span>
+            <span class="value">{{ getTowerStats(entity.data)?.hp }}</span>
+          </div>
+          <div class="popup-row">
+            <span class="label">🛡️ 护甲</span>
+            <span class="value">{{ getTowerStats(entity.data)?.armor }}</span>
+          </div>
+          <div class="popup-row">
+            <span class="label">⚔️ 攻击</span>
+            <span class="value">{{ getTowerStats(entity.data)?.attackMin }}-{{ getTowerStats(entity.data)?.attackMax }}</span>
+          </div>
+          <div class="popup-row">
+            <span class="label">🎯 射程</span>
+            <span class="value">{{ getTowerStats(entity.data)?.attackRange }}</span>
+          </div>
+        </template>
         <div class="popup-row coords">
           <span class="label">📍</span>
           <span class="value">({{ Math.round(entity.data.x) }}, {{ Math.round(entity.data.y) }})</span>
         </div>
       </template>
       
-      <!-- 泉水/遗迹/前哨详情 -->
+      <!-- 遗迹详情 -->
+      <template v-else-if="entity.type === 'fort'">
+        <div class="popup-row" v-if="entity.data.team">
+          <span class="label">阵营</span>
+          <span class="value" :class="entity.data.team === 2 ? 'radiant' : 'dire'">
+            {{ getTeamName(entity.data.team) }}
+          </span>
+        </div>
+        <template v-if="getAncientStats()">
+          <div class="popup-row">
+            <span class="label">❤️ 血量</span>
+            <span class="value">{{ getAncientStats()?.hp }}</span>
+          </div>
+          <div class="popup-row">
+            <span class="label">🛡️ 护甲</span>
+            <span class="value">{{ getAncientStats()?.armor }}</span>
+          </div>
+          <div class="popup-row">
+            <span class="label">💚 回血</span>
+            <span class="value">{{ getAncientStats()?.hpRegen }}/秒</span>
+          </div>
+        </template>
+        <div class="popup-row coords">
+          <span class="label">📍</span>
+          <span class="value">({{ Math.round(entity.data.x) }}, {{ Math.round(entity.data.y) }})</span>
+        </div>
+      </template>
+      
+      <!-- 泉水详情 -->
+      <template v-else-if="entity.type === 'fountain'">
+        <div class="popup-row" v-if="entity.data.team">
+          <span class="label">阵营</span>
+          <span class="value" :class="entity.data.team === 2 ? 'radiant' : 'dire'">
+            {{ getTeamName(entity.data.team) }}
+          </span>
+        </div>
+        <template v-if="getFountainStats()">
+          <div class="popup-row">
+            <span class="label">⚔️ 攻击</span>
+            <span class="value">{{ getFountainStats()?.attackMin }}-{{ getFountainStats()?.attackMax }}</span>
+          </div>
+          <div class="popup-row">
+            <span class="label">🎯 射程</span>
+            <span class="value">{{ getFountainStats()?.attackRange }}</span>
+          </div>
+          <div class="popup-row">
+            <span class="label">⚡ 攻速</span>
+            <span class="value">{{ getFountainStats()?.attackRate }}</span>
+          </div>
+        </template>
+        <div class="popup-row coords">
+          <span class="label">📍</span>
+          <span class="value">({{ Math.round(entity.data.x) }}, {{ Math.round(entity.data.y) }})</span>
+        </div>
+      </template>
+      
+      <!-- 其他实体 -->
       <template v-else>
         <div class="popup-row" v-if="entity.data.team">
           <span class="label">阵营</span>

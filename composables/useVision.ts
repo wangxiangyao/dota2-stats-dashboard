@@ -68,7 +68,7 @@ export function useVision(
     const needsFogCacheUpdate = ref(true)
 
     // 选中的眼位
-    const selectedWardId = ref<number | null>(null)
+    const selectedWardId = ref<string | null>(null)
 
     // 选中的防御塔
     const selectedTower = ref<MapEntity | null>(null)
@@ -92,6 +92,16 @@ export function useVision(
 
         try {
             await visionSimulator.initialize(`/data/map/${VERSION}/vision_data.json`)
+
+            // 加载禁眼区多边形数据
+            try {
+                const noWardsResponse = await fetch(`/data/map/${VERSION}/entities/trigger_no_wards.json`)
+                const noWardsData = await noWardsResponse.json()
+                visionSimulator.setNoWardPolygons(noWardsData)
+            } catch (err) {
+                console.warn('禁眼区数据加载失败:', err)
+            }
+
             visionReady.value = true
             console.log('视野模拟器初始化完成')
 
@@ -112,9 +122,21 @@ export function useVision(
         const gridPt = visionSimulator.WorldXYtoGridXY(worldX, worldY)
         const key = `${gridPt.x},${gridPt.y}`
 
+        // 调试：检查禁眼区数据
+        console.log('放眼调试:', {
+            worldX, worldY,
+            gridX: gridPt.x, gridY: gridPt.y,
+            key,
+            noWardPolygonsCount: (visionSimulator.noWardPolygons || []).length,
+            isInNoWards: visionSimulator.isInNoWardZone(gridPt.x, gridPt.y),
+            gridnavCount: Object.keys(visionSimulator.gridnav || {}).length,
+            isInGridnav: !!(visionSimulator.gridnav && visionSimulator.gridnav[key]),
+            isValidXY: visionSimulator.isValidXY(gridPt.x, gridPt.y, true, true, true)
+        })
+
         // 检查是否可以放眼
         if (!visionSimulator.isValidXY(gridPt.x, gridPt.y, true, true, true)) {
-            console.log('无法在此位置放眼')
+            console.log('无法在此位置放眼 - 被禁眼区或不可行走区域阻止')
             return false
         }
 
@@ -161,6 +183,37 @@ export function useVision(
     }
 
     /**
+     * 移动眼位到新位置
+     */
+    function moveWard(wardId: string, worldX: number, worldY: number): boolean {
+        if (!visionSimulator) return false
+
+        const ward = wards.value.find(w => w.id === wardId)
+        if (!ward) return false
+
+        const gridPt = visionSimulator.WorldXYtoGridXY(worldX, worldY)
+
+        // 检查目标位置是否有效（不在禁眼区、树上、不可行走区域）
+        if (!visionSimulator.isValidXY(gridPt.x, gridPt.y, true, true, true)) {
+            console.log('无法移动眼位到此位置 - 被禁眼区、树木或不可行走区域阻止')
+            return false
+        }
+
+        // 更新眼位坐标
+        ward.worldX = worldX
+        ward.worldY = worldY
+        ward.gridX = gridPt.x
+        ward.gridY = gridPt.y
+        ward.position = { x: worldX, y: worldY }
+
+        // 重新计算视野
+        updateCombinedVision()
+        needsFogCacheUpdate.value = true
+
+        return true
+    }
+
+    /**
      * 计算建筑视野（按阵营）
      */
     function computeBuildingVision(team: Team, isDay: boolean): Set<string> {
@@ -173,9 +226,9 @@ export function useVision(
             const isRadiant = tower.team === 2
             if ((team === 'radiant' && !isRadiant) || (team === 'dire' && isRadiant)) continue
 
-            const name = tower.name || ''
+            const name = (tower as any).MapUnitName || tower.name || ''
             let visionRadius: number
-            if (name.includes('_tower1_')) {
+            if (name.includes('tower1_')) {
                 visionRadius = isDay ? TOWER_VISION.tier1.day : TOWER_VISION.tier1.night
             } else {
                 visionRadius = isDay ? TOWER_VISION.tier2.day : TOWER_VISION.tier2.night
@@ -338,7 +391,13 @@ export function useVision(
      * 设置日夜状态（外部调用）
      */
     function setDaytime(isDay: boolean): void {
+        if (isDaytime.value === isDay) return // 避免重复计算
+
         isDaytime.value = isDay
+
+        // 日夜变化时清除建筑视野缓存并重新计算
+        clearBuildingVisionCache()
+        updateCombinedVision()
     }
 
     /**
@@ -368,6 +427,7 @@ export function useVision(
         placeWard,
         removeWard,
         clearAllWards,
+        moveWard,
         updateCombinedVision,
         isWardExpiring,
         hitTestWard,
