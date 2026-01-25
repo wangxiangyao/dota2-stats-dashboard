@@ -22,20 +22,27 @@ const DEFAULT_CONFIG = {
 
 // 需要拉取的文件（只拉取实际使用的）
 const FILES_TO_PULL = {
-    // 从 data/<version>/ 根目录拉取的 JSON 文件
-    root: [
-        'vision_data.json'   // 视野系统数据（高度、树木、阻挡点）
+    // 从 data/<version>/processed/ 拉取的 JSON 文件
+    processed: [
+        'vision_data.json'    // 视野系统数据（高度、树木、阻挡点）
     ],
     // 从 data/<version>/parsed/ 拉取的 JSON 文件
     parsed: [
-        'mapdata.json',      // 地图实体数据（树木坐标、建筑等）
-        'worlddata.json'     // 世界边界数据
+        'worlddata.json'      // 世界边界数据
     ],
-    // 从 img/<version>/ 拉取的图片文件
+    // 从 data/<version>/parsed/entities/ 拉取的实体 JSON 文件
+    entities: [
+        'ent_dota_tree.json',           // 树木
+        'npc_dota_tower.json',          // 防御塔
+        'npc_dota_neutral_spawner.json', // 野怪点
+        'trigger_no_wards.json',        // 禁眼区
+        '_index.json'                   // 实体索引
+    ],
+    // 从 data/<version>/img/ 拉取的图片文件
     images: [
         'elevation.png',       // 地势图
-        'gridnav.png',         // 导航网格（可行走检测）
-        'minimap_accurate.png' // 精确风格化小地图（底图）
+        'gridnav.png',         // 导航网格
+        'minimap_accurate.png' // 精确小地图
     ]
 };
 
@@ -82,16 +89,22 @@ function main() {
 
     const projectRoot = path.join(__dirname, '..');
     const targetDataDir = path.join(projectRoot, 'public', 'data', 'map', version);
+    const targetEntitiesDir = path.join(targetDataDir, 'entities');
     const targetImgDir = path.join(projectRoot, 'public', 'images', 'map', version);
+
+    // 源目录
+    const srcDataDir = path.join(config.mapCoordinatesPath, 'data', version);
+    const srcParsedDir = path.join(srcDataDir, 'parsed');
+    const srcProcessedDir = path.join(srcDataDir, 'processed');
+    const srcEntitiesDir = path.join(srcParsedDir, 'entities');
+    const srcImgDir = path.join(srcDataDir, 'img');  // 注意：现在在 data/<version>/img/
 
     // 拉取 JSON 数据文件
     console.log('拉取 JSON 数据文件...');
-    const srcDataDir = path.join(config.mapCoordinatesPath, 'data', version);
-    const srcParsedDir = path.join(srcDataDir, 'parsed');
 
-    // 从根目录拉取
-    for (const file of FILES_TO_PULL.root) {
-        const srcPath = path.join(srcDataDir, file);
+    // 从 processed 目录拉取
+    for (const file of FILES_TO_PULL.processed) {
+        const srcPath = path.join(srcProcessedDir, file);
         const dstPath = path.join(targetDataDir, file);
 
         if (fs.existsSync(srcPath)) {
@@ -115,10 +128,24 @@ function main() {
         }
     }
 
+    // 从 entities 目录拉取
+    console.log();
+    console.log('拉取实体数据...');
+    for (const file of FILES_TO_PULL.entities) {
+        const srcPath = path.join(srcEntitiesDir, file);
+        const dstPath = path.join(targetEntitiesDir, file);
+
+        if (fs.existsSync(srcPath)) {
+            copyFile(srcPath, dstPath);
+            console.log(`  ✓ entities/${file}`);
+        } else {
+            console.log(`  ✗ entities/${file} (不存在)`);
+        }
+    }
+
     // 拉取图片文件
     console.log();
     console.log('拉取图片文件...');
-    const srcImgDir = path.join(config.mapCoordinatesPath, 'img', version);
 
     for (const file of FILES_TO_PULL.images) {
         const srcPath = path.join(srcImgDir, file);
@@ -136,6 +163,7 @@ function main() {
     console.log('='.repeat(60));
     console.log('完成！');
     console.log(`JSON 数据: ${targetDataDir}`);
+    console.log(`实体数据: ${targetEntitiesDir}`);
     console.log(`图片文件: ${targetImgDir}`);
     console.log('='.repeat(60));
 }

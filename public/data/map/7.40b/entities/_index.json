@@ -1,0 +1,316 @@
+{
+  "version": "7.40b",
+  "total_entities": 5123,
+  "total_types": 76,
+  "sources": [
+    "default_ents.txt",
+    "world_layer_radiant.txt",
+    "world_layer_dire.txt"
+  ],
+  "entity_types": {
+    "worldspawn": {
+      "count": 1,
+      "description": "世界生成"
+    },
+    "env_fog_controller": {
+      "count": 1,
+      "description": "雾效控制器"
+    },
+    "env_global_light": {
+      "count": 1,
+      "description": "全局光照"
+    },
+    "ent_dota_lightinfo": {
+      "count": 40,
+      "description": "光照信息"
+    },
+    "info_target": {
+      "count": 24,
+      "description": "目标点"
+    },
+    "dota_minimap_boundary": {
+      "count": 2,
+      "description": "小地图边界"
+    },
+    "world_bounds": {
+      "count": 1,
+      "description": "世界边界"
+    },
+    "prop_dynamic_clientside": {
+      "count": 354,
+      "description": "客户端动态模型"
+    },
+    "dota_world_particle_system": {
+      "count": 748,
+      "description": "世界粒子系统"
+    },
+    "ambient_creatures": {
+      "count": 224,
+      "description": "环境生物"
+    },
+    "env_deferred_light_client_only": {
+      "count": 334,
+      "description": "延迟光照"
+    },
+    "ent_dota_tree": {
+      "count": 2456,
+      "description": "树木"
+    },
+    "info_particle_system": {
+      "count": 230,
+      "description": "粒子系统"
+    },
+    "ent_fow_blocker_node": {
+      "count": 393,
+      "description": "视野阻挡点"
+    },
+    "trigger_multiple": {
+      "count": 39,
+      "description": "多重触发器"
+    },
+    "trigger_shop": {
+      "count": 5,
+      "description": "商店触发区"
+    },
+    "env_soundscape": {
+      "count": 2,
+      "description": "声景"
+    },
+    "ambient_generic": {
+      "count": 2,
+      "description": "环境音效"
+    },
+    "npc_dota_spawner_good_bot": {
+      "count": 1,
+      "description": "天辉下路兵线"
+    },
+    "npc_dota_spawner_good_mid": {
+      "count": 1,
+      "description": "天辉中路兵线"
+    },
+    "npc_dota_spawner_good_top": {
+      "count": 1,
+      "description": "天辉上路兵线"
+    },
+    "npc_dota_spawner_bad_top": {
+      "count": 1,
+      "description": "夜魇上路兵线"
+    },
+    "npc_dota_spawner_bad_mid": {
+      "count": 1,
+      "description": "夜魇中路兵线"
+    },
+    "npc_dota_spawner_bad_bot": {
+      "count": 1,
+      "description": "夜魇下路兵线"
+    },
+    "logic_auto": {
+      "count": 2,
+      "description": "自动逻辑"
+    },
+    "env_tonemap_controller": {
+      "count": 1,
+      "description": "色调映射控制器"
+    },
+    "water_lod_control": {
+      "count": 1,
+      "description": "水体LOD控制"
+    },
+    "game_ragdoll_manager": {
+      "count": 1,
+      "description": "布娃娃管理器"
+    },
+    "info_player_start": {
+      "count": 1,
+      "description": "玩家出生点"
+    },
+    "info_player_start_goodguys": {
+      "count": 5,
+      "description": "天辉出生点"
+    },
+    "info_player_start_badguys": {
+      "count": 5,
+      "description": "夜魇出生点"
+    },
+    "ent_dota_game_events": {
+      "count": 1,
+      "description": "游戏事件"
+    },
+    "path_corner": {
+      "count": 62,
+      "description": "小兵路径点"
+    },
+    "trigger_no_wards": {
+      "count": 5,
+      "description": "禁止插眼区域"
+    },
+    "logic_relay": {
+      "count": 5,
+      "description": "逻辑中继"
+    },
+    "npc_dota_neutral_spawner": {
+      "count": 28,
+      "description": "野怪刷新点"
+    },
+    "trigger_boss_attackable": {
+      "count": 2,
+      "description": "肉山攻击触发区"
+    },
+    "point_prefab": {
+      "count": 2,
+      "description": "预制体点"
+    },
+    "info_courier_spawn_radiant": {
+      "count": 1,
+      "description": "天辉信使出生点"
+    },
+    "info_courier_spawn_radiant_1": {
+      "count": 1,
+      "description": ""
+    },
+    "info_courier_spawn_radiant_5": {
+      "count": 1,
+      "description": ""
+    },
+    "info_courier_spawn_radiant_4": {
+      "count": 1,
+      "description": ""
+    },
+    "info_courier_spawn_radiant_2": {
+      "count": 1,
+      "description": ""
+    },
+    "info_courier_spawn_radiant_3": {
+      "count": 1,
+      "description": ""
+    },
+    "npc_dota_base_blocker": {
+      "count": 4,
+      "description": "基地阻挡器"
+    },
+    "npc_dota_lantern": {
+      "count": 10,
+      "description": "灯笼/哨卫"
+    },
+    "ent_fow_revealer": {
+      "count": 19,
+      "description": "视野揭示点"
+    },
+    "info_player_start_dota": {
+      "count": 4,
+      "description": "Dota 出生点标记"
+    },
+    "npc_dota_roshan_spawner": {
+      "count": 1,
+      "description": "肉山刷新点"
+    },
+    "npc_dota_xp_fountain": {
+      "count": 2,
+      "description": "经验坟墓"
+    },
+    "dota_movespeed_modifier_path": {
+      "count": 5,
+      "description": "移速修正路径(河道)"
+    },
+    "npc_dota_miniboss_spawner": {
+      "count": 1,
+      "description": "痛苦魔方刷新点"
+    },
+    "npc_dota_tower": {
+      "count": 22,
+      "description": "防御塔"
+    },
+    "npc_dota_barracks": {
+      "count": 12,
+      "description": "兵营"
+    },
+    "npc_dota_fort": {
+      "count": 2,
+      "description": "基地/遗迹"
+    },
+    "info_world_layer": {
+      "count": 4,
+      "description": "世界层信息"
+    },
+    "prop_dynamic": {
+      "count": 4,
+      "description": "动态模型"
+    },
+    "npc_dota_building": {
+      "count": 14,
+      "description": "建筑物"
+    },
+    "npc_dota_watch_tower": {
+      "count": 2,
+      "description": "哨塔/前哨"
+    },
+    "npc_dota_unit_twin_gate": {
+      "count": 2,
+      "description": "双子门"
+    },
+    "npc_dota_lotus_pool": {
+      "count": 2,
+      "description": "莲花池"
+    },
+    "ent_dota_halloffame": {
+      "count": 2,
+      "description": "名人堂"
+    },
+    "ent_dota_shop": {
+      "count": 4,
+      "description": "商店"
+    },
+    "dota_reflection_skybox": {
+      "count": 1,
+      "description": "天空盒反射"
+    },
+    "info_courier_spawn_dire_1": {
+      "count": 1,
+      "description": ""
+    },
+    "info_courier_spawn_dire_3": {
+      "count": 1,
+      "description": ""
+    },
+    "info_courier_spawn_dire_4": {
+      "count": 1,
+      "description": ""
+    },
+    "info_courier_spawn_dire_5": {
+      "count": 1,
+      "description": ""
+    },
+    "info_courier_spawn_dire_2": {
+      "count": 1,
+      "description": ""
+    },
+    "info_courier_spawn_dire": {
+      "count": 1,
+      "description": "夜魇信使出生点"
+    },
+    "ent_dota_fountain": {
+      "count": 2,
+      "description": "泉水/复活点"
+    },
+    "filter_activator_model": {
+      "count": 1,
+      "description": "激活器模型过滤"
+    },
+    "prop_dynamic_client_fadeout": {
+      "count": 1,
+      "description": "淡出动态模型"
+    },
+    "dota_item_rune_spawner_bounty": {
+      "count": 2,
+      "description": "赏金神符刷新点"
+    },
+    "dota_item_rune_spawner_powerup": {
+      "count": 2,
+      "description": "强化神符刷新点"
+    },
+    "ent_dota_neutral_item_stash": {
+      "count": 2,
+      "description": "中立物品储藏处"
+    }
+  }
+}

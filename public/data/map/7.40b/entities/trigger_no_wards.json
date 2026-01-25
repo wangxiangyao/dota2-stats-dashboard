@@ -1,0 +1,71 @@
+[
+  {
+    "source1_brushmodel_index": "40",
+    "StartDisabled": false,
+    "useLocalOffset": false,
+    "classname": "trigger_no_wards",
+    "origin": "-7584.000000 -6664.000000 416.000000",
+    "angles": "0.000000 0.000000 0.000000",
+    "scales": "1.000000 1.000000 1.000000",
+    "hammerUniqueId": "2699:25701",
+    "model": "maps/dota/entities/unnamed_2699_25701.vmdl",
+    "x": -7584.0,
+    "y": -6664.0,
+    "z": 416.0
+  },
+  {
+    "source1_brushmodel_index": "41",
+    "StartDisabled": false,
+    "useLocalOffset": false,
+    "classname": "trigger_no_wards",
+    "origin": "7584.000000 6656.000000 288.000000",
+    "angles": "0.000000 0.000000 0.000000",
+    "scales": "1.000000 1.000000 1.000000",
+    "hammerUniqueId": "2699:25707",
+    "model": "maps/dota/entities/unnamed_2699_25707.vmdl",
+    "x": 7584.0,
+    "y": 6656.0,
+    "z": 288.0
+  },
+  {
+    "useLocalOffset": false,
+    "StartDisabled": false,
+    "source1_brushmodel_index": "49",
+    "classname": "trigger_no_wards",
+    "origin": "-3212.866211 2747.168457 223.999878",
+    "angles": "0.000000 335.294495 0.000000",
+    "scales": "1.000000 1.000000 1.000000",
+    "hammerUniqueId": "2699:28491",
+    "model": "maps/dota/entities/unnamed_2699_28491.vmdl",
+    "x": -3212.866211,
+    "y": 2747.168457,
+    "z": 223.999878
+  },
+  {
+    "useLocalOffset": false,
+    "StartDisabled": false,
+    "source1_brushmodel_index": "49",
+    "classname": "trigger_no_wards",
+    "origin": "3169.786621 -3005.845215 192.000000",
+    "angles": "0.000000 184.665176 0.000000",
+    "scales": "1.000000 1.000000 1.000000",
+    "hammerUniqueId": "2699:28496",
+    "model": "maps/dota/entities/unnamed_2699_28496.vmdl",
+    "x": 3169.786621,
+    "y": -3005.845215,
+    "z": 192.0
+  },
+  {
+    "StartDisabled": false,
+    "useLocalOffset": false,
+    "classname": "trigger_no_wards",
+    "origin": "4847.485840 -1148.983521 249.300812",
+    "angles": "0.000000 278.999847 0.000000",
+    "scales": "1.000000 1.000000 1.000000",
+    "hammerUniqueId": "3010:4090:49",
+    "model": "maps/dota/entities/unnamed_3010_4090_49.vmdl",
+    "x": 4847.48584,
+    "y": -1148.983521,
+    "z": 249.300812
+  }
+]
