@@ -41,6 +41,21 @@ const FILES_TO_PULL = {
         'npc_dota_watch_tower.json',        // 前哨
         'dota_item_rune_spawner_powerup.json',  // 神力符
         'dota_item_rune_spawner_bounty.json',   // 赏金符
+        'npc_dota_barracks.json',           // 兵营
+        'npc_dota_building.json',           // 普通建筑
+        'ent_dota_shop.json',               // 商店
+        'npc_dota_roshan_spawner.json',     // 肉山
+        'npc_dota_miniboss_spawner.json',   // 痛苦魔方
+        'npc_dota_lotus_pool.json',         // 莲花池
+        'npc_dota_xp_fountain.json',        // 智慧神龛
+        'npc_dota_unit_twin_gate.json',     // 双子门
+        'path_corner.json',                 // 路径点
+        'npc_dota_spawner_good_top.json',   // 天辉兵线起点
+        'npc_dota_spawner_good_mid.json',
+        'npc_dota_spawner_good_bot.json',
+        'npc_dota_spawner_bad_top.json',    // 夜魇兵线起点
+        'npc_dota_spawner_bad_mid.json',
+        'npc_dota_spawner_bad_bot.json',
         '_index.json'                       // 实体索引
     ],
     // 从 data/<version>/img/ 拉取的图片文件

@@ -1,0 +1,14 @@
+[
+  {
+    "targetname": "[PR#]lane_mid_goodguys_melee_spawner",
+    "NPCFirstWaypoint": "[PR#]lane_mid_pathcorner_goodguys_1",
+    "classname": "npc_dota_spawner_good_mid",
+    "origin": "-5008.000000 -4488.000000 352.000000",
+    "angles": "0.000000 0.000000 0.000000",
+    "scales": "1.000000 1.000000 1.000000",
+    "hammerUniqueId": "2699:25330",
+    "x": -5008.0,
+    "y": -4488.0,
+    "z": 352.0
+  }
+]

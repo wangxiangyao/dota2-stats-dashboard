@@ -211,6 +211,7 @@ export interface IconConfig {
     subRow: number
     size: number
     note: string
+    bgColor?: number[]  // [r, g, b] 背景色，用于去除透明
 }
 
 export interface IconsData {

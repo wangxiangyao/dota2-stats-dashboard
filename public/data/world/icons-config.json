@@ -13,7 +13,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "泉水"
+            "note": "泉水",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "tower_mid": {
             "col": 7,
@@ -21,7 +26,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "中路防御塔（含4塔）"
+            "note": "中路防御塔（含4塔）",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         },
         "tower_side": {
             "col": 6,
@@ -29,7 +39,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "边路防御塔"
+            "note": "边路防御塔",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "ancient": {
             "col": 1,
@@ -37,7 +52,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "遗迹（天辉夜魇共用）"
+            "note": "遗迹（天辉夜魇共用）",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         },
         "outpost": {
             "col": 2,
@@ -45,7 +65,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "前哨"
+            "note": "前哨",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "rune_spot": {
             "col": 7,
@@ -53,7 +78,12 @@
             "subCol": 1,
             "subRow": 1,
             "size": 0.5,
-            "note": "神符地点（占位）"
+            "note": "神符地点（占位）",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "rune_invis": {
             "col": 7,
@@ -61,7 +91,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 0.5,
-            "note": "隐身神符"
+            "note": "隐身神符",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         },
         "rune_haste": {
             "col": 7,
@@ -69,7 +104,12 @@
             "subCol": 1,
             "subRow": 0,
             "size": 0.5,
-            "note": "急速神符"
+            "note": "急速神符",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         },
         "rune_illusion": {
             "col": 7,
@@ -77,7 +117,12 @@
             "subCol": 0,
             "subRow": 1,
             "size": 0.5,
-            "note": "分身神符"
+            "note": "分身神符",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         },
         "rune_dd": {
             "col": 7,
@@ -85,7 +130,12 @@
             "subCol": 1,
             "subRow": 1,
             "size": 0.5,
-            "note": "双倍神符"
+            "note": "双倍神符",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         },
         "rune_regen": {
             "col": 7,
@@ -93,7 +143,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 0.5,
-            "note": "恢复神符"
+            "note": "恢复神符",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "rune_bounty": {
             "col": 7,
@@ -101,7 +156,12 @@
             "subCol": 1,
             "subRow": 0,
             "size": 0.5,
-            "note": "赏金神符"
+            "note": "赏金神符",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "rune_arcane": {
             "col": 7,
@@ -109,7 +169,12 @@
             "subCol": 0,
             "subRow": 1,
             "size": 0.5,
-            "note": "奥术神符"
+            "note": "奥术神符",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "rune_shield": {
             "col": 8,
@@ -117,7 +182,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 0.5,
-            "note": "护盾神符"
+            "note": "护盾神符",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         },
         "camp_small": {
             "col": 0,
@@ -125,7 +195,12 @@
             "subCol": 0,
             "subRow": 1,
             "size": 0.5,
-            "note": "小野营地"
+            "note": "小野营地",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "camp_medium": {
             "col": 0,
@@ -133,7 +208,12 @@
             "subCol": 0,
             "subRow": 1,
             "size": 0.5,
-            "note": "中野营地"
+            "note": "中野营地",
+            "bgColor": [
+                0,
+                0,
+                0
+            ]
         },
         "camp_large": {
             "col": 0,
@@ -141,7 +221,12 @@
             "subCol": 1,
             "subRow": 0,
             "size": 0.5,
-            "note": "大野营地"
+            "note": "大野营地",
+            "bgColor": [
+                0,
+                0,
+                0
+            ]
         },
         "camp_ancient": {
             "col": 0,
@@ -149,7 +234,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 0.5,
-            "note": "远古营地"
+            "note": "远古营地",
+            "bgColor": [
+                0,
+                0,
+                0
+            ]
         },
         "lotus_pool": {
             "col": 5,
@@ -157,7 +247,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "莲花池"
+            "note": "莲花池",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "twin_gate": {
             "col": 4,
@@ -165,7 +260,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "传送门"
+            "note": "传送门",
+            "bgColor": [
+                1,
+                9,
+                10
+            ]
         },
         "tormentor": {
             "col": 2,
@@ -173,23 +273,38 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "观察者/Tormentor"
+            "note": "观察者/Tormentor",
+            "bgColor": [
+                1,
+                9,
+                10
+            ]
         },
         "pain_cube": {
             "col": 8,
             "row": 7,
             "subCol": 0,
             "subRow": 1,
-            "size": 1,
-            "note": "痛苦魔方"
+            "size": 0.5,
+            "note": "痛苦魔方",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         },
         "wisdom_shrine": {
             "col": 8,
             "row": 7,
             "subCol": 1,
             "subRow": 0,
-            "size": 1,
-            "note": "经验神龛"
+            "size": 0.5,
+            "note": "经验神龛",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         },
         "shop_base": {
             "col": 5,
@@ -197,7 +312,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "泉水商店"
+            "note": "泉水商店",
+            "bgColor": [
+                0,
+                0,
+                0
+            ]
         },
         "shop_secret": {
             "col": 3,
@@ -205,7 +325,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "神秘商店"
+            "note": "神秘商店",
+            "bgColor": [
+                0,
+                0,
+                0
+            ]
         },
         "courier_radiant": {
             "col": 0,
@@ -213,7 +338,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 0.5,
-            "note": "天辉信使（普通）"
+            "note": "天辉信使（普通）",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "courier_radiant_flying": {
             "col": 7,
@@ -221,7 +351,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "天辉信使（飞行）"
+            "note": "天辉信使（飞行）",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         },
         "courier_dire": {
             "col": 4,
@@ -229,7 +364,12 @@
             "subCol": 1,
             "subRow": 1,
             "size": 0.5,
-            "note": "夜魇信使（普通）"
+            "note": "夜魇信使（普通）",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "courier_dire_flying": {
             "col": 6,
@@ -237,7 +377,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "夜魇信使（飞行）"
+            "note": "夜魇信使（飞行）",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "roshan": {
             "col": 6,
@@ -245,7 +390,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "肉山"
+            "note": "肉山",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         },
         "barracks_mid": {
             "col": 0,
@@ -253,7 +403,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "中路兵营"
+            "note": "中路兵营",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "barracks_side": {
             "col": 0,
@@ -261,7 +416,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "边路兵营"
+            "note": "边路兵营",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         },
         "building_base": {
             "col": 4,
@@ -269,7 +429,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "高地普通建筑"
+            "note": "高地普通建筑",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         },
         "ward_observer": {
             "col": 9,
@@ -277,7 +442,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "侦察守卫"
+            "note": "侦察守卫",
+            "bgColor": [
+                34,
+                34,
+                34
+            ]
         },
         "ward_sentry": {
             "col": 9,
@@ -285,7 +455,12 @@
             "subCol": 0,
             "subRow": 0,
             "size": 1,
-            "note": "岗哨守卫"
+            "note": "岗哨守卫",
+            "bgColor": [
+                51,
+                51,
+                51
+            ]
         }
     }
 }

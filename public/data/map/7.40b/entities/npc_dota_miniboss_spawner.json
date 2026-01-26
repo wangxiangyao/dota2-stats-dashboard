@@ -1,0 +1,14 @@
+[
+  {
+    "VisualTeam": "2",
+    "targetname": "[PR#]tormentor_spawn_radiant",
+    "classname": "npc_dota_miniboss_spawner",
+    "origin": "7488.000000 -7856.709961 320.000000",
+    "angles": "0.000000 0.000000 0.000000",
+    "scales": "1.000000 1.000000 1.000000",
+    "hammerUniqueId": "2699:29204",
+    "x": 7488.0,
+    "y": -7856.709961,
+    "z": 320.0
+  }
+]

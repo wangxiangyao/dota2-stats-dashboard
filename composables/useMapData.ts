@@ -39,6 +39,15 @@ export interface MapDataState {
         outposts: MapEntity[]  // npc_dota_watch_tower
         powerupRunes: MapEntity[]
         bountyRunes: MapEntity[]
+        // 新增实体
+        barracks: MapEntity[]
+        buildings: MapEntity[]
+        shops: MapEntity[]
+        roshan: MapEntity[]
+        tormentors: MapEntity[] // npc_dota_miniboss_spawner
+        lotusPools: MapEntity[]
+        wisdomRunes: MapEntity[] // npc_dota_xp_fountain
+        twinGates: MapEntity[]
     }
 
     // 辅助数据
@@ -71,6 +80,15 @@ export function useMapData() {
     const outposts = ref<MapEntity[]>([])
     const powerupRunes = ref<MapEntity[]>([])
     const bountyRunes = ref<MapEntity[]>([])
+    // 新增实体
+    const barracks = ref<MapEntity[]>([])
+    const buildings = ref<MapEntity[]>([])
+    const shops = ref<MapEntity[]>([])
+    const roshan = ref<MapEntity[]>([])
+    const tormentors = ref<MapEntity[]>([])
+    const lotusPools = ref<MapEntity[]>([])
+    const wisdomRunes = ref<MapEntity[]>([])
+    const twinGates = ref<MapEntity[]>([])
 
     // 辅助数据
     const campTypes = ref<CampTypeConfig[]>([])
@@ -140,8 +158,17 @@ export function useMapData() {
             outpostsData,
             powerupData,
             bountyData,
+            // 新增实体数据变量
+            barracksData,
+            buildingsDataRaw,
+            shopsData,
+            roshanData,
+            tormentorsData,
+            lotusData,
+            wisdomData,
+            twinGatesData,
+
             iconsDataRes,
-            // 新增：营地类型和建筑数据
             campTypesData,
             buildingsDataRes,
             neutralsDataRes
@@ -154,6 +181,16 @@ export function useMapData() {
             fetch(`${baseUrl}/entities/npc_dota_watch_tower.json`).then(r => r.ok ? r.json() : []),
             fetch(`${baseUrl}/entities/dota_item_rune_spawner_powerup.json`).then(r => r.ok ? r.json() : []),
             fetch(`${baseUrl}/entities/dota_item_rune_spawner_bounty.json`).then(r => r.ok ? r.json() : []),
+            // 新增实体请求
+            fetch(`${baseUrl}/entities/npc_dota_barracks.json`).then(r => r.ok ? r.json() : []),
+            fetch(`${baseUrl}/entities/npc_dota_building.json`).then(r => r.ok ? r.json() : []),
+            fetch(`${baseUrl}/entities/ent_dota_shop.json`).then(r => r.ok ? r.json() : []),
+            fetch(`${baseUrl}/entities/npc_dota_roshan_spawner.json`).then(r => r.ok ? r.json() : []),
+            fetch(`${baseUrl}/entities/npc_dota_miniboss_spawner.json`).then(r => r.ok ? r.json() : []),
+            fetch(`${baseUrl}/entities/npc_dota_lotus_pool.json`).then(r => r.ok ? r.json() : []),
+            fetch(`${baseUrl}/entities/npc_dota_xp_fountain.json`).then(r => r.ok ? r.json() : []),
+            fetch(`${baseUrl}/entities/npc_dota_unit_twin_gate.json`).then(r => r.ok ? r.json() : []),
+
             // 图标配置
             fetch('/data/world/icons-config.json').then(r => r.ok ? r.json() : null),
             // 营地类型（手工标注）
@@ -172,6 +209,17 @@ export function useMapData() {
         outposts.value = outpostsData
         powerupRunes.value = powerupData
         bountyRunes.value = bountyData
+
+        // 赋值新增实体
+        barracks.value = barracksData
+        buildings.value = buildingsDataRaw
+        shops.value = shopsData
+        roshan.value = roshanData
+        tormentors.value = tormentorsData
+        lotusPools.value = lotusData
+        wisdomRunes.value = wisdomData
+        twinGates.value = twinGatesData
+
         iconsConfig.value = iconsDataRes
 
         // 营地类型配置（从手工标注数据）
@@ -191,7 +239,20 @@ export function useMapData() {
             await loadSpriteSheet(iconsConfig.value.meta.spriteSheet)
         }
 
-        console.log(`实体数据加载完成: ${trees.value.length} 树木, ${towers.value.length} 防御塔, ${campTypes.value.length} 营地类型`)
+        console.log('=== 地图数据加载统计 ===')
+        console.log(`Trees: ${trees.value.length}`)
+        console.log(`Towers: ${towers.value.length}`)
+        console.log(`Barracks: ${barracks.value.length}`)
+        console.log(`Shops: ${shops.value.length}`)
+        console.log(`Outposts: ${outposts.value.length}`)
+        console.log(`Runes (Powerup/Bounty/Wisdom): ${powerupRunes.value.length}/${bountyRunes.value.length}/${wisdomRunes.value.length}`)
+        console.log(`Neutrals: ${neutralSpawners.value.length}`)
+        console.log(`Buildings (Generic): ${buildings.value.length}`)
+        console.log(`Features (Lotus/Tormentor/Gate): ${lotusPools.value.length}/${tormentors.value.length}/${twinGates.value.length}`)
+        console.log(`Ancients: ${ancients.value.length}`)
+        console.log(`Fountains: ${fountains.value.length}`)
+        console.log('==========================')
+
     }
 
     /**
@@ -286,6 +347,16 @@ export function useMapData() {
         outposts,
         powerupRunes,
         bountyRunes,
+
+        // 新增实体
+        barracks,
+        buildings,
+        shops,
+        roshan,
+        tormentors,
+        lotusPools,
+        wisdomRunes,
+        twinGates,
 
         // 辅助数据
         campTypes,

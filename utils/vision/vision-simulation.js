@@ -597,17 +597,35 @@ export class VisionSimulation {
         for (const trigger of triggers) {
             const vertices = trigger.worldVerticesXY
             if (vertices && vertices.length >= 3) {
+                // 对顶点进行凸包排序（按角度排序）
+                const sortedVertices = this._sortPolygonVertices(vertices)
                 this.noWardPolygons.push({
-                    vertices: vertices,
+                    vertices: sortedVertices,
                     // 预计算边界框用于快速排除
-                    minX: Math.min(...vertices.map(v => v[0])),
-                    maxX: Math.max(...vertices.map(v => v[0])),
-                    minY: Math.min(...vertices.map(v => v[1])),
-                    maxY: Math.max(...vertices.map(v => v[1]))
+                    minX: Math.min(...sortedVertices.map(v => v[0])),
+                    maxX: Math.max(...sortedVertices.map(v => v[0])),
+                    minY: Math.min(...sortedVertices.map(v => v[1])),
+                    maxY: Math.max(...sortedVertices.map(v => v[1]))
                 })
             }
         }
         console.log(`VisionSimulation: 加载 ${this.noWardPolygons.length} 个禁眼区多边形`)
+    }
+
+    /**
+     * 对多边形顶点按角度排序（逆时针）
+     */
+    _sortPolygonVertices(vertices) {
+        // 计算中心点
+        const cx = vertices.reduce((sum, v) => sum + v[0], 0) / vertices.length
+        const cy = vertices.reduce((sum, v) => sum + v[1], 0) / vertices.length
+
+        // 按照相对于中心点的角度排序
+        return [...vertices].sort((a, b) => {
+            const angleA = Math.atan2(a[1] - cy, a[0] - cx)
+            const angleB = Math.atan2(b[1] - cy, b[0] - cx)
+            return angleA - angleB
+        })
     }
 
     /**

@@ -91,6 +91,7 @@
 
 <script setup lang="ts">
 import type { TocItem } from '~/components/chart/Layout.vue'
+import WorldInteractiveMap from '@/components/world/InteractiveMap.vue'
 
 // Tab配置
 const tabs = [

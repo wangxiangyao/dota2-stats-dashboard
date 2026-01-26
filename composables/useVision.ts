@@ -223,13 +223,17 @@ export function useVision(
 
         // 计算防御塔视野
         for (const tower of towers.value) {
-            const isRadiant = tower.team === 2
+            const teamnumber = Number((tower as any).teamnumber || tower.team)
+            const isRadiant = teamnumber === 2
             if ((team === 'radiant' && !isRadiant) || (team === 'dire' && isRadiant)) continue
 
             const name = (tower as any).MapUnitName || tower.name || ''
+            const TOWER_COLLISION_RADIUS = 144
             let visionRadius: number
-            if (name.includes('tower1_')) {
-                visionRadius = isDay ? TOWER_VISION.tier1.day : TOWER_VISION.tier1.night
+            if (name.includes('tower1')) {
+                // 一塔视野：只有夜晚时加上碰撞半径
+                const baseVision = isDay ? TOWER_VISION.tier1.day : TOWER_VISION.tier1.night
+                visionRadius = isDay ? baseVision : baseVision + TOWER_COLLISION_RADIUS
             } else {
                 visionRadius = isDay ? TOWER_VISION.tier2.day : TOWER_VISION.tier2.night
             }
@@ -246,7 +250,8 @@ export function useVision(
 
         // 计算基地视野
         for (const ancient of ancients.value) {
-            const isRadiant = ancient.team === 2
+            const teamnumber = Number((ancient as any).teamnumber || ancient.team)
+            const isRadiant = teamnumber === 2
             if ((team === 'radiant' && !isRadiant) || (team === 'dire' && isRadiant)) continue
 
             const gridRadius = Math.ceil(ANCIENT_VISION_RADIUS / VISION_GRID_SIZE)
