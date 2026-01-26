@@ -1,0 +1,122 @@
+{
+    "meta": {
+        "source": "Liquipedia (verified 2026-01-26)",
+        "extractedAt": "2026-01-26T09:30:00.000Z",
+        "note": "仅包含视频制作所需的核心资源：赏金符、智慧符、莲花池"
+    },
+    "bountyRune": {
+        "nameZh": "赏金符",
+        "nameEn": "Bounty Rune",
+        "firstSpawn": 0,
+        "respawnInterval": 240,
+        "goldFormula": {
+            "base": 40,
+            "perInterval": 6,
+            "interval": 300,
+            "description": "40金 + (6金 × ⌊游戏时间 / 5⌋) 每英雄",
+            "formula": "40 + 6 × ⌊游戏时间 / 5⌋"
+        },
+        "notes": "每4分钟刷新；7.40起，金钱由生成时刻决定，而非拾取时刻"
+    },
+    "wisdomRune": {
+        "nameZh": "智慧符",
+        "nameEn": "Wisdom Rune",
+        "firstSpawn": 420,
+        "respawnInterval": 420,
+        "expFormula": {
+            "base": 280,
+            "perInterval": 280,
+            "interval": 420,
+            "description": "280经验 + (280 × ⌊游戏时间 / 7⌋)",
+            "formula": "280 + 280 × ⌊游戏时间 / 7⌋"
+        },
+        "distribution": "拾取者 + 队伍中经验最低的英雄（如果拾取者就是最低，则给第二低）",
+        "notes": "7:00起每7分钟刷新，地图左右边缘各1个，不会消失"
+    },
+    "lotusPool": {
+        "nameZh": "莲花池",
+        "nameEn": "Lotus Pool",
+        "respawnInterval": 180,
+        "maxStack": 6,
+        "totalTime": 1080,
+        "poolCount": 2,
+        "locations": "地图西侧和东侧边缘",
+        "lotusTypes": {
+            "healing": {
+                "nameZh": "治疗莲花",
+                "nameEn": "Healing Lotus",
+                "spawnTime": "0:00起",
+                "hp": 125,
+                "mana": 125,
+                "instant": true,
+                "pickupRange": 275,
+                "notes": "基础莲花"
+            },
+            "great": {
+                "nameZh": "大治疗莲花",
+                "nameEn": "Great Healing Lotus",
+                "spawnTime": "35:00起（池子直接刷新）",
+                "hp": 400,
+                "mana": 400,
+                "instant": true,
+                "pickupRange": 550,
+                "combineFrom": "3个治疗莲花",
+                "notes": "35分钟后池子直接刷新此级别莲花，或3个基础莲花合成"
+            },
+            "greater": {
+                "nameZh": "更大治疗莲花",
+                "nameEn": "Greater Healing Lotus",
+                "spawnTime": "60:00起（池子直接刷新）",
+                "hp": 900,
+                "mana": 900,
+                "instant": true,
+                "pickupRange": 1050,
+                "combineFrom": "2个大治疗莲花（=6个治疗莲花）",
+                "notes": "60分钟后池子直接刷新此级别莲花，或2个大莲花合成"
+            }
+        },
+        "combineRules": {
+            "autoCombine": true,
+            "recipe1": "3 × 治疗莲花 = 1 × 大治疗莲花",
+            "recipe2": "2 × 大治疗莲花 = 1 × 更大治疗莲花"
+        },
+        "pluckingMechanic": {
+            "description": "需站在池中拾取，逐个拾取",
+            "canInterrupt": "敌方英雄靠近时暂停",
+            "speedBonus": "连续拾取时，每个莲花拾取时间-30%",
+            "timePerLotus": [
+                {
+                    "sequence": 1,
+                    "time": 1.5,
+                    "total": 1.5
+                },
+                {
+                    "sequence": 2,
+                    "time": 1.05,
+                    "total": 2.55
+                },
+                {
+                    "sequence": 3,
+                    "time": 0.74,
+                    "total": 3.29
+                },
+                {
+                    "sequence": 4,
+                    "time": 0.51,
+                    "total": 3.8
+                },
+                {
+                    "sequence": 5,
+                    "time": 0.36,
+                    "total": 4.16
+                },
+                {
+                    "sequence": 6,
+                    "time": 0.3,
+                    "total": 4.46
+                }
+            ]
+        },
+        "notes": "每3分钟生成1朵莲花，最多储存6朵（18分钟全满）。35分钟后刷新大莲花，60分钟后刷新更大莲花。"
+    }
+}
