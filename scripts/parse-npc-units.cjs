@@ -203,7 +203,7 @@ const NEUTRAL_CAMPS = {
 // 生成野怪数据
 function generateNeutralsData(data) {
     const neutrals = {};
-    const excludePatterns = ['diretide', 'halloween', 'mutation', 'seasonal', 'aghsfort', 'enraged'];
+    const excludePatterns = ['diretide', 'halloween', 'mutation', 'seasonal', 'aghsfort'];
     const shouldExclude = (key) => excludePatterns.some(p => key.toLowerCase().includes(p));
 
     // 提取所有野怪

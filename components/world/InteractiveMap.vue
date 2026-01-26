@@ -674,7 +674,18 @@ function drawNeutralCamps(ctx: CanvasRenderingContext2D) {
     const campConfig = mapData.campTypes.value.find((c: any) => 
       Math.abs(c.x - camp.x) < 100 && Math.abs(c.y - camp.y) < 100
     )
-    const campType = campConfig?.type || (camp.targetname?.includes('ancient') ? 'ancient' : null)
+    let campType = campConfig?.type || (camp.targetname?.includes('ancient') ? 'ancient' : null)
+    
+    // 对进化营地(isFrog)，根据游戏时间计算当前等级
+    if (campConfig?.isFrog && campType) {
+      const minutes = Math.floor(gameTime.value / 60)
+      const baseTierIndex = ['small', 'medium', 'large', 'ancient'].indexOf(campType)
+      const maxUpgrades = Math.min(2, 3 - baseTierIndex)
+      const completedUpgrades = Math.min(maxUpgrades, Math.floor(minutes / 15))
+      const currentTierIndex = Math.min(baseTierIndex + completedUpgrades, 3)
+      campType = (['small', 'medium', 'large', 'ancient'] as const)[currentTierIndex]
+    }
+    
     const config = campType ? CAMP_CONFIG[campType] : DEFAULT_CONFIG
     
     // 自适应大小
@@ -1227,7 +1238,8 @@ function hitTestEntity(worldCoords: Point, event: MouseEvent): SelectedEntity | 
           type: 'camp', 
           data: camp, 
           index: i + 1,
-          campType: campConfig?.type || (camp.targetname?.includes('ancient') ? 'ancient' : undefined)
+          campType: campConfig?.type || (camp.targetname?.includes('ancient') ? 'ancient' : undefined),
+          isFrog: campConfig?.isFrog || false
         }
       }
     }
@@ -1576,6 +1588,8 @@ onMounted(() => {
         :position="popupPosition"
         :buildings-data="mapData.buildingsData.value"
         :neutrals-data="mapData.neutralsData.value"
+        :camp-spawns-data="mapData.campSpawnsData.value"
+        :game-time="gameTime"
         @close="selectedEntity = null; popupPosition = null"
       />
     </template>

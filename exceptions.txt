@@ -1,0 +1,30 @@
+---------------
+Parent file: D:\steam\steamapps\common\dota 2 beta\game\dota\maps\dota.vpk
+File: maps\dota\world.vwrld_c
+Exception: Datamodel.AttributeTypeException: Attribute "texcoord$1" (Vector4[]) is not an array.
+   at Datamodel.Element.GetArray[T](String name)
+   at ValveResourceFormat.IO.HammerMeshBuilder.AddRenderMesh(DmeMesh shape, Vector3 positionOffset) in /_/ValveResourceFormat/IO/HammerMeshBuilder.cs:line 1236
+   at ValveResourceFormat.IO.MapExtract.RenderMeshToHammerMesh(Model model, Resource resource, Vector3 offset, String entityClassname) in /_/ValveResourceFormat/IO/MapExtract.cs:line 627
+   at ValveResourceFormat.IO.MapExtract.<HandleWorldNode>g__ProcessAggregate|101_6(KVObject agg, Int32 layerIndex, List`1 layerNodes) in /_/ValveResourceFormat/IO/MapExtract.cs:line 1049
+   at ValveResourceFormat.IO.MapExtract.HandleWorldNode(WorldNode node) in /_/ValveResourceFormat/IO/MapExtract.cs:line 1158
+   at ValveResourceFormat.IO.MapExtract.ToValveMap() in /_/ValveResourceFormat/IO/MapExtract.cs:line 408
+   at ValveResourceFormat.IO.MapExtract.ToContentFile() in /_/ValveResourceFormat/IO/MapExtract.cs:line 294
+   at ValveResourceFormat.IO.FileExtract.Extract(Resource resource, IFileLoader fileLoader, IProgress`1 progress) in /_/ValveResourceFormat/IO/FileExtract.cs:line 174
+   at CLI.Decompiler.DecompileResource(Resource resource, IFileLoader fileLoader) in /_/CLI/Decompiler.cs:line 764
+   at CLI.Decompiler.ProcessVPKEntries(String parentPath, Package package, IFileLoader fileLoader, String type, Dictionary`2 manifestData) in /_/CLI/Decompiler.cs:line 1321
+
+---------------
+Parent file: D:\steam\steamapps\common\dota 2 beta\game\dota\maps\dota.vpk
+File: maps\dota.vmap_c
+Exception: Datamodel.AttributeTypeException: Attribute "texcoord$1" (Vector4[]) is not an array.
+   at Datamodel.Element.GetArray[T](String name)
+   at ValveResourceFormat.IO.HammerMeshBuilder.AddRenderMesh(DmeMesh shape, Vector3 positionOffset) in /_/ValveResourceFormat/IO/HammerMeshBuilder.cs:line 1236
+   at ValveResourceFormat.IO.MapExtract.RenderMeshToHammerMesh(Model model, Resource resource, Vector3 offset, String entityClassname) in /_/ValveResourceFormat/IO/MapExtract.cs:line 627
+   at ValveResourceFormat.IO.MapExtract.<HandleWorldNode>g__ProcessAggregate|101_6(KVObject agg, Int32 layerIndex, List`1 layerNodes) in /_/ValveResourceFormat/IO/MapExtract.cs:line 1049
+   at ValveResourceFormat.IO.MapExtract.HandleWorldNode(WorldNode node) in /_/ValveResourceFormat/IO/MapExtract.cs:line 1158
+   at ValveResourceFormat.IO.MapExtract.ToValveMap() in /_/ValveResourceFormat/IO/MapExtract.cs:line 408
+   at ValveResourceFormat.IO.MapExtract.ToContentFile() in /_/ValveResourceFormat/IO/MapExtract.cs:line 294
+   at ValveResourceFormat.IO.FileExtract.Extract(Resource resource, IFileLoader fileLoader, IProgress`1 progress) in /_/ValveResourceFormat/IO/FileExtract.cs:line 174
+   at CLI.Decompiler.DecompileResource(Resource resource, IFileLoader fileLoader) in /_/CLI/Decompiler.cs:line 764
+   at CLI.Decompiler.ProcessVPKEntries(String parentPath, Package package, IFileLoader fileLoader, String type, Dictionary`2 manifestData) in /_/CLI/Decompiler.cs:line 1321
+

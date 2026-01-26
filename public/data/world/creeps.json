@@ -1,7 +1,7 @@
 {
   "meta": {
     "source": "npc_units.txt + Liquipedia",
-    "extractedAt": "2026-01-22T04:11:27.197Z",
+    "extractedAt": "2026-01-26T11:46:16.053Z",
     "notes": "每 7.5 分钟升级一次（第1次在7:30），最多30次升级（225分钟封顶）"
   },
   "upgradeInterval": 450,

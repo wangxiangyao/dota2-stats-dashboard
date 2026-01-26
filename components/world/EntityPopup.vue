@@ -12,6 +12,8 @@ interface Props {
   position: { x: number, y: number } | null
   buildingsData?: any
   neutralsData?: any
+  campSpawnsData?: any
+  gameTime?: number
 }
 
 const props = defineProps<Props>()
@@ -87,6 +89,93 @@ function getAncientStats() {
 function getFountainStats() {
   return props.buildingsData?.fountain?.stats
 }
+
+// 青蛙组合ID列表
+const FROG_CAMP_IDS = ['pollywog', 'froglet', 'frog', 'ancient_frog']
+
+// 获取野怪组合（对进化营地使用当前进化后的等级）
+function getCampCombinations(baseTier: string | null | undefined, isFrog?: boolean, gameTimeSeconds?: number) {
+  if (!baseTier || !props.campSpawnsData) return []
+  
+  // 确定实际使用的等级
+  let actualTier = baseTier
+  
+  // 如果是进化营地，根据游戏时间计算当前等级
+  if (isFrog && gameTimeSeconds !== undefined) {
+    const evoState = getEvolutionState(baseTier, gameTimeSeconds)
+    actualTier = evoState.currentTier
+  }
+  
+  // 检查该等级是否有组合数据
+  if (!props.campSpawnsData[actualTier]) return []
+  
+  const combinations = props.campSpawnsData[actualTier].combinations || []
+  
+  // 如果是青蛙营地,只返回青蛙组合
+  if (isFrog) {
+    return combinations.filter((c: any) => FROG_CAMP_IDS.includes(c.id))
+  }
+  
+  // 非青蛙营地,过滤掉青蛙组合
+  return combinations.filter((c: any) => !FROG_CAMP_IDS.includes(c.id))
+}
+
+// 进化等级顺序
+const TIER_ORDER = ['small', 'medium', 'large', 'ancient']
+const TIER_NAMES: Record<string, string> = {
+  small: '小野',
+  medium: '中野', 
+  large: '大野',
+  ancient: '远古野'
+}
+
+// 获取进化营地当前状态（基于初始等级，最多升级两次）
+function getEvolutionState(baseTier: string, gameTimeSeconds: number) {
+  const minutes = Math.floor(gameTimeSeconds / 60)
+  const baseTierIndex = TIER_ORDER.indexOf(baseTier)
+  
+  // 最大可升级次数 = 2次，但不能超过ancient
+  const maxUpgrades = Math.min(2, TIER_ORDER.length - 1 - baseTierIndex)
+  
+  // 计算已完成的升级轮数（每15分钟完成一轮，每轮3只野怪都进化一次）
+  const completedUpgrades = Math.min(maxUpgrades, Math.floor(minutes / 15))
+  
+  // 当前等级 = 初始等级 + 已完成升级次数
+  const currentTierIndex = Math.min(baseTierIndex + completedUpgrades, TIER_ORDER.length - 1)
+  const currentTier = TIER_ORDER[currentTierIndex]
+  
+  // 当前轮次内已进化几只（每5分钟进化一只，共3只）
+  const currentRoundMinutes = minutes % 15
+  const evolutionsInRound = Math.min(3, Math.floor(currentRoundMinutes / 5))
+  
+  // 下次全部升级时间
+  const nextUpgradeTime = completedUpgrades < maxUpgrades ? (completedUpgrades + 1) * 15 : null
+  
+  // 最终等级和完全升级时间
+  const finalTierIndex = Math.min(baseTierIndex + maxUpgrades, TIER_ORDER.length - 1)
+  const finalTier = TIER_ORDER[finalTierIndex]
+  const fullyEvolvedTime = maxUpgrades * 15
+  
+  return {
+    baseTier,
+    baseTierName: TIER_NAMES[baseTier],
+    currentTier,
+    currentTierName: TIER_NAMES[currentTier],
+    evolutionsInRound,
+    completedUpgrades,
+    maxUpgrades,
+    nextUpgradeTime,
+    finalTier,
+    finalTierName: TIER_NAMES[finalTier],
+    fullyEvolvedTime,
+    isFullyEvolved: completedUpgrades >= maxUpgrades
+  }
+}
+
+// 格式化单位名称
+function formatUnitName(id: string): string {
+  return id.replace(/_/g, ' ')
+}
 </script>
 
 <template>
@@ -108,24 +197,68 @@ function getFountainStats() {
         <button class="close-btn" @click="emit('close')">×</button>
       </div>
       
-      <!-- 野怪营地详情 -->
       <template v-if="entity.type === 'camp'">
         <div class="popup-row">
           <span class="label">类型</span>
           <span class="value" :class="entity.campType || 'unknown'">
             {{ getCampTypeName(entity.campType) }}
+            <span v-if="entity.isFrog" class="frog-badge">🐸 进化</span>
           </span>
         </div>
-        <template v-if="getCampStats(entity.campType)">
-          <div class="popup-row">
-            <span class="label">💰 金币</span>
-            <span class="value">{{ getCampStats(entity.campType)?.nameZh }}</span>
-          </div>
-        </template>
         <div class="popup-row">
           <span class="label">🔄 刷新</span>
-          <span class="value">60 秒</span>
+          <span class="value">60秒 | 堆叠:53-55</span>
         </div>
+        
+        <!-- 进化营地状态 -->
+        <template v-if="entity.isFrog && gameTime !== undefined">
+          <div class="evolution-header">🌊 进化状态</div>
+          <div class="evolution-status">
+            <div class="evolution-row">
+              <span class="evo-label">初始等级</span>
+              <span class="evo-value">{{ getEvolutionState(entity.campType || 'small', gameTime).baseTierName }}</span>
+            </div>
+            <div class="evolution-row">
+              <span class="evo-label">当前等级</span>
+              <span class="evo-value highlight">{{ getEvolutionState(entity.campType || 'small', gameTime).currentTierName }}</span>
+            </div>
+            <div class="evolution-row">
+              <span class="evo-label">本轮进化</span>
+              <span class="evo-value">{{ getEvolutionState(entity.campType || 'small', gameTime).evolutionsInRound }}/3 只</span>
+            </div>
+            <div class="evolution-row" v-if="!getEvolutionState(entity.campType || 'small', gameTime).isFullyEvolved">
+              <span class="evo-label">下次升级</span>
+              <span class="evo-value">{{ getEvolutionState(entity.campType || 'small', gameTime).nextUpgradeTime }}:00</span>
+            </div>
+            <div class="evolution-row">
+              <span class="evo-label">最终形态</span>
+              <span class="evo-value" :class="{ complete: getEvolutionState(entity.campType || 'small', gameTime).isFullyEvolved }">
+                {{ getEvolutionState(entity.campType || 'small', gameTime).finalTierName }}
+                <span v-if="!getEvolutionState(entity.campType || 'small', gameTime).isFullyEvolved">
+                  ({{ getEvolutionState(entity.campType || 'small', gameTime).fullyEvolvedTime }}:00)
+                </span>
+                <span v-else>✓</span>
+              </span>
+            </div>
+          </div>
+        </template>
+        
+        <!-- 野怪组合列表 -->
+        <template v-if="getCampCombinations(entity.campType, entity.isFrog, gameTime).length > 0">
+          <div class="combinations-header">{{ entity.isFrog ? '青蛙野怪' : '野怪组合' }}</div>
+          <div 
+            v-for="(combo, index) in getCampCombinations(entity.campType, entity.isFrog, gameTime)" 
+            :key="combo.id"
+            class="combo-item"
+          >
+            <div class="combo-name">{{ Number(index) + 1 }}. {{ combo.name }}</div>
+            <div class="combo-stats">
+              <span class="stat-gold">💰 {{ combo.totalGold.min }}-{{ combo.totalGold.max }}</span>
+              <span class="stat-xp">⭐ {{ combo.totalXP }}</span>
+            </div>
+          </div>
+        </template>
+        
         <div class="popup-row coords">
           <span class="label">📍</span>
           <span class="value">({{ Math.round(entity.data.x) }}, {{ Math.round(entity.data.y) }})</span>
@@ -318,5 +451,121 @@ function getFountainStats() {
 .popup-row.coords {
   font-size: 0.8rem;
   color: #666;
+}
+
+/* 野怪组合样式 */
+.combinations-header {
+  padding: 0.6rem 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.combo-item {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.combo-item:last-of-type {
+  border-bottom: 1px solid #333;
+}
+
+.combo-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #eee;
+  margin-bottom: 0.3rem;
+}
+
+.combo-stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+}
+
+.stat-gold {
+  color: #f39c12;
+}
+
+.stat-xp {
+  color: #3498db;
+}
+
+/* 进化营地样式 */
+.frog-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-left: 6px;
+}
+
+.evolution-header {
+  padding: 0.6rem 1rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #9b87f5;
+}
+
+.evolution-timeline {
+  padding: 0.5rem 1rem;
+}
+
+.evolution-stage {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  font-size: 0.8rem;
+}
+
+.evolution-time {
+  color: #888;
+  min-width: 40px;
+}
+
+.evolution-name {
+  color: #aaa;
+}
+
+.evolution-name.active {
+  color: #9b87f5;
+  font-weight: 600;
+}
+
+.evolution-status {
+  padding: 0.5rem 1rem;
+}
+
+.evolution-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  font-size: 0.85rem;
+}
+
+.evo-label {
+  color: #888;
+}
+
+.evo-value {
+  color: #eee;
+  font-weight: 500;
+}
+
+.evo-value.highlight {
+  color: #f39c12;
+  font-weight: 600;
+}
+
+.evo-value.complete {
+  color: #27ae60;
+  font-weight: 600;
 }
 </style>

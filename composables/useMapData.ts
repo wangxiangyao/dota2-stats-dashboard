@@ -92,6 +92,7 @@ export function useMapData() {
 
     // 辅助数据
     const campTypes = ref<CampTypeConfig[]>([])
+    const campSpawnsData = ref<any>(null)
     const neutralsData = ref<any>(null)
     const buildingsData = ref<any>(null)
     const iconsConfig = ref<IconsData | null>(null)
@@ -170,6 +171,7 @@ export function useMapData() {
 
             iconsDataRes,
             campTypesData,
+            campSpawnsDataRes,
             buildingsDataRes,
             neutralsDataRes
         ] = await Promise.all([
@@ -195,6 +197,8 @@ export function useMapData() {
             fetch('/data/world/icons-config.json').then(r => r.ok ? r.json() : null),
             // 营地类型（手工标注）
             fetch('/data/world/custom/neutral-camp-types.json').then(r => r.ok ? r.json() : null),
+            // 营地野怪组合
+            fetch('/data/world/custom/camp-spawns.json').then(r => r.ok ? r.json() : null),
             // 建筑数据（防御塔属性等）
             fetch('/data/world/buildings.json').then(r => r.ok ? r.json() : null),
             // 野怪数据
@@ -226,6 +230,9 @@ export function useMapData() {
         if (campTypesData?.camps) {
             campTypes.value = campTypesData.camps
         }
+
+        // 营地野怪组合数据
+        campSpawnsData.value = campSpawnsDataRes
 
         // 建筑数据
         buildingsData.value = buildingsDataRes
@@ -360,6 +367,7 @@ export function useMapData() {
 
         // 辅助数据
         campTypes,
+        campSpawnsData,
         neutralsData,
         buildingsData,
         iconsConfig,

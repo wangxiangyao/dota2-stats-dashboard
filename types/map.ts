@@ -88,6 +88,7 @@ export interface SelectedEntity {
     campType?: CampType
     campNote?: string
     index?: number
+    isFrog?: boolean
 }
 
 /**
@@ -128,6 +129,7 @@ export interface CampTypeConfig {
     y: number
     type: CampType
     note: string
+    isFrog?: boolean
 }
 
 /**

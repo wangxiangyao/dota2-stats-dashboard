@@ -1,269 +1,883 @@
 {
-    "meta": {
-        "source": "neutrals.json + 游戏数据分析",
-        "extractedAt": "2026-01-26T09:20:00.000Z",
-        "notes": "野怪营地可能的组合及经济期望值（基于7.40版本）"
-    },
-    "small": {
-        "nameZh": "小野",
-        "combinations": [
-            {
-                "id": "kobold",
-                "name": "狗头人",
-                "units": [
-                    "kobold",
-                    "kobold",
-                    "kobold_tunneler"
-                ],
-                "totalGold": {
-                    "min": 18,
-                    "max": 24
-                },
-                "totalXP": 45,
-                "difficulty": "easy"
-            },
-            {
-                "id": "forest_troll",
-                "name": "森林巨魔",
-                "units": [
-                    "forest_troll_berserker",
-                    "forest_troll_berserker",
-                    "forest_troll_high_priest"
-                ],
-                "totalGold": {
-                    "min": 54,
-                    "max": 60
-                },
-                "totalXP": 84,
-                "difficulty": "easy"
-            },
-            {
-                "id": "gnoll",
-                "name": "豺狼人",
-                "units": [
-                    "gnoll_assassin",
-                    "gnoll_assassin",
-                    "gnoll_assassin"
-                ],
-                "totalGold": {
-                    "min": 48,
-                    "max": 51
-                },
-                "totalXP": 66,
-                "difficulty": "easy"
-            },
-            {
-                "id": "harpy",
-                "name": "鹰身女妖",
-                "units": [
-                    "harpy_scout",
-                    "harpy_scout",
-                    "harpy_storm"
-                ],
-                "totalGold": {
-                    "min": 36,
-                    "max": 42
-                },
-                "totalXP": 60,
-                "difficulty": "easy"
-            }
+  "meta": {
+    "source": "Liquipedia (verified 2026-01-26) + npc_units.txt",
+    "extractedAt": "2026-01-26T11:47:44.892Z",
+    "notes": "野怪营地组合及准确的金钱/经验数值"
+  },
+  "small": {
+    "nameZh": "小野",
+    "nameEn": "Small Camp",
+    "combinations": [
+      {
+        "id": "kobold",
+        "name": "狗头人营地",
+        "nameEn": "Kobold Camp",
+        "units": [
+          "kobold",
+          "kobold",
+          "kobold",
+          "kobold_tunneler",
+          "kobold_taskmaster"
+        ],
+        "totalGold": {
+          "min": 40,
+          "max": 50,
+          "avg": 45
+        },
+        "totalXP": 89,
+        "unitDetails": [
+          {
+            "id": "kobold",
+            "gold": "3-5",
+            "xp": 14
+          },
+          {
+            "id": "kobold",
+            "gold": "3-5",
+            "xp": 14
+          },
+          {
+            "id": "kobold",
+            "gold": "3-5",
+            "xp": 14
+          },
+          {
+            "id": "kobold_tunneler",
+            "gold": "12-14",
+            "xp": 17
+          },
+          {
+            "id": "kobold_taskmaster",
+            "gold": "19-21",
+            "xp": 30
+          }
         ]
-    },
-    "medium": {
-        "nameZh": "中野",
-        "combinations": [
-            {
-                "id": "centaur",
-                "name": "半人马",
-                "units": [
-                    "centaur_outrunner",
-                    "centaur_outrunner",
-                    "centaur_khan"
-                ],
-                "totalGold": {
-                    "min": 54,
-                    "max": 60
-                },
-                "totalXP": 90,
-                "difficulty": "medium"
-            },
-            {
-                "id": "satyr",
-                "name": "萨特",
-                "units": [
-                    "satyr_trickster",
-                    "satyr_trickster",
-                    "satyr_soulstealer"
-                ],
-                "totalGold": {
-                    "min": 54,
-                    "max": 60
-                },
-                "totalXP": 90,
-                "difficulty": "medium"
-            },
-            {
-                "id": "ogre",
-                "name": "食人魔",
-                "units": [
-                    "ogre_mauler",
-                    "ogre_mauler",
-                    "ogre_magi"
-                ],
-                "totalGold": {
-                    "min": 54,
-                    "max": 60
-                },
-                "totalXP": 90,
-                "difficulty": "medium"
-            },
-            {
-                "id": "wolf",
-                "name": "狼群",
-                "units": [
-                    "giant_wolf",
-                    "giant_wolf",
-                    "alpha_wolf"
-                ],
-                "totalGold": {
-                    "min": 54,
-                    "max": 60
-                },
-                "totalXP": 90,
-                "difficulty": "medium"
-            }
+      },
+      {
+        "id": "hill_troll",
+        "name": "山地巨魔营地",
+        "nameEn": "Hill Troll Camp",
+        "units": [
+          "forest_troll_berserker",
+          "forest_troll_berserker",
+          "forest_troll_high_priest"
+        ],
+        "totalGold": {
+          "min": 54,
+          "max": 60,
+          "avg": 57
+        },
+        "totalXP": 84,
+        "unitDetails": [
+          {
+            "id": "forest_troll_berserker",
+            "gold": "18-20",
+            "xp": 28
+          },
+          {
+            "id": "forest_troll_berserker",
+            "gold": "18-20",
+            "xp": 28
+          },
+          {
+            "id": "forest_troll_high_priest",
+            "gold": "18-20",
+            "xp": 28
+          }
         ]
-    },
-    "large": {
-        "nameZh": "大野",
-        "combinations": [
-            {
-                "id": "satyr_hellcaller",
-                "name": "地狱萨特",
-                "units": [
-                    "satyr_trickster",
-                    "satyr_soulstealer",
-                    "satyr_hellcaller"
-                ],
-                "totalGold": {
-                    "min": 84,
-                    "max": 93
-                },
-                "totalXP": 159,
-                "difficulty": "hard"
-            },
-            {
-                "id": "wildkin",
-                "name": "野性之心",
-                "units": [
-                    "wildkin",
-                    "enraged_wildkin"
-                ],
-                "totalGold": {
-                    "min": 72,
-                    "max": 78
-                },
-                "totalXP": 132,
-                "difficulty": "hard"
-            },
-            {
-                "id": "dark_troll",
-                "name": "黑暗巨魔",
-                "units": [
-                    "dark_troll",
-                    "dark_troll",
-                    "dark_troll_warlord"
-                ],
-                "totalGold": {
-                    "min": 72,
-                    "max": 81
-                },
-                "totalXP": 147,
-                "difficulty": "hard"
-            }
+      },
+      {
+        "id": "hill_troll_kobold",
+        "name": "山地巨魔狗头人营地",
+        "nameEn": "Hill Troll and Kobold Camp",
+        "units": [
+          "forest_troll_berserker",
+          "forest_troll_berserker",
+          "kobold_taskmaster"
+        ],
+        "totalGold": {
+          "min": 55,
+          "max": 61,
+          "avg": 58
+        },
+        "totalXP": 86,
+        "unitDetails": [
+          {
+            "id": "forest_troll_berserker",
+            "gold": "18-20",
+            "xp": 28
+          },
+          {
+            "id": "forest_troll_berserker",
+            "gold": "18-20",
+            "xp": 28
+          },
+          {
+            "id": "kobold_taskmaster",
+            "gold": "19-21",
+            "xp": 30
+          }
         ]
-    },
-    "ancient": {
-        "nameZh": "远古野",
-        "combinations": [
-            {
-                "id": "dragon",
-                "name": "黑龙",
-                "units": [
-                    "black_drake",
-                    "black_drake",
-                    "black_dragon"
-                ],
-                "totalGold": {
-                    "min": 126,
-                    "max": 141
-                },
-                "totalXP": 246,
-                "difficulty": "very_hard",
-                "notes": "黑龙有溅射伤害"
-            },
-            {
-                "id": "golem",
-                "name": "石像鬼",
-                "units": [
-                    "rock_golem",
-                    "rock_golem",
-                    "granite_golem"
-                ],
-                "totalGold": {
-                    "min": 126,
-                    "max": 141
-                },
-                "totalXP": 246,
-                "difficulty": "very_hard",
-                "notes": "花岗石像有硬化光环"
-            },
-            {
-                "id": "thunder_lizard",
-                "name": "雷霆蜥蜴",
-                "units": [
-                    "small_thunder_lizard",
-                    "big_thunder_lizard"
-                ],
-                "totalGold": {
-                    "min": 96,
-                    "max": 108
-                },
-                "totalXP": 186,
-                "difficulty": "very_hard",
-                "notes": "有击退能力"
-            },
-            {
-                "id": "prowler",
-                "name": "潜行者",
-                "units": [
-                    "prowler_acolyte",
-                    "prowler_shaman"
-                ],
-                "totalGold": {
-                    "min": 108,
-                    "max": 120
-                },
-                "totalXP": 204,
-                "difficulty": "very_hard"
-            },
-            {
-                "id": "frog",
-                "name": "远古蛙",
-                "units": [
-                    "tadpole",
-                    "froglet",
-                    "grown_frog",
-                    "ancient_frog"
-                ],
-                "totalGold": {
-                    "min": 144,
-                    "max": 162
-                },
-                "totalXP": 300,
-                "difficulty": "very_hard",
-                "notes": "最高经济价值"
-            }
+      },
+      {
+        "id": "vhoul",
+        "name": "虚无刺客营地",
+        "nameEn": "Vhoul Assassin Camp",
+        "units": [
+          "gnoll_assassin",
+          "gnoll_assassin",
+          "gnoll_assassin"
+        ],
+        "totalGold": {
+          "min": 48,
+          "max": 54,
+          "avg": 51
+        },
+        "totalXP": 90,
+        "unitDetails": [
+          {
+            "id": "gnoll_assassin",
+            "gold": "16-18",
+            "xp": 30
+          },
+          {
+            "id": "gnoll_assassin",
+            "gold": "16-18",
+            "xp": 30
+          },
+          {
+            "id": "gnoll_assassin",
+            "gold": "16-18",
+            "xp": 30
+          }
         ]
-    }
+      },
+      {
+        "id": "ghost",
+        "name": "幽灵营地",
+        "nameEn": "Ghost Camp",
+        "units": [
+          "fel_beast",
+          "fel_beast",
+          "ghost"
+        ],
+        "totalGold": {
+          "min": 55,
+          "max": 61,
+          "avg": 58
+        },
+        "totalXP": 94,
+        "unitDetails": [
+          {
+            "id": "fel_beast",
+            "gold": "16-18",
+            "xp": 26
+          },
+          {
+            "id": "fel_beast",
+            "gold": "16-18",
+            "xp": 26
+          },
+          {
+            "id": "ghost",
+            "gold": "23-25",
+            "xp": 42
+          }
+        ]
+      },
+      {
+        "id": "harpy",
+        "name": "鹰身女妖营地",
+        "nameEn": "Harpy Camp",
+        "units": [
+          "harpy_scout",
+          "harpy_scout",
+          "harpy_storm"
+        ],
+        "totalGold": {
+          "min": 53,
+          "max": 59,
+          "avg": 56
+        },
+        "totalXP": 94,
+        "unitDetails": [
+          {
+            "id": "harpy_scout",
+            "gold": "14-16",
+            "xp": 26
+          },
+          {
+            "id": "harpy_scout",
+            "gold": "14-16",
+            "xp": 26
+          },
+          {
+            "id": "harpy_storm",
+            "gold": "25-27",
+            "xp": 42
+          }
+        ]
+      },
+      {
+        "id": "pollywog",
+        "name": "蝌蚪营地",
+        "nameEn": "Pollywog Camp",
+        "units": [
+          "tadpole",
+          "tadpole",
+          "tadpole"
+        ],
+        "totalGold": {
+          "min": 51,
+          "max": 57,
+          "avg": 54
+        },
+        "totalXP": 90,
+        "unitDetails": [
+          {
+            "id": "tadpole",
+            "gold": "17-19",
+            "xp": 30
+          },
+          {
+            "id": "tadpole",
+            "gold": "17-19",
+            "xp": 30
+          },
+          {
+            "id": "tadpole",
+            "gold": "17-19",
+            "xp": 30
+          }
+        ]
+      }
+    ]
+  },
+  "medium": {
+    "nameZh": "中野",
+    "nameEn": "Medium Camp",
+    "combinations": [
+      {
+        "id": "centaur",
+        "name": "半人马营地",
+        "nameEn": "Centaur Camp",
+        "units": [
+          "centaur_outrunner",
+          "centaur_khan"
+        ],
+        "totalGold": {
+          "min": 70,
+          "max": 78,
+          "avg": 74
+        },
+        "totalXP": 122,
+        "unitDetails": [
+          {
+            "id": "centaur_outrunner",
+            "gold": "16-18",
+            "xp": 32
+          },
+          {
+            "id": "centaur_khan",
+            "gold": "54-60",
+            "xp": 90
+          }
+        ]
+      },
+      {
+        "id": "wolf",
+        "name": "狼群营地",
+        "nameEn": "Wolf Camp",
+        "units": [
+          "giant_wolf",
+          "giant_wolf",
+          "alpha_wolf"
+        ],
+        "totalGold": {
+          "min": 68,
+          "max": 78,
+          "avg": 73
+        },
+        "totalXP": 140,
+        "unitDetails": [
+          {
+            "id": "giant_wolf",
+            "gold": "18-22",
+            "xp": 40
+          },
+          {
+            "id": "giant_wolf",
+            "gold": "18-22",
+            "xp": 40
+          },
+          {
+            "id": "alpha_wolf",
+            "gold": "32-34",
+            "xp": 60
+          }
+        ]
+      },
+      {
+        "id": "satyr",
+        "name": "萨特营地",
+        "nameEn": "Satyr Camp",
+        "units": [
+          "satyr_trickster",
+          "satyr_trickster",
+          "satyr_soulstealer",
+          "satyr_soulstealer"
+        ],
+        "totalGold": {
+          "min": 60,
+          "max": 72,
+          "avg": 66
+        },
+        "totalXP": 140,
+        "unitDetails": [
+          {
+            "id": "satyr_trickster",
+            "gold": "12-14",
+            "xp": 24
+          },
+          {
+            "id": "satyr_trickster",
+            "gold": "12-14",
+            "xp": 24
+          },
+          {
+            "id": "satyr_soulstealer",
+            "gold": "18-22",
+            "xp": 46
+          },
+          {
+            "id": "satyr_soulstealer",
+            "gold": "18-22",
+            "xp": 46
+          }
+        ]
+      },
+      {
+        "id": "ogre",
+        "name": "食人魔营地",
+        "nameEn": "Ogre Camp",
+        "units": [
+          "ogre_mauler",
+          "ogre_mauler",
+          "ogre_magi"
+        ],
+        "totalGold": {
+          "min": 72,
+          "max": 84,
+          "avg": 78
+        },
+        "totalXP": 112,
+        "unitDetails": [
+          {
+            "id": "ogre_mauler",
+            "gold": "22-26",
+            "xp": 32
+          },
+          {
+            "id": "ogre_mauler",
+            "gold": "22-26",
+            "xp": 32
+          },
+          {
+            "id": "ogre_magi",
+            "gold": "28-32",
+            "xp": 48
+          }
+        ]
+      },
+      {
+        "id": "golem",
+        "name": "泥土傀儡营地",
+        "nameEn": "Golem Camp",
+        "units": [
+          "mud_golem",
+          "mud_golem"
+        ],
+        "totalGold": {
+          "min": 38,
+          "max": 42,
+          "avg": 40
+        },
+        "totalXP": 64,
+        "unitDetails": [
+          {
+            "id": "mud_golem",
+            "gold": "19-21",
+            "xp": 32
+          },
+          {
+            "id": "mud_golem",
+            "gold": "19-21",
+            "xp": 32
+          }
+        ]
+      },
+      {
+        "id": "froglet",
+        "name": "小蛙营地",
+        "nameEn": "Froglet Camp",
+        "units": [
+          "froglet",
+          "froglet",
+          "froglet_mage"
+        ],
+        "totalGold": {
+          "min": 75,
+          "max": 87,
+          "avg": 81
+        },
+        "totalXP": 126,
+        "unitDetails": [
+          {
+            "id": "froglet",
+            "gold": "25-29",
+            "xp": 42
+          },
+          {
+            "id": "froglet",
+            "gold": "25-29",
+            "xp": 42
+          },
+          {
+            "id": "froglet_mage",
+            "gold": "25-29",
+            "xp": 42
+          }
+        ]
+      }
+    ]
+  },
+  "large": {
+    "nameZh": "大野",
+    "nameEn": "Large Camp",
+    "combinations": [
+      {
+        "id": "large_centaur",
+        "name": "大半人马营地",
+        "nameEn": "Large Centaur Camp",
+        "units": [
+          "centaur_outrunner",
+          "centaur_khan",
+          "centaur_khan"
+        ],
+        "totalGold": {
+          "min": 124,
+          "max": 138,
+          "avg": 131
+        },
+        "totalXP": 212,
+        "unitDetails": [
+          {
+            "id": "centaur_outrunner",
+            "gold": "16-18",
+            "xp": 32
+          },
+          {
+            "id": "centaur_khan",
+            "gold": "54-60",
+            "xp": 90
+          },
+          {
+            "id": "centaur_khan",
+            "gold": "54-60",
+            "xp": 90
+          }
+        ]
+      },
+      {
+        "id": "large_satyr",
+        "name": "大萨特营地",
+        "nameEn": "Large Satyr Camp",
+        "units": [
+          "satyr_trickster",
+          "satyr_soulstealer",
+          "satyr_hellcaller"
+        ],
+        "totalGold": {
+          "min": 90,
+          "max": 102,
+          "avg": 96
+        },
+        "totalXP": 160,
+        "unitDetails": [
+          {
+            "id": "satyr_trickster",
+            "gold": "12-14",
+            "xp": 24
+          },
+          {
+            "id": "satyr_soulstealer",
+            "gold": "18-22",
+            "xp": 46
+          },
+          {
+            "id": "satyr_hellcaller",
+            "gold": "60-66",
+            "xp": 90
+          }
+        ]
+      },
+      {
+        "id": "hellbear",
+        "name": "地狱熊营地",
+        "nameEn": "Hellbear Camp",
+        "units": [
+          "polar_furbolg_champion",
+          "polar_furbolg_ursa_warrior"
+        ],
+        "totalGold": {
+          "min": 92,
+          "max": 104,
+          "avg": 98
+        },
+        "totalXP": 156,
+        "unitDetails": [
+          {
+            "id": "polar_furbolg_champion",
+            "gold": "30-38",
+            "xp": 66
+          },
+          {
+            "id": "polar_furbolg_ursa_warrior",
+            "gold": "62-66",
+            "xp": 90
+          }
+        ]
+      },
+      {
+        "id": "wildwing",
+        "name": "野性之心营地",
+        "nameEn": "Wildwing Camp",
+        "units": [
+          "wildkin",
+          "wildkin",
+          "enraged_wildkin"
+        ],
+        "totalGold": {
+          "min": 90,
+          "max": 100,
+          "avg": 95
+        },
+        "totalXP": 142,
+        "unitDetails": [
+          {
+            "id": "wildkin",
+            "gold": "16-18",
+            "xp": 26
+          },
+          {
+            "id": "wildkin",
+            "gold": "16-18",
+            "xp": 26
+          },
+          {
+            "id": "enraged_wildkin",
+            "gold": "58-64",
+            "xp": 90
+          }
+        ]
+      },
+      {
+        "id": "troll",
+        "name": "黑暗巨魔营地",
+        "nameEn": "Troll Camp",
+        "units": [
+          "dark_troll",
+          "dark_troll",
+          "dark_troll_warlord"
+        ],
+        "totalGold": {
+          "min": 74,
+          "max": 84,
+          "avg": 79
+        },
+        "totalXP": 174,
+        "unitDetails": [
+          {
+            "id": "dark_troll",
+            "gold": "17-19",
+            "xp": 42
+          },
+          {
+            "id": "dark_troll",
+            "gold": "17-19",
+            "xp": 42
+          },
+          {
+            "id": "dark_troll_warlord",
+            "gold": "40-46",
+            "xp": 90
+          }
+        ]
+      },
+      {
+        "id": "warpine",
+        "name": "扭曲树人营地",
+        "nameEn": "Warpine Camp",
+        "units": [
+          "warpine_raider",
+          "warpine_raider"
+        ],
+        "totalGold": {
+          "min": 96,
+          "max": 100,
+          "avg": 98
+        },
+        "totalXP": 152,
+        "unitDetails": [
+          {
+            "id": "warpine_raider",
+            "gold": "48-50",
+            "xp": 76
+          },
+          {
+            "id": "warpine_raider",
+            "gold": "48-50",
+            "xp": 76
+          }
+        ]
+      },
+      {
+        "id": "frog",
+        "name": "蛙营地",
+        "nameEn": "Frog Camp",
+        "units": [
+          "grown_frog",
+          "grown_frog",
+          "grown_frog_mage"
+        ],
+        "totalGold": {
+          "min": 111,
+          "max": 123,
+          "avg": 117
+        },
+        "totalXP": 165,
+        "unitDetails": [
+          {
+            "id": "grown_frog",
+            "gold": "37-41",
+            "xp": 55
+          },
+          {
+            "id": "grown_frog",
+            "gold": "37-41",
+            "xp": 55
+          },
+          {
+            "id": "grown_frog_mage",
+            "gold": "37-41",
+            "xp": 55
+          }
+        ]
+      }
+    ]
+  },
+  "ancient": {
+    "nameZh": "远古野",
+    "nameEn": "Ancient Camp",
+    "combinations": [
+      {
+        "id": "dragon",
+        "name": "黑龙营地",
+        "nameEn": "Dragon Camp",
+        "units": [
+          "black_drake",
+          "black_drake",
+          "black_dragon"
+        ],
+        "totalGold": {
+          "min": 150,
+          "max": 166,
+          "avg": 158
+        },
+        "totalXP": 314,
+        "unitDetails": [
+          {
+            "id": "black_drake",
+            "gold": "37-43",
+            "xp": 95
+          },
+          {
+            "id": "black_drake",
+            "gold": "37-43",
+            "xp": 95
+          },
+          {
+            "id": "black_dragon",
+            "gold": "76-80",
+            "xp": 124
+          }
+        ]
+      },
+      {
+        "id": "large_golem",
+        "name": "大石像鬼营地",
+        "nameEn": "Large Golem Camp",
+        "units": [
+          "rock_golem",
+          "rock_golem",
+          "granite_golem"
+        ],
+        "totalGold": {
+          "min": 150,
+          "max": 166,
+          "avg": 158
+        },
+        "totalXP": 314,
+        "unitDetails": [
+          {
+            "id": "rock_golem",
+            "gold": "37-43",
+            "xp": 95
+          },
+          {
+            "id": "rock_golem",
+            "gold": "37-43",
+            "xp": 95
+          },
+          {
+            "id": "granite_golem",
+            "gold": "76-80",
+            "xp": 124
+          }
+        ]
+      },
+      {
+        "id": "thunderhide",
+        "name": "雷皮兽营地",
+        "nameEn": "Thunderhide Camp",
+        "units": [
+          "big_thunder_lizard",
+          "small_thunder_lizard",
+          "small_thunder_lizard"
+        ],
+        "totalGold": {
+          "min": 160,
+          "max": 178,
+          "avg": 169
+        },
+        "totalXP": 314,
+        "unitDetails": [
+          {
+            "id": "big_thunder_lizard",
+            "gold": "76-80",
+            "xp": 124
+          },
+          {
+            "id": "small_thunder_lizard",
+            "gold": "42-49",
+            "xp": 95
+          },
+          {
+            "id": "small_thunder_lizard",
+            "gold": "42-49",
+            "xp": 95
+          }
+        ]
+      },
+      {
+        "id": "frostbitten",
+        "name": "冰霜营地",
+        "nameEn": "Frostbitten Camp",
+        "units": [
+          "ice_shaman",
+          "frostbitten_golem",
+          "frostbitten_golem"
+        ],
+        "totalGold": {
+          "min": 150,
+          "max": 166,
+          "avg": 158
+        },
+        "totalXP": 314,
+        "unitDetails": [
+          {
+            "id": "ice_shaman",
+            "gold": "76-80",
+            "xp": 124
+          },
+          {
+            "id": "frostbitten_golem",
+            "gold": "37-43",
+            "xp": 95
+          },
+          {
+            "id": "frostbitten_golem",
+            "gold": "37-43",
+            "xp": 95
+          }
+        ]
+      },
+      {
+        "id": "prowler",
+        "name": "潜行者营地",
+        "nameEn": "Prowler Camp",
+        "units": [
+          "prowler_shaman",
+          "prowler_acolyte",
+          "prowler_acolyte"
+        ],
+        "totalGold": {
+          "min": 150,
+          "max": 166,
+          "avg": 158
+        },
+        "totalXP": 314,
+        "unitDetails": [
+          {
+            "id": "prowler_shaman",
+            "gold": "76-80",
+            "xp": 124
+          },
+          {
+            "id": "prowler_acolyte",
+            "gold": "37-43",
+            "xp": 95
+          },
+          {
+            "id": "prowler_acolyte",
+            "gold": "37-43",
+            "xp": 95
+          }
+        ]
+      },
+      {
+        "id": "ancient_frog",
+        "name": "远古蛙营地",
+        "nameEn": "Ancient Frog Camp",
+        "units": [
+          "ancient_frog",
+          "ancient_frog",
+          "ancient_frog_mage"
+        ],
+        "totalGold": {
+          "min": 159,
+          "max": 168,
+          "avg": 164
+        },
+        "totalXP": 312,
+        "unitDetails": [
+          {
+            "id": "ancient_frog",
+            "gold": "53-56",
+            "xp": 104
+          },
+          {
+            "id": "ancient_frog",
+            "gold": "53-56",
+            "xp": 104
+          },
+          {
+            "id": "ancient_frog_mage",
+            "gold": "53-56",
+            "xp": 104
+          }
+        ]
+      }
+    ]
+  }
 }
