@@ -21,6 +21,7 @@ interface Props {
   showBuildings: boolean
   showFogOfWar: boolean
   showVisionCircles: boolean
+  showLanePaths: boolean
   
   // 寻路
   moveSpeed: number
@@ -52,6 +53,7 @@ const emit = defineEmits<{
   'update:showBuildings': [value: boolean]
   'update:showFogOfWar': [value: boolean]
   'update:showVisionCircles': [value: boolean]
+  'update:showLanePaths': [value: boolean]
   'update:moveSpeed': [value: number]
   'update:currentTeam': [value: Team]
   'update:currentView': [value: TeamView]
@@ -186,6 +188,10 @@ const speedPresets = [300, 350, 420, 550]
         <label>
           <input type="checkbox" :checked="showNavGrid" @change="emit('update:showNavGrid', !showNavGrid)">
           网格
+        </label>
+        <label>
+          <input type="checkbox" :checked="showLanePaths" @change="emit('update:showLanePaths', !showLanePaths)">
+          兵线
         </label>
       </div>
     </div>

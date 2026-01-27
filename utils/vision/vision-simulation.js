@@ -489,10 +489,8 @@ export class VisionSimulation {
     updateVisibility(gX, gY, radius) {
         const key = xy2key(gX, gY)
         radius = radius || this.radius
-        console.log(`updateVisibility: gX=${gX}, gY=${gY}, radius=${radius}`)
 
         this.elevation = this.elevationGrid[key]?.z || 0
-        console.log(`眼位高度: ${this.elevation}`)
         this.walls = this.treeWalls[this.elevation] || {}
 
 
@@ -568,15 +566,6 @@ export class VisionSimulation {
         })
 
         this.lightArea = Object.keys(this.lights).length
-        console.log(`updateVisibility: skip=${this._debugSkipCount}, hit=${this._debugHitCount}, lights=${this.lightArea}`)
-        console.log(`lightPassesCallback: elevWall=${this._lightBlockCounts.elevWall}, fowNode=${this._lightBlockCounts.fowNode}, treeWall=${this._lightBlockCounts.treeWall}, pass=${this._lightBlockCounts.pass}`)
-        console.log(`treeBlocking: checked=${this._treeBlockDebug?.checked || 0}, blocked=${this._treeBlockDebug?.blocked || 0}`)
-        if (this._blockedSamples.length > 0) {
-            console.log('被阻挡点采样 (前20个):', JSON.stringify(this._blockedSamples, null, 2))
-        }
-        if (this._shadowedSamples.length > 0) {
-            console.log('被阴影遮挡的同高度点 (前20个):', JSON.stringify(this._shadowedSamples, null, 2))
-        }
         this._debugSkipCount = 0
         this._debugHitCount = 0
         this._lightBlockCounts = { elevWall: 0, fowNode: 0, treeWall: 0, pass: 0 }

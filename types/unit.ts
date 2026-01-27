@@ -42,16 +42,40 @@ export function getUnitColor(colorIndex: number): string {
 // ===== 战斗属性 =====
 
 /**
- * 战斗属性
+ * 战斗属性（完整版）
  */
 export interface CombatStats {
+    // 生命
     maxHp: number
     currentHp: number
-    maxMana: number
-    currentMana: number
-    moveSpeed: number
-    attackDamage: number
+    hpRegen: number
+
+    // 法力（可选，小兵没有）
+    maxMana?: number
+    currentMana?: number
+
+    // 攻击
+    attackDamageMin: number
+    attackDamageMax: number
+    attackRate: number          // 攻击间隔（秒）
+    attackRange: number         // 攻击距离
+    acquisitionRange: number    // 索敌范围
+
+    // 防御
     armor: number
+    magicResist: number
+
+    // 移动
+    moveSpeed: number
+}
+
+/**
+ * 攻击状态
+ */
+export interface AttackState {
+    target: string | null          // 攻击目标 ID
+    lastAttackTime: number         // 上次攻击时间（游戏秒）
+    attackAnimProgress: number     // 攻击动画进度 0~1
 }
 
 /**
@@ -60,11 +84,17 @@ export interface CombatStats {
 export const DEFAULT_HERO_COMBAT: CombatStats = {
     maxHp: 600,
     currentHp: 600,
+    hpRegen: 1,
     maxMana: 300,
     currentMana: 300,
-    moveSpeed: 300,
-    attackDamage: 50,
-    armor: 2
+    attackDamageMin: 45,
+    attackDamageMax: 55,
+    attackRate: 1.7,
+    attackRange: 150,
+    acquisitionRange: 600,
+    armor: 2,
+    magicResist: 25,
+    moveSpeed: 300
 }
 
 // ===== 视野属性 =====
@@ -165,12 +195,29 @@ export interface CreateHeroOptions {
     name?: string
 }
 
-// ===== Creep 类型（预留） =====
+// ===== Creep 类型 =====
 
 /**
  * 小兵类型
  */
 export type CreepType = 'melee' | 'ranged' | 'siege' | 'flagbearer'
+
+/**
+ * 小兵行为状态
+ */
+export type CreepBehaviorState =
+    | 'idle'       // 无目标
+    | 'lane_move'  // 沿路径移动
+    | 'chase'      // 强制追击（Type1 仇恨）
+    | 'attack'     // 攻击目标
+    | 'seek_last'  // 移动到目标最后可见位置
+    | 'return'     // 返回记忆点
+    | 'dead'       // 死亡
+
+/**
+ * 兵线类型
+ */
+export type Lane = 'top' | 'mid' | 'bot'
 
 /**
  * 小兵单位
@@ -179,6 +226,26 @@ export interface Creep extends Unit {
     unitType: 'creep'
     creepType: CreepType
     waveNumber: number
+    lane: Lane
+
+    // 路径
+    lanePathIndex: number              // 当前目标路径点索引
+    rememberedPosition: Point | null   // 离开路径时的记忆点
+
+    // 仇恨
+    aggroTarget: string | null         // 仇恨目标 ID
+    lastAggroCooldown: number          // 上次 Type1 仇恨触发时间
+    chaseStartTime: number | null      // 强制追击开始时间
+    targetLastSeenAt: Point | null     // 目标最后可见位置
+
+    // 行为
+    behaviorState: CreepBehaviorState
+
+    // 碰撞避让
+    collisionWaitTime: number          // 碰撞等待计时器（秒）
+
+    // 攻击
+    attackState: AttackState
 }
 
 // ===== 选中状态 =====

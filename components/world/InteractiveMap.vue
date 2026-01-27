@@ -32,8 +32,9 @@ import { useCoordinates } from '@/composables/useCoordinates'
 import { usePathfinding } from '@/composables/usePathfinding'
 import { useVision } from '@/composables/useVision'
 import { useUnit } from '@/composables/useUnit'
+import { useCombatLoop } from '@/composables/useCombatLoop'
 import { getUnitColor, TEAM_RING_COLORS } from '@/types/unit'
-import type { Unit, Hero } from '@/types/unit'
+import type { Unit, Hero, Creep } from '@/types/unit'
 
 // 子组件导入
 import MapControlPanel from './MapControlPanel.vue'
@@ -153,6 +154,12 @@ function updateGameTime(currentTime: number) {
   const hasMovingUnits = unitSystem.getAllUnits().some(u => u.pathPlan.isMoving)
   unitSystem.updateUnits(actualDelta)
   
+  // 更新小兵模拟
+  if (creepSimEnabled.value) {
+    combatLoop.setGameTime(gameTime.value)
+    combatLoop.update(actualDelta)
+  }
+  
   // 如果有单位在移动，更新视野
   if (hasMovingUnits) {
     updateUnitVision()
@@ -168,6 +175,10 @@ function onGameTimeChange() {
     vision.value.setDaytime(isDaytime.value)
     // 更新单位视野（昼夜视野范围不同）
     updateUnitVision()
+  }
+  // 同步战斗系统时间
+  if (creepSimEnabled.value) {
+    combatLoop.setGameTime(gameTime.value)
   }
   draw()
 }
@@ -198,6 +209,32 @@ let treeLayerCache: HTMLCanvasElement | null = null
 let needsTreeCacheUpdate = true
 let fogOfWarCache: HTMLCanvasElement | null = null
 let needsFogCacheUpdate = true
+
+// ===== 战斗系统 =====
+// 寻路实例（用于小兵 AI）
+const creepPathfinding = computed(() => {
+  if (!mapData.navData.value) return null
+  return usePathfinding(
+    mapData.navData,
+    mapData.navWidth,
+    mapData.navHeight,
+    mapData.treeIndex,
+    mapData.destroyedTrees,
+    showTrees
+  )
+})
+
+// 寻路函数封装
+const findPathForCreeps = (start: Point, end: Point, options?: { collisionRadius?: number }) => {
+  const pf = creepPathfinding.value
+  if (!pf) return []
+  return pf.findPath(start, end, options)
+}
+
+const combatLoop = useCombatLoop({ findPath: findPathForCreeps })
+const showCreeps = ref(true)
+const creepSimEnabled = ref(true)
+const showLanePaths = ref(false)  // 兵线路径调试图层（默认隐藏）
 
 // ===== 更新单位视野 =====
 function updateUnitVision() {
@@ -517,6 +554,12 @@ function draw() {
   
   // 绘制单位（英雄等）
   drawUnits(ctx)
+  
+  // 绘制小兵
+  drawCreeps(ctx)
+  
+  // 绘制兵线路径点（调试）
+  drawLanePaths(ctx)
   
   // 绘制选中防御塔的范围圈
   drawTowerRanges(ctx, canvasSize)
@@ -1101,6 +1144,91 @@ function drawUnits(ctx: CanvasRenderingContext2D) {
     ctx.beginPath()
     ctx.arc(pos.x, pos.y, innerRadius, 0, Math.PI * 2)
     ctx.fill()
+  }
+}
+
+// ===== 小兵渲染 =====
+function drawCreeps(ctx: CanvasRenderingContext2D) {
+  if (!showCreeps.value) return
+  
+  for (const creep of combatLoop.creeps.value) {
+    if (!creep.isAlive) continue
+    
+    // 渲染大小 = 碰撞半径的 1/3
+    const baseSize = getPhysicalSize(creep.collisionRadius / 3)
+    const minSize = 3 / scale.value       // 最小 3 屏幕像素
+    const creepRadius = Math.max(baseSize, minSize)
+    
+    const pos = coords.value.worldToCanvas(creep.position.x, creep.position.y)
+    const teamColor = TEAM_RING_COLORS[creep.team]
+    
+    // 呼吸动画（攻击时放大）
+    let animScale = 1.0
+    if (creep.attackState.attackAnimProgress > 0 && creep.attackState.attackAnimProgress < 1) {
+      // 进度 0->0.5 放大，0.5->1 缩小
+      const phase = creep.attackState.attackAnimProgress
+      animScale = phase < 0.5 
+        ? 1 + 0.3 * (phase * 2)           // 1.0 -> 1.3
+        : 1 + 0.3 * ((1 - phase) * 2)     // 1.3 -> 1.0
+    }
+    
+    const radius = creepRadius * animScale
+    
+    // 绘制实心圆点
+    ctx.fillStyle = teamColor
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2)
+    ctx.fill()
+  }
+}
+
+// ===== 调试：渲染兵线路径点 =====
+function drawLanePaths(ctx: CanvasRenderingContext2D) {
+  if (!showLanePaths.value) return
+  
+  const paths = combatLoop.getLanePaths()
+  if (!paths) return
+  
+  const boxSize = getMarkerSize(8)  // 8 屏幕像素的方块
+  const halfBox = boxSize / 2
+  
+  // 路线颜色
+  const laneColors: Record<string, string> = {
+    top: '#FFD700',    // 金色
+    mid: '#FF69B4',    // 粉色
+    bot: '#00CED1'     // 青色
+  }
+  
+  for (const team of ['radiant', 'dire'] as const) {
+    for (const lane of ['top', 'mid', 'bot'] as const) {
+      const pathData = paths[team][lane]
+      if (!pathData) continue
+      
+      // 绘制刷兵点（较大的方块）
+      const spawner = coords.value.worldToCanvas(pathData.spawner.x, pathData.spawner.y)
+      ctx.fillStyle = TEAM_RING_COLORS[team]
+      ctx.fillRect(spawner.x - halfBox * 1.5, spawner.y - halfBox * 1.5, boxSize * 1.5, boxSize * 1.5)
+      
+      // 绘制路径点（白色小方块）
+      ctx.fillStyle = '#FFFFFF'
+      for (const waypoint of pathData.waypoints) {
+        const pos = coords.value.worldToCanvas(waypoint.x, waypoint.y)
+        ctx.fillRect(pos.x - halfBox, pos.y - halfBox, boxSize, boxSize)
+      }
+      
+      // 绘制连线
+      ctx.strokeStyle = laneColors[lane]
+      ctx.lineWidth = 2
+      ctx.setLineDash([5, 3])
+      ctx.beginPath()
+      ctx.moveTo(spawner.x, spawner.y)
+      for (const waypoint of pathData.waypoints) {
+        const pos = coords.value.worldToCanvas(waypoint.x, waypoint.y)
+        ctx.lineTo(pos.x, pos.y)
+      }
+      ctx.stroke()
+      ctx.setLineDash([])
+    }
   }
 }
 
@@ -1776,6 +1904,9 @@ onMounted(async () => {
     vision.value = useVision(mapData.towers, mapData.ancients)
     await vision.value.initialize()
     
+    // 初始化战斗系统
+    await combatLoop.initialize()
+    
     setTimeout(draw, 100)
   } catch (err) {
     console.error('地图初始化失败:', err)
@@ -1814,6 +1945,7 @@ onMounted(() => {
           :show-buildings="showBuildings"
           :show-fog-of-war="showFogOfWar"
           :show-vision-circles="showVisionCircles"
+          :show-lane-paths="showLanePaths"
           :move-speed="moveSpeed"
           :path-length="pathLength"
           :formatted-time="formattedTime"
@@ -1832,6 +1964,7 @@ onMounted(() => {
           @update:show-buildings="v => { showBuildings = v; draw() }"
           @update:show-fog-of-war="v => { showFogOfWar = v; onFogToggle() }"
           @update:show-vision-circles="v => { showVisionCircles = v; draw() }"
+          @update:show-lane-paths="v => { showLanePaths = v; draw() }"
           @update:move-speed="v => moveSpeed = v"
           @update:current-team="v => { currentTeam = v; onTeamChange() }"
           @update:current-view="v => { currentView = v; onViewChange() }"
@@ -1907,7 +2040,7 @@ onMounted(() => {
               </div>
               <div class="stat-item">
                 <span class="stat-label">攻击</span>
-                <span class="stat-value">{{ unitSystem.selectedUnit.value.combat.attackDamage }}</span>
+                <span class="stat-value">{{ unitSystem.selectedUnit.value.combat.attackDamageMin }}-{{ unitSystem.selectedUnit.value.combat.attackDamageMax }}</span>
               </div>
               <div class="stat-item">
                 <span class="stat-label">护甲</span>
