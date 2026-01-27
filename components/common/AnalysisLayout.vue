@@ -60,18 +60,19 @@ const switchTab = (tabName: string) => {
 </script>
 
 <style scoped>
+/* ===== 根布局：使用 grid 三行布局 ===== */
 .analysis-layout {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  height: 100%;
   background: #f5f7fa;
   overflow: hidden;
 }
 
-/* 紧凑头部 */
+/* ===== 头部 ===== */
 .page-header {
-  flex-shrink: 0;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
   align-items: baseline;
   gap: 12px;
   padding: 12px 24px;
@@ -91,15 +92,16 @@ const switchTab = (tabName: string) => {
   color: #9ca3af;
 }
 
-/* Tab导航 */
+/* ===== Tab 导航 ===== */
 .tabs-nav {
-  flex-shrink: 0;
   background: #fff;
   border-bottom: 1px solid #e5e7eb;
 }
 
 .tabs-wrapper {
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: start;
   gap: 0;
   padding: 0 24px;
 }
@@ -129,28 +131,36 @@ const switchTab = (tabName: string) => {
   font-weight: 600;
 }
 
-/* 内容区域 - 独立滚动 */
+/* ===== 内容区域 ===== */
 .page-content {
-  flex: 1;
+  display: grid;
+  grid-template-rows: 1fr;
+  min-height: 0;
   overflow: hidden;
 }
 
 .content-wrapper {
-  height: 100%;
+  display: grid;
+  grid-template-rows: 1fr;
+  min-height: 0;
   overflow-y: auto;
   padding: 24px;
 }
 
 .tab-panel {
+  display: grid;
+  grid-template-rows: 1fr;
+  min-height: 0;
   max-width: 1400px;
   margin: 0 auto;
+  width: 100%;
 }
 
-/* 响应式 */
+/* ===== 响应式 ===== */
 @media (max-width: 768px) {
   .page-header {
     padding: 10px 16px;
-    flex-direction: column;
+    grid-template-columns: 1fr;
     gap: 4px;
   }
 

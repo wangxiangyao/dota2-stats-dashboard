@@ -170,9 +170,9 @@ const timelineTocItems: TocItem[] = [
 }
 
 .interactive-map-container {
-  height: calc(100vh - 200px);
-  min-height: 600px;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 1fr;
+  height: 100%;
+  min-height: 0;
 }
 </style>

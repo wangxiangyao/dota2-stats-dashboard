@@ -206,6 +206,10 @@ export class VisionSimulation {
         // 真正阻挡光线传播的只有：FOW遮挡物、树木
         this._lightBlockCounts = { elevWall: 0, fowNode: 0, treeWall: 0, pass: 0 }
         this._blockedSamples = []  // 采样记录被阻挡的点
+        this._currentEyeX = 0  // 当前视野源位置
+        this._currentEyeY = 0
+        const TREE_BLOCK_IMMUNITY_RANGE = 2  // 2格内豁免树木阻挡
+
         this.lightPassesCallback = (x, y) => {
             const key = x + ',' + y
             const treeWalls = this.treeWalls[this.elevation]
@@ -218,6 +222,18 @@ export class VisionSimulation {
                 }
                 return false
             }
+
+            // 计算到视野源的距离
+            const dx = x - this._currentEyeX
+            const dy = y - this._currentEyeY
+            const distance = Math.sqrt(dx * dx + dy * dy)
+
+            // 近距离（2格内）豁免树木阻挡
+            if (distance <= TREE_BLOCK_IMMUNITY_RANGE) {
+                this._lightBlockCounts.pass++
+                return true
+            }
+
             // 检查是否被树木阻挡（树木阻挡光线传播）
             if (treeWalls && treeWalls[key] && treeWalls[key].length > 0) {
                 this._lightBlockCounts.treeWall++
@@ -490,6 +506,10 @@ export class VisionSimulation {
         this.fov.walls = this.walls
         this.lights = {}
 
+        // 设置当前视野源位置（用于 lightPassesCallback 中的距离计算）
+        this._currentEyeX = gX
+        this._currentEyeY = gY
+
         this.area = this.fov.compute(gX, gY, radius, (x2, y2, r, vis) => {
             const key = xy2key(x2, y2)
             // 调试：检查多少点被跳过
@@ -502,12 +522,15 @@ export class VisionSimulation {
 
             // 检查树木遮挡
             // 在 Dota 中，树木始终阻挡视野（无论高度差）
+            // 但距离视野源很近的点（2格内）豁免树木阻挡，模拟英雄站在树边仍能看到周围
             const treePts = this.treeRelations[key]
             let treeBlocking = false
+            const TREE_BLOCK_IMMUNITY_RANGE = 2  // 2格内豁免树木阻挡
 
             if (!this._treeBlockDebug) this._treeBlockDebug = { checked: 0, blocked: 0 }
 
-            if (treePts) {
+            // 距离 r 是网格距离，2格以内不检查树木阻挡
+            if (treePts && r > TREE_BLOCK_IMMUNITY_RANGE) {
                 for (const treePt of treePts) {
                     this._treeBlockDebug.checked++
                     // 只要树木存在就阻挡

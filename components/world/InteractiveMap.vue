@@ -31,6 +31,9 @@ import { useMapData } from '@/composables/useMapData'
 import { useCoordinates } from '@/composables/useCoordinates'
 import { usePathfinding } from '@/composables/usePathfinding'
 import { useVision } from '@/composables/useVision'
+import { useUnit } from '@/composables/useUnit'
+import { getUnitColor, TEAM_RING_COLORS } from '@/types/unit'
+import type { Unit, Hero } from '@/types/unit'
 
 // 子组件导入
 import MapControlPanel from './MapControlPanel.vue'
@@ -66,13 +69,10 @@ const coords = computed(() => useCoordinates(mapData.navWidth.value, mapData.nav
 // ===== 本地状态 =====
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 
-// 交互状态
-const startPoint = ref<Point | null>(null)
-const endPoint = ref<Point | null>(null)
-const path = ref<Point[]>([])
-const isSettingStart = ref(true)
+// ===== Unit 系统 =====
+const unitSystem = useUnit()
 
-// 移速输入
+// 移速输入（用于选中英雄的移速调整）
 const moveSpeed = ref(300)
 
 // 图层控制
@@ -89,6 +89,7 @@ const offsetX = ref(0)
 const offsetY = ref(0)
 const isDragging = ref(false)
 const isDraggingWard = ref(false)
+const isDraggingUnit = ref(false)  // 是否正在拖动英雄
 const lastMousePos = ref({ x: 0, y: 0 })
 
 // 详情面板
@@ -108,6 +109,14 @@ let lastFrameTime = 0
 function togglePlay() {
   isPlaying.value = !isPlaying.value
   if (isPlaying.value) {
+    // 启动所有有路径的单位移动
+    for (const unit of unitSystem.getAllUnits()) {
+      if (unit.pathPlan.currentPath.length > 0) {
+        unitSystem.startMoving(unit.id)
+      }
+    }
+    unitSystem.isPlanning.value = false
+    
     lastFrameTime = performance.now()
     animationFrameId = requestAnimationFrame(updateGameTime)
   } else if (animationFrameId) {
@@ -139,6 +148,16 @@ function updateGameTime(currentTime: number) {
     }
   }
   
+  // 更新单位位置（根据移速和路径移动）
+  const actualDelta = deltaTime * playSpeed.value
+  const hasMovingUnits = unitSystem.getAllUnits().some(u => u.pathPlan.isMoving)
+  unitSystem.updateUnits(actualDelta)
+  
+  // 如果有单位在移动，更新视野
+  if (hasMovingUnits) {
+    updateUnitVision()
+  }
+  
   draw()
   animationFrameId = requestAnimationFrame(updateGameTime)
 }
@@ -147,7 +166,8 @@ function onGameTimeChange() {
   if (vision.value) {
     vision.value.setGameTime(gameTime.value)
     vision.value.setDaytime(isDaytime.value)
-    needsFogCacheUpdate = true
+    // 更新单位视野（昼夜视野范围不同）
+    updateUnitVision()
   }
   draw()
 }
@@ -179,19 +199,52 @@ let needsTreeCacheUpdate = true
 let fogOfWarCache: HTMLCanvasElement | null = null
 let needsFogCacheUpdate = true
 
-// ===== 计算属性 =====
+// ===== 更新单位视野 =====
+function updateUnitVision() {
+  if (!vision.value) return
+  
+  const isDay = isDaytime.value
+  const sources = unitSystem.getAllUnits()
+    .filter(u => u.isAlive)
+    .map(u => ({
+      x: u.position.x,
+      y: u.position.y,
+      radius: isDay ? u.vision.dayVision : u.vision.nightVision,
+      team: u.team as 'radiant' | 'dire'
+    }))
+  
+  vision.value.setUnitVisionSources(sources)
+  needsFogCacheUpdate = true
+}
+
+// ===== 检查位置是否可放置单位 =====
+function isValidPlacement(worldPos: Point): boolean {
+  const pathfinding = usePathfinding(
+    mapData.navData,
+    mapData.navWidth,
+    mapData.navHeight,
+    mapData.treeIndex,
+    mapData.destroyedTrees,
+    showTrees
+  )
+  const navPos = coords.value.worldToNav(worldPos.x, worldPos.y)
+  return pathfinding.isWalkable(navPos.x, navPos.y)
+}
 const pathLength = computed(() => {
-  if (path.value.length < 2) return 0
+  const unit = unitSystem.selectedUnit.value
+  if (!unit || unit.pathPlan.currentPath.length < 2) return 0
   let total = 0
-  for (let i = 1; i < path.value.length; i++) {
-    total += coords.value.distance(path.value[i - 1], path.value[i])
+  const path = unit.pathPlan.currentPath
+  for (let i = 1; i < path.length; i++) {
+    total += coords.value.distance(path[i - 1], path[i])
   }
   return Math.round(total)
 })
 
 const travelTime = computed(() => {
-  if (pathLength.value === 0 || moveSpeed.value <= 0) return 0
-  return pathLength.value / moveSpeed.value
+  const unit = unitSystem.selectedUnit.value
+  if (pathLength.value === 0 || !unit) return 0
+  return pathLength.value / unit.combat.moveSpeed
 })
 
 const formattedTime = computed(() => {
@@ -201,6 +254,67 @@ const formattedTime = computed(() => {
   const secs = (seconds % 60).toFixed(1)
   return `${mins} 分 ${secs} 秒`
 })
+
+/**
+ * 计算选中单位的完整路径
+ * 根据路径点，使用 A* 算法计算每段实际路径
+ */
+function calculateUnitPath() {
+  const unit = unitSystem.selectedUnit.value
+  if (!unit) return
+  
+  const waypoints = unit.pathPlan.waypoints
+  if (waypoints.length === 0) {
+    unitSystem.setCurrentPath(unit.id, [])
+    return
+  }
+  
+  // 创建寻路实例
+  const pathfinding = usePathfinding(
+    mapData.navData,
+    mapData.navWidth,
+    mapData.navHeight,
+    mapData.treeIndex,
+    mapData.destroyedTrees,
+    showTrees
+  )
+  
+  // 起点是单位当前位置
+  const allPoints: Point[] = [unit.position]
+  
+  // 对每对相邻点计算 A* 路径
+  let currentPos = unit.position
+  let totalDistance = 0
+  let totalTime = 0
+  
+  for (let i = 0; i < waypoints.length; i++) {
+    const target = waypoints[i].position
+    const segment = pathfinding.findPath(currentPos, target)
+    
+    if (segment.length > 0) {
+      // 跳过第一个点（已包含在 allPoints 中）
+      for (let j = 1; j < segment.length; j++) {
+        allPoints.push(segment[j])
+      }
+      
+      // 计算这段的距离和时间
+      const legDistance = pathfinding.getPathLength(segment)
+      const legTime = pathfinding.getTravelTime(segment, unit.combat.moveSpeed)
+      
+      totalDistance += legDistance
+      totalTime += legTime
+      
+      // 更新路径点信息
+      waypoints[i].legDistance = legDistance
+      waypoints[i].arrivalTime = totalTime
+    }
+    
+    currentPos = target
+  }
+  
+  // 设置完整路径
+  unitSystem.setCurrentPath(unit.id, allPoints)
+}
 
 const formatGameTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60)
@@ -400,6 +514,9 @@ function draw() {
   
   // 绘制路径
   drawPath(ctx)
+  
+  // 绘制单位（英雄等）
+  drawUnits(ctx)
   
   // 绘制选中防御塔的范围圈
   drawTowerRanges(ctx, canvasSize)
@@ -895,21 +1012,95 @@ function drawRunes(ctx: CanvasRenderingContext2D) {
 }
 
 function drawPath(ctx: CanvasRenderingContext2D) {
-  // 路径
-  if (path.value.length > 1) {
-    ctx.strokeStyle = '#ffff00'
-    ctx.lineWidth = 3
-    ctx.beginPath()
+  // 绘制所有单位的路径
+  for (const unit of unitSystem.getAllUnits()) {
+    const path = unit.pathPlan.currentPath
+    const startIndex = unit.pathPlan.currentPathIndex
+    const unitColor = getUnitColor(unit.colorIndex)
     
-    const first = coords.value.worldToCanvas(path.value[0].x, path.value[0].y)
-    ctx.moveTo(first.x, first.y)
-    
-    for (let i = 1; i < path.value.length; i++) {
-      const pt = coords.value.worldToCanvas(path.value[i].x, path.value[i].y)
-      ctx.lineTo(pt.x, pt.y)
+    // 只绘制剩余路径（从英雄当前位置开始）
+    if (path.length > startIndex) {
+      ctx.strokeStyle = unitColor  // 使用单位颜色
+      ctx.lineWidth = 3
+      ctx.setLineDash([5, 5])
+      ctx.beginPath()
+      
+      // 从英雄当前位置开始
+      const first = coords.value.worldToCanvas(unit.position.x, unit.position.y)
+      ctx.moveTo(first.x, first.y)
+      
+      // 连接剩余路径点
+      for (let i = startIndex; i < path.length; i++) {
+        const pt = coords.value.worldToCanvas(path[i].x, path[i].y)
+        ctx.lineTo(pt.x, pt.y)
+      }
+      
+      ctx.stroke()
+      ctx.setLineDash([])
     }
     
-    ctx.stroke()
+    // 绘制路径点（只显示终点红色，中间点蓝色，不显示起点绿色）
+    const waypoints = unit.pathPlan.waypoints
+    waypoints.forEach((wp, index) => {
+      const pos = coords.value.worldToCanvas(wp.position.x, wp.position.y)
+      const isLast = index === waypoints.length - 1
+      
+      // 终点红色，中间点蓝色
+      ctx.fillStyle = isLast ? '#dc143c' : '#3498db'
+      ctx.beginPath()
+      ctx.arc(pos.x, pos.y, 8, 0, Math.PI * 2)
+      ctx.fill()
+      
+      // 序号
+      ctx.fillStyle = '#fff'
+      ctx.font = 'bold 10px Arial'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(String(index + 1), pos.x, pos.y)
+    })
+  }
+}
+
+function drawUnits(ctx: CanvasRenderingContext2D) {
+  // 图标大小逻辑：
+  // - 物理大小：放大时显示 64 单位
+  // - 屏幕大小：缩小时保持屏幕上约 32px（对应 128 单位左右）
+  const physicalSize = getPhysicalSize(64)   // 放大时显示 64 单位（画布像素）
+  const screenSize = 32 / scale.value        // 缩小时屏幕 32px 对应的画布像素
+  const heroSize = Math.max(physicalSize, screenSize)
+  
+  for (const unit of unitSystem.getAllUnits()) {
+    if (!unit.isAlive) continue
+    
+    const pos = coords.value.worldToCanvas(unit.position.x, unit.position.y)
+    const isSelected = unitSystem.selectedUnitId.value === unit.id
+    const unitColor = getUnitColor(unit.colorIndex)
+    const teamColor = TEAM_RING_COLORS[unit.team]
+    
+    // 内圆半径（占总大小的 70%）
+    const innerRadius = heroSize / 2 * 0.7
+    const outerRadius = heroSize / 2
+    
+    // 选中高亮（白色外圈）
+    if (isSelected) {
+      ctx.strokeStyle = '#fff'
+      ctx.lineWidth = 3
+      ctx.beginPath()
+      ctx.arc(pos.x, pos.y, outerRadius + 4, 0, Math.PI * 2)
+      ctx.stroke()
+    }
+    
+    // 阵营外圈（绿色/红色）
+    ctx.fillStyle = teamColor
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, outerRadius, 0, Math.PI * 2)
+    ctx.fill()
+    
+    // 内圆（单位颜色）
+    ctx.fillStyle = unitColor
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, innerRadius, 0, Math.PI * 2)
+    ctx.fill()
   }
 }
 
@@ -973,6 +1164,16 @@ function drawFogOfWar(ctx: CanvasRenderingContext2D, canvasSize: number) {
         ? (isDay ? OBSERVER_VISION_RADIUS_DAY : OBSERVER_VISION_RADIUS_NIGHT)
         : SENTRY_VISION_RADIUS
       visionSources.push({ x: ward.worldX, y: ward.worldY, radius })
+    }
+    
+    // 收集单位视野源（英雄/小兵）
+    for (const unit of unitSystem.getAllUnits()) {
+      if (!unit.isAlive) continue
+      if (view === 'radiant' && unit.team !== 'radiant') continue
+      if (view === 'dire' && unit.team !== 'dire') continue
+      
+      const radius = isDay ? unit.vision.dayVision : unit.vision.nightVision
+      visionSources.push({ x: unit.position.x, y: unit.position.y, radius })
     }
     
     // 创建临时画布绘制格子视野
@@ -1160,6 +1361,21 @@ function handleCanvasClick(event: MouseEvent) {
     return
   }
   
+  // 检测是否点击英雄（优先于其他实体）
+  const clickedUnit = unitSystem.hitTest(worldCoords, 100)
+  if (clickedUnit) {
+    unitSystem.selectUnit(clickedUnit.id)
+    draw()
+    return
+  } else {
+    // 点击空白区域，取消选中英雄
+    if (unitSystem.selectedUnitId.value) {
+      unitSystem.selectUnit(null)
+      unitSystem.isPlanning.value = false
+      draw()
+    }
+  }
+  
   // 检测是否点击眼位
   if (vision.value) {
     const clickedWard = hitTestWard(worldCoords)
@@ -1256,48 +1472,77 @@ function handleContextMenu(event: MouseEvent) {
   
   const worldCoords = coords.value.canvasToWorld(canvasCoords.x, canvasCoords.y)
   
+  // Shift + 右键：为选中单位添加路径点
+  if (event.shiftKey && unitSystem.selectedUnit.value) {
+    // 自动暂停时间条
+    if (isPlaying.value) {
+      isPlaying.value = false
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
+        animationFrameId = null
+      }
+    }
+    
+    // 添加路径点
+    unitSystem.addWaypoint(worldCoords)
+    unitSystem.isPlanning.value = true
+    
+    // 计算完整路径
+    calculateUnitPath()
+    
+    draw()
+    return
+  }
+  
+  // 普通右键（选中单位状态下）：取消上一个路径点
+  if (unitSystem.selectedUnit.value && unitSystem.selectedUnit.value.pathPlan.waypoints.length > 0 && !event.ctrlKey) {
+    unitSystem.removeLastWaypoint()
+    calculateUnitPath()
+    draw()
+    return
+  }
+  
+  // Ctrl + 右键：清空所有路径点
+  if (event.ctrlKey && unitSystem.selectedUnit.value) {
+    unitSystem.clearWaypoints()
+    draw()
+    return
+  }
+  
   contextMenu.value = {
     visible: true,
     x: event.clientX,
     y: event.clientY,
     items: [
       {
-        label: '设为起点 (寻路)',
+        label: '放置天辉英雄',
         icon: '🟢',
         action: () => {
-          startPoint.value = worldCoords
-          // 如果有终点，执行寻路
-          if (endPoint.value) {
-            const pathfinding = usePathfinding(
-              mapData.navData,
-              mapData.navWidth,
-              mapData.navHeight,
-              mapData.treeIndex,
-              mapData.destroyedTrees,
-              showTrees
-            )
-            path.value = pathfinding.findPath(startPoint.value, endPoint.value)
+          if (!isValidPlacement(worldCoords)) {
+            console.warn('无法在此处放置英雄（不可行走区域）')
+            return
           }
+          unitSystem.createHero({
+            team: 'radiant',
+            position: worldCoords
+          })
+          updateUnitVision()
           draw()
         }
       },
       {
-        label: '设为终点 (寻路)',
+        label: '放置夜魇英雄',
         icon: '🔴',
         action: () => {
-          endPoint.value = worldCoords
-          // 如果有起点，执行寻路
-          if (startPoint.value) {
-            const pathfinding = usePathfinding(
-              mapData.navData,
-              mapData.navWidth,
-              mapData.navHeight,
-              mapData.treeIndex,
-              mapData.destroyedTrees,
-              showTrees
-            )
-            path.value = pathfinding.findPath(startPoint.value, endPoint.value)
+          if (!isValidPlacement(worldCoords)) {
+            console.warn('无法在此处放置英雄（不可行走区域）')
+            return
           }
+          unitSystem.createHero({
+            team: 'dire',
+            position: worldCoords
+          })
+          updateUnitVision()
           draw()
         }
       },
@@ -1366,11 +1611,36 @@ function handleMouseDown(event: MouseEvent) {
     return
   }
   
-  // 左键拖动选中的眼位
-  if (event.button === 0 && vision.value?.selectedWardId.value) {
+  // 左键拖动
+  if (event.button === 0) {
     const canvasCoords = getCanvasCoords(event)
-    if (canvasCoords) {
-      const worldCoords = coords.value.canvasToWorld(canvasCoords.x, canvasCoords.y)
+    if (!canvasCoords) return
+    
+    const worldCoords = coords.value.canvasToWorld(canvasCoords.x, canvasCoords.y)
+    
+    // 优先检测是否点击了选中的英雄
+    const selectedUnit = unitSystem.selectedUnit.value
+    if (selectedUnit) {
+      const dx = selectedUnit.position.x - worldCoords.x
+      const dy = selectedUnit.position.y - worldCoords.y
+      const distance = Math.sqrt(dx * dx + dy * dy)
+      if (distance < 50) {  // 在英雄范围内
+        isDraggingUnit.value = true
+        lastMousePos.value = { x: event.clientX, y: event.clientY }
+        // 拖动时暂停播放
+        if (isPlaying.value) {
+          isPlaying.value = false
+          if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId)
+            animationFrameId = null
+          }
+        }
+        return
+      }
+    }
+    
+    // 检测眼位拖动
+    if (vision.value?.selectedWardId.value) {
       const clickedWard = hitTestWard(worldCoords)
       if (clickedWard && clickedWard.id === vision.value.selectedWardId.value) {
         isDraggingWard.value = true
@@ -1390,6 +1660,32 @@ function handleMouseMove(event: MouseEvent) {
     return
   }
   
+  // 拖动英雄
+  if (isDraggingUnit.value) {
+    const selectedUnit = unitSystem.selectedUnit.value
+    if (selectedUnit) {
+      const canvasCoords = getCanvasCoords(event)
+      if (canvasCoords) {
+        const worldCoords = coords.value.canvasToWorld(canvasCoords.x, canvasCoords.y)
+        // 只有在有效位置才更新英雄位置
+        if (isValidPlacement(worldCoords)) {
+          selectedUnit.position.x = worldCoords.x
+          selectedUnit.position.y = worldCoords.y
+          // 保留路径点，只重新计算路径
+          selectedUnit.pathPlan.currentPathIndex = 0
+          selectedUnit.pathPlan.isMoving = false
+          // 如果有路径点，重新计算完整路径
+          if (selectedUnit.pathPlan.waypoints.length > 0) {
+            calculateUnitPath()
+          }
+          updateUnitVision()
+        }
+        draw()
+      }
+    }
+    return
+  }
+  
   // 拖动眼位
   if (isDraggingWard.value && vision.value?.selectedWardId.value) {
     const canvasCoords = getCanvasCoords(event)
@@ -1406,6 +1702,7 @@ function handleMouseMove(event: MouseEvent) {
 function handleMouseUp() {
   isDragging.value = false
   isDraggingWard.value = false
+  isDraggingUnit.value = false
 }
 
 function resetZoom() {
@@ -1415,11 +1712,11 @@ function resetZoom() {
   draw()
 }
 
-function resetPoints() {
-  startPoint.value = null
-  endPoint.value = null
-  path.value = []
-  isSettingStart.value = true
+function resetUnits() {
+  // 清空所有单位
+  for (const unit of unitSystem.getAllUnits()) {
+    unitSystem.removeUnit(unit.id)
+  }
   draw()
 }
 
@@ -1520,7 +1817,7 @@ onMounted(() => {
           :move-speed="moveSpeed"
           :path-length="pathLength"
           :formatted-time="formattedTime"
-          :has-path="path.length > 0"
+          :has-path="!!unitSystem.selectedUnit.value?.pathPlan.currentPath.length"
           :tree-count="mapData.trees.value.length"
           :destroyed-tree-count="mapData.destroyedTrees.value.size"
           :current-team="currentTeam"
@@ -1538,7 +1835,7 @@ onMounted(() => {
           @update:move-speed="v => moveSpeed = v"
           @update:current-team="v => { currentTeam = v; onTeamChange() }"
           @update:current-view="v => { currentView = v; onViewChange() }"
-          @reset-path="resetPoints"
+          @reset-path="resetUnits"
           @reset-zoom="resetZoom"
           @reset-trees="resetTrees"
           @clear-wards="clearWards"
@@ -1569,7 +1866,71 @@ onMounted(() => {
               @mouseup="handleMouseUp"
               @mouseleave="handleMouseUp"
             ></canvas>
+            
+            <!-- 右上角功能面板 -->
+            <div v-if="unitSystem.selectedUnit.value" class="hud-panel hud-top-right">
+              <div class="hud-title">路径信息</div>
+              <div class="hud-row">
+                <span class="hud-label">路径点</span>
+                <span class="hud-value">{{ unitSystem.selectedUnit.value.pathPlan.waypoints.length }}</span>
+              </div>
+              <div class="hud-row">
+                <span class="hud-label">路径长度</span>
+                <span class="hud-value">{{ pathLength }} 单位</span>
+              </div>
+              <div class="hud-row">
+                <span class="hud-label">移动时间</span>
+                <span class="hud-value">{{ formattedTime }}</span>
+              </div>
+              <div class="hud-row">
+                <span class="hud-label">状态</span>
+                <span class="hud-value" :class="{ 'is-moving': unitSystem.selectedUnit.value.pathPlan.isMoving }">
+                  {{ unitSystem.selectedUnit.value.pathPlan.isMoving ? '移动中' : '静止' }}
+                </span>
+              </div>
+            </div>
           </main>
+          
+          <!-- 底部单位信息面板（在 map-section 层级） -->
+          <div v-if="unitSystem.selectedUnit.value" class="hud-panel hud-bottom">
+            <div class="unit-icon" :style="{ backgroundColor: getUnitColor(unitSystem.selectedUnit.value.colorIndex), borderColor: TEAM_RING_COLORS[unitSystem.selectedUnit.value.team] }"></div>
+            <div class="unit-details">
+              <div class="unit-name">{{ unitSystem.selectedUnit.value.name }}</div>
+              <div class="unit-team" :class="unitSystem.selectedUnit.value.team">
+                {{ unitSystem.selectedUnit.value.team === 'radiant' ? '天辉' : '夜魇' }}
+              </div>
+            </div>
+            <div class="unit-stats">
+              <div class="stat-item">
+                <span class="stat-label">移速</span>
+                <span class="stat-value">{{ unitSystem.selectedUnit.value.combat.moveSpeed }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">攻击</span>
+                <span class="stat-value">{{ unitSystem.selectedUnit.value.combat.attackDamage }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">护甲</span>
+                <span class="stat-value">{{ unitSystem.selectedUnit.value.combat.armor }}</span>
+              </div>
+            </div>
+            <div class="unit-stats">
+              <div class="stat-item">
+                <span class="stat-label">日间视野</span>
+                <span class="stat-value">{{ unitSystem.selectedUnit.value.vision.dayVision }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">夜间视野</span>
+                <span class="stat-value">{{ unitSystem.selectedUnit.value.vision.nightVision }}</span>
+              </div>
+            </div>
+            <div class="unit-position">
+              <span class="pos-label">位置</span>
+              <span class="pos-value">
+                ({{ Math.round(unitSystem.selectedUnit.value.position.x) }}, {{ Math.round(unitSystem.selectedUnit.value.position.y) }})
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1597,19 +1958,23 @@ onMounted(() => {
 </template>
 
 <style scoped>
+/* ===== 根容器 ===== */
 .map-container {
+  display: grid;
+  grid-template-rows: 1fr;
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  min-height: 0;
   background: #1a1a2e;
   color: #eee;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
 }
 
+/* ===== 加载和错误状态 ===== */
 .loading, .error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   height: 100%;
   gap: 1rem;
 }
@@ -1631,23 +1996,30 @@ onMounted(() => {
   color: #ff6b6b;
 }
 
+/* ===== 主布局：左右两栏 ===== */
 .layout {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
   height: 100%;
-}
-
-.map-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
 }
 
+/* ===== 右侧地图区域：上下两行 ===== */
+.map-section {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ===== 地图画布容器 ===== */
 .map-area {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
   overflow: hidden;
   background: #0d0d1a;
 }
@@ -1656,6 +2028,140 @@ canvas {
   max-width: 100%;
   max-height: 100%;
   cursor: crosshair;
+}
+
+/* ===== HUD 面板通用样式 ===== */
+.hud-panel {
+  position: absolute;
+  background: rgba(20, 20, 40, 0.95);
+  border: 1px solid rgba(100, 100, 150, 0.5);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  font-size: 13px;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+/* ===== 右上角路径信息面板 ===== */
+.hud-top-right {
+  top: 16px;
+  right: 16px;
+  min-width: 160px;
+}
+
+.hud-title {
+  font-weight: bold;
+  color: #7ecfff;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(100, 100, 150, 0.3);
+}
+
+.hud-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  margin: 4px 0;
+}
+
+.hud-label {
+  color: #aaa;
+}
+
+.hud-value {
+  color: #fff;
+  font-weight: 500;
+}
+
+.hud-value.is-moving {
+  color: #4ade80;
+}
+
+/* ===== 底部单位信息面板 ===== */
+.hud-bottom {
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: auto auto repeat(3, auto) auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.unit-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid;
+}
+
+.unit-details {
+  min-width: 100px;
+}
+
+.unit-name {
+  font-weight: bold;
+  font-size: 16px;
+  color: #fff;
+}
+
+.unit-team {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.unit-team.radiant {
+  color: #32cd32;
+}
+
+.unit-team.dire {
+  color: #dc143c;
+}
+
+.unit-stats {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 16px;
+  padding: 0 12px;
+  border-left: 1px solid rgba(100, 100, 150, 0.3);
+}
+
+.stat-item {
+  text-align: center;
+  min-width: 50px;
+  white-space: nowrap;
+}
+
+.stat-label {
+  display: block;
+  font-size: 11px;
+  color: #888;
+  white-space: nowrap;
+}
+
+.stat-value {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.unit-position {
+  padding-left: 12px;
+  border-left: 1px solid rgba(100, 100, 150, 0.3);
+}
+
+.pos-label {
+  color: #888;
+  font-size: 11px;
+  display: block;
+  white-space: nowrap;
+}
+
+.pos-value {
+  color: #fff;
+  font-family: monospace;
 }
 </style>
 

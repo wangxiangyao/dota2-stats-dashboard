@@ -74,6 +74,15 @@ export function useVision(
     const selectedTower = ref<MapEntity | null>(null)
     const selectedTowerVision = ref<Set<string>>(new Set())
 
+    // 单位视野源（英雄/小兵）
+    interface UnitVisionSource {
+        x: number
+        y: number
+        radius: number
+        team: 'radiant' | 'dire'
+    }
+    const unitVisionSources = ref<UnitVisionSource[]>([])
+
     /**
      * 初始化视野模拟器
      */
@@ -346,6 +355,22 @@ export function useVision(
             }
         }
 
+        // 计算单位视野（英雄/小兵）
+        for (const unit of unitVisionSources.value) {
+            // 根据阵营视角过滤
+            if (view !== 'both' && unit.team !== view) continue
+
+            const gridX = Math.floor((unit.x - WORLD_MIN) / VISION_GRID_SIZE)
+            const gridY = Math.floor((unit.y - WORLD_MIN) / VISION_GRID_SIZE)
+            const gridRadius = Math.ceil(unit.radius / VISION_GRID_SIZE)
+
+            visionSimulator.updateVisibility(gridX, gridY, gridRadius)
+
+            for (const key in visionSimulator.lights) {
+                combinedVision.value.add(key)
+            }
+        }
+
         needsFogCacheUpdate.value = true
     }
 
@@ -415,6 +440,14 @@ export function useVision(
         }
     }
 
+    /**
+     * 设置单位视野源（英雄/小兵），并更新视野
+     */
+    function setUnitVisionSources(sources: { x: number; y: number; radius: number; team: 'radiant' | 'dire' }[]): void {
+        unitVisionSources.value = sources
+        updateCombinedVision()
+    }
+
     return {
         // 状态
         visionReady,
@@ -440,6 +473,7 @@ export function useVision(
         setGameTime,
         setDaytime,
         clearBuildingVisionCache,
+        setUnitVisionSources,
 
         // 常量
         OBSERVER_DURATION,
