@@ -170,6 +170,11 @@ function updateGameTime(currentTime: number) {
 }
 
 function onGameTimeChange() {
+  // 非播放状态下的时间变化视为拖动跳跃，自动关闭兵线
+  if (!isPlaying.value && creepSimEnabled.value) {
+    creepSimEnabled.value = false
+  }
+  
   if (vision.value) {
     vision.value.setGameTime(gameTime.value)
     vision.value.setDaytime(isDaytime.value)
@@ -235,6 +240,13 @@ const combatLoop = useCombatLoop({ findPath: findPathForCreeps })
 const showCreeps = ref(true)
 const creepSimEnabled = ref(true)
 const showLanePaths = ref(false)  // 兵线路径调试图层（默认隐藏）
+
+// 监听兵线开关，关闭时清除所有小兵
+watch(creepSimEnabled, (enabled) => {
+  if (!enabled) {
+    combatLoop.reset()
+  }
+})
 
 // ===== 更新单位视野 =====
 function updateUnitVision() {
@@ -1965,6 +1977,8 @@ onMounted(() => {
           @update:show-fog-of-war="v => { showFogOfWar = v; onFogToggle() }"
           @update:show-vision-circles="v => { showVisionCircles = v; draw() }"
           @update:show-lane-paths="v => { showLanePaths = v; draw() }"
+          :creep-sim-enabled="creepSimEnabled"
+          @update:creep-sim-enabled="v => { creepSimEnabled = v; draw() }"
           @update:move-speed="v => moveSpeed = v"
           @update:current-team="v => { currentTeam = v; onTeamChange() }"
           @update:current-view="v => { currentView = v; onViewChange() }"

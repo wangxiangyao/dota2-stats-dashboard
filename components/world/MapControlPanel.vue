@@ -22,6 +22,7 @@ interface Props {
   showFogOfWar: boolean
   showVisionCircles: boolean
   showLanePaths: boolean
+  creepSimEnabled: boolean
   
   // 寻路
   moveSpeed: number
@@ -54,6 +55,7 @@ const emit = defineEmits<{
   'update:showFogOfWar': [value: boolean]
   'update:showVisionCircles': [value: boolean]
   'update:showLanePaths': [value: boolean]
+  'update:creepSimEnabled': [value: boolean]
   'update:moveSpeed': [value: number]
   'update:currentTeam': [value: Team]
   'update:currentView': [value: TeamView]
@@ -194,6 +196,18 @@ const speedPresets = [300, 350, 420, 550]
           兵线
         </label>
       </div>
+    </div>
+
+    <!-- 兵线模拟 -->
+    <div class="section">
+      <h3>⚔ 兵线</h3>
+      <div class="toggle-row">
+        <label>
+          <input type="checkbox" :checked="creepSimEnabled" @change="emit('update:creepSimEnabled', !creepSimEnabled)">
+          开启兵线模拟
+        </label>
+      </div>
+      <small class="hint">拖动时间条会自动关闭</small>
     </div>
 
     <!-- 树木管理 -->
