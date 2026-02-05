@@ -13,8 +13,10 @@ const traitType = computed(() => route.params.trait as string)
 
 // 特征配置
 const traitConfig: Record<string, { name: string; icon: string }> = {
-  damage: { name: '伤害特征', icon: '💥' }
+  damage: { name: '伤害特征', icon: '💥' },
+  stun: { name: '控制特征', icon: '⚡' }
 }
+
 
 // 数据状态
 const abilities = ref<any[]>([])
@@ -121,6 +123,56 @@ const hasValidDamage = (ability: any): boolean => {
   return ability.damageValues.some((arr: number[]) => arr.some((v: number) => v > 0))
 }
 
+// ============ 控制技能筛选 ============
+
+// 控制相关的关键词 - 只需要包含这些关键词即可
+const stunKeywords = [
+  'stun', 'bash', 'hex', 'root', 'ensnare', 'entangle',
+  'sleep', 'cyclone', 'disable', 'taunt', 'fear', 'leash',
+  'knockback', 'knockdown', 'lift', 'imprison', 'banish',
+  'shackle', 'bind', 'trap', 'silence', 'mute', 'disarm',
+  'channel', 'voodoo', 'grip', 'hold', 'paralyze', 'freeze'
+]
+
+// 特定的控制持续时间字段名
+const stunDurationKeys = [
+  'stun_duration', 'bash_duration', 'hex_duration', 'root_duration',
+  'sleep_duration', 'cyclone_duration', 'taunt_duration', 'fear_duration',
+  'leash_duration', 'silence_duration', 'disarm_duration', 'mute_duration',
+  'knockback_duration', 'bind_duration', 'shackle_duration', 'imprison_duration',
+  'duration', 'disable_duration', 'entangle_duration', 'ensnare_duration',
+  'channel_time', 'voodoo_duration', 'freeze_duration', 'hold_duration'
+]
+
+// 检查技能是否有控制效果
+const hasStunEffect = (ability: any): boolean => {
+  if (!ability.abilityValues) return false
+  
+  for (const [key, value] of Object.entries(ability.abilityValues)) {
+    const keyLower = key.toLowerCase()
+    
+    // 方法1：直接匹配控制持续时间字段
+    const isStunDurationKey = stunDurationKeys.some(sdk => keyLower.includes(sdk))
+    
+    // 方法2：包含控制关键词，且值大于0
+    const hasStunKeyword = stunKeywords.some(kw => keyLower.includes(kw))
+    
+    if (isStunDurationKey || hasStunKeyword) {
+      // 检查值是否有效
+      let val = ''
+      if (typeof value === 'string') val = value
+      else if (typeof value === 'object' && (value as any)?.value) val = (value as any).value
+      else if (typeof value === 'number') val = String(value)
+      
+      // 解析第一个数字
+      const firstNum = parseFloat(val.split(' ')[0] || val)
+      if (!isNaN(firstNum) && firstNum > 0) return true
+    }
+  }
+  return false
+}
+
+
 const canTargetEnemy = (ability: any): boolean => {
   const team = ability.targetTeam || ''
   const behavior = ability.behavior || ''
@@ -138,17 +190,26 @@ const isExcludedByName = (ability: any): boolean => {
   })
 }
 
-// 候选技能
+// 候选技能 - 根据 traitType 切换筛选规则
 const candidateAbilities = computed(() => {
   return abilities.value.filter(a => {
-    if (forceIncludeAbilities.includes(a.internalName)) return true
+    // 通用排除规则
     if (a.isPassive || a.isInnate || a.isGrantedByScepter || a.isGrantedByShard) return false
+    
+    // stun 类型：显示所有主动技能，供人工筛选
+    if (traitType.value === 'stun') {
+      return true  // 已经在上面排除了被动/天生技能
+    }
+    
+    // damage 类型：原有的伤害筛选逻辑
+    if (forceIncludeAbilities.includes(a.internalName)) return true
     if (isExcludedByName(a)) return false
     if (!hasValidDamage(a)) return false
     if (!canTargetEnemy(a)) return false
     return true
   })
 })
+
 
 // 选中状态
 const selectedAbilities = ref<Set<string>>(new Set())
@@ -280,14 +341,17 @@ const attrGroups = computed(() => {
 
 const editDialogVisible = ref(false)
 const editingAbility = ref<any>(null)
-const editingData = ref<DamageTraitData>({
+const editingData = ref<any>({
   formulaExpected: 'damage',
   formulaMin: null,
   formulaMax: null,
   customParams: null,
   notes: null,
   isBurst: true,
-  damageTime: null
+  damageTime: null,
+  // stun 相关字段
+  stunDuration: '',
+  stunType: 'stun'
 })
 
 // 当 isBurst 变化时，自动清空 damageTime
@@ -304,7 +368,11 @@ const openEditDialog = (ability: any) => {
   editingAbility.value = ability
   const existing = traitData.value[ability.internalName]
   if (existing) {
-    editingData.value = { ...existing }
+    editingData.value = { 
+      ...existing,
+      stunDuration: (existing as any).stunDuration || '',
+      stunType: (existing as any).stunType || 'stun'
+    }
     // 将 customParams 转为数组
     if (existing.customParams) {
       editingCustomParams.value = Object.entries(existing.customParams).map(([k, v]) => ({ key: k, value: v }))
@@ -319,7 +387,9 @@ const openEditDialog = (ability: any) => {
       customParams: null,
       notes: null,
       isBurst: true,
-      damageTime: null
+      damageTime: null,
+      stunDuration: '',
+      stunType: 'stun'
     }
     editingCustomParams.value = []
   }
@@ -672,6 +742,30 @@ const stats = computed(() => ({
               />
               <div class="form-tip">点击左侧变量可自动填入，用于计算 DPS</div>
             </el-form-item>
+            
+            <!-- 眩晕相关字段（仅 stun 类型显示） -->
+            <template v-if="traitType === 'stun'">
+              <el-form-item label="眩晕时间（秒）">
+                <el-input 
+                  v-model="editingData.stunDuration" 
+                  placeholder="如: 1.5 2.0 2.5 3.0（按等级，空格分隔）" 
+                />
+                <div class="form-tip">填写各等级的眩晕时间，用空格分隔</div>
+              </el-form-item>
+              
+              <el-form-item label="控制类型">
+                <el-select v-model="editingData.stunType" placeholder="选择控制类型">
+                  <el-option label="眩晕 (Stun)" value="stun" />
+                  <el-option label="变羊 (Hex)" value="hex" />
+                  <el-option label="缠绕 (Root)" value="root" />
+                  <el-option label="睡眠 (Sleep)" value="sleep" />
+                  <el-option label="嘲讽 (Taunt)" value="taunt" />
+                  <el-option label="持续施法控制" value="channel_stun" />
+                  <el-option label="小眩晕" value="mini_stun" />
+                  <el-option label="时间停止" value="time_stop" />
+                </el-select>
+              </el-form-item>
+            </template>
             
             <el-form-item label="备注">
               <el-input v-model="editingData.notes" type="textarea" :rows="2" placeholder="可选" />

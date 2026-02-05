@@ -12,6 +12,7 @@ export default defineNuxtConfig({
   components: [
     { path: '~/components/common', pathPrefix: false },
     { path: '~/components/hero', prefix: 'Hero' },
+    { path: '~/components/hero/charts', prefix: 'Hero' },
     { path: '~/components/item', pathPrefix: false },
     { path: '~/components/ability', prefix: 'Ability' },
     { path: '~/components/analysis', prefix: 'Analysis' },

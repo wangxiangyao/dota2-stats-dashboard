@@ -68,9 +68,10 @@ function getTowerStats(data: any) {
 }
 
 // 阵营名称
-function getTeamName(team: number | undefined): string {
-  if (team === 2) return '天辉'
-  if (team === 3) return '夜魇'
+function getTeamName(team: number | string | undefined): string {
+  // 使用宽松比较以支持数字和字符串类型
+  if (team == 2) return '天辉'
+  if (team == 3) return '夜魇'
   return '中立'
 }
 
@@ -269,8 +270,8 @@ function formatUnitName(id: string): string {
       <template v-else-if="entity.type === 'tower'">
         <div class="popup-row">
           <span class="label">阵营</span>
-          <span class="value" :class="entity.data.team === 2 ? 'radiant' : 'dire'">
-            {{ getTeamName(entity.data.team) }}
+          <span class="value" :class="(entity.data.teamnumber || entity.data.team) == 2 ? 'radiant' : 'dire'">
+            {{ getTeamName(entity.data.teamnumber || entity.data.team) }}
           </span>
         </div>
         <div class="popup-row">

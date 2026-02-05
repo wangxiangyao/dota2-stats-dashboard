@@ -173,14 +173,14 @@ const damageStats = computed(() => {
               <div class="trait-arrow">→</div>
             </NuxtLink>
             
-            <div class="trait-card disabled">
-              <div class="trait-icon">💫</div>
+            <NuxtLink to="/data/abilities/stun" class="trait-card">
+              <div class="trait-icon">⚡</div>
               <div class="trait-info">
-                <div class="trait-title">眩晕特征</div>
-                <div class="trait-desc">管理控制技能和持续时间</div>
+                <div class="trait-title">控制特征</div>
+                <div class="trait-desc">管理控制技能（眩晕/缠绕/沉默等）</div>
               </div>
-              <div class="trait-badge">规划中</div>
-            </div>
+              <div class="trait-arrow">→</div>
+            </NuxtLink>
             
             <div class="trait-card disabled">
               <div class="trait-icon">🐌</div>

@@ -1187,7 +1187,7 @@
     "formulaMax": null,
     "customParams": {
       "base_damage": "80 / 120 / 160",
-      "base_soul": "13 15 15"
+      "base_soul": "13 15 16"
     },
     "notes": null,
     "isBurst": true

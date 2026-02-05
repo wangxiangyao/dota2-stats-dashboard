@@ -158,11 +158,20 @@ const getCdDamageAtLevel = (ability: AbilityDamageInfo, level: number) => {
   return getDamageAtLevel(ability, level)
 }
 
-// 提取冷却时间 (CD 使用满级值)
-const normalBurstCooldowns = computed(() => normalBurst.value.map(a => a.cooldown).filter(v => v > 0))
-const normalDotCooldowns = computed(() => normalDot.value.map(a => a.cooldown).filter(v => v > 0))
-const ultBurstCooldowns = computed(() => ultBurst.value.map(a => a.cooldown).filter(v => v > 0))
-const ultDotCooldowns = computed(() => ultDot.value.map(a => a.cooldown).filter(v => v > 0))
+// 获取指定等级的冷却时间
+const getCooldownAtLevel = (ability: AbilityDamageInfo, level: number) => {
+  if ((ability as any).cooldownAllLevels && (ability as any).cooldownAllLevels.length > 0) {
+    const idx = Math.min(level - 1, (ability as any).cooldownAllLevels.length - 1)
+    return (ability as any).cooldownAllLevels[idx] || ability.cooldown
+  }
+  return ability.cooldown
+}
+
+// 提取冷却时间（根据等级）
+const normalBurstCooldowns = computed(() => normalBurst.value.map(a => getCooldownAtLevel(a, normalBurstLevel.value)).filter(v => v > 0))
+const normalDotCooldowns = computed(() => normalDot.value.map(a => getCooldownAtLevel(a, normalDotLevel.value)).filter(v => v > 0))
+const ultBurstCooldowns = computed(() => ultBurst.value.map(a => getCooldownAtLevel(a, ultBurstLevel.value)).filter(v => v > 0))
+const ultDotCooldowns = computed(() => ultDot.value.map(a => getCooldownAtLevel(a, ultDotLevel.value)).filter(v => v > 0))
 
 // CD统计
 const normalBurstCdCalc = computed(() => calculateStats(normalBurstCooldowns.value))
@@ -172,9 +181,10 @@ const ultDotCdCalc = computed(() => calculateStats(ultDotCooldowns.value))
 
 // DPC计算函数 - 使用 cdDamage（CD周期内实际伤害）
 const calcDpc = (ability: AbilityDamageInfo, level: number) => {
-  if (ability.cooldown <= 0) return 0
+  const cd = getCooldownAtLevel(ability, level)
+  if (cd <= 0) return 0
   const cdDmg = getCdDamageAtLevel(ability, level)
-  return Math.round(cdDmg / ability.cooldown * 10) / 10
+  return Math.round(cdDmg / cd * 10) / 10
 }
 
 // DPC统计
@@ -263,10 +273,10 @@ const getAttrColor = (attr: string) => {
 }
 
 // CD 柱状图
-const createCdBarChart = (abilities: AbilityDamageInfo[]) => {
+const createCdBarChart = (abilities: AbilityDamageInfo[], level: number) => {
   const sorted = abilities
-    .filter(a => a.cooldown > 0)
-    .map(a => ({ name: a.displayName, cd: a.cooldown, barColor: getAttrColor(a.heroAttribute) }))
+    .map(a => ({ name: a.displayName, cd: getCooldownAtLevel(a, level), barColor: getAttrColor(a.heroAttribute) }))
+    .filter(a => a.cd > 0)
     .sort((a, b) => b.cd - a.cd)
 
   return {
@@ -345,10 +355,10 @@ const createDpcBarChart = (abilities: AbilityDamageInfo[], level: number) => {
   }
 }
 
-const normalBurstCdChartOption = computed(() => createCdBarChart(normalBurst.value))
-const normalDotCdChartOption = computed(() => createCdBarChart(normalDot.value))
-const ultBurstCdChartOption = computed(() => createCdBarChart(ultBurst.value))
-const ultDotCdChartOption = computed(() => createCdBarChart(ultDot.value))
+const normalBurstCdChartOption = computed(() => createCdBarChart(normalBurst.value, normalBurstLevel.value))
+const normalDotCdChartOption = computed(() => createCdBarChart(normalDot.value, normalDotLevel.value))
+const ultBurstCdChartOption = computed(() => createCdBarChart(ultBurst.value, ultBurstLevel.value))
+const ultDotCdChartOption = computed(() => createCdBarChart(ultDot.value, ultDotLevel.value))
 
 const normalBurstDpcChartOption = computed(() => createDpcBarChart(normalBurst.value, normalBurstLevel.value))
 const normalDotDpcChartOption = computed(() => createDpcBarChart(normalDot.value, normalDotLevel.value))

@@ -40,21 +40,13 @@ const isScrolling = ref(false)  // 防止点击滚动时触发高亮更新
 // 滚动到指定区块
 const scrollToSection = (id: string) => {
   const el = document.getElementById(id)
-  if (el && contentRef.value) {
+  if (el) {
     // 标记正在滚动，暂停检测
     isScrolling.value = true
     activeId.value = id
     
-    // 获取元素相对于内容区域的偏移
-    const containerRect = contentRef.value.getBoundingClientRect()
-    const elRect = el.getBoundingClientRect()
-    const scrollTop = contentRef.value.scrollTop
-    const targetTop = scrollTop + elRect.top - containerRect.top - 16
-    
-    contentRef.value.scrollTo({
-      top: targetTop,
-      behavior: 'smooth'
-    })
+    // 使用 scrollIntoView 兼容嵌套布局
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
     
     // 滚动动画结束后恢复检测
     setTimeout(() => {
@@ -116,7 +108,8 @@ onMounted(() => {
   padding: 16px 0;
   position: sticky;
   top: 0;
-  height: calc(100vh - 180px);
+  align-self: flex-start;
+  max-height: calc(100vh - 140px);
   overflow-y: auto;
 }
 
@@ -198,7 +191,7 @@ onMounted(() => {
   flex: 1;
   padding: 20px 24px;
   overflow-y: auto;
-  height: calc(100vh - 180px);
+  height: 100%;
 }
 </style>
 

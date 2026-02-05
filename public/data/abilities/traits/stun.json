@@ -1,0 +1,554 @@
+{
+  "sven_storm_bolt": {
+    "stunDuration": "1.0 1.2 1.4 1.6",
+    "stunType": "stun",
+    "notes": "风暴之拳",
+    "customParams": null
+  },
+  "vengefulspirit_magic_missile": {
+    "stunDuration": "1.2 1.4 1.6 1.8",
+    "stunType": "stun",
+    "notes": "魔法箭"
+  },
+  "skeleton_king_hellfire_blast": {
+    "stunDuration": "1.0 1.2 1.4 1.6",
+    "stunType": "stun",
+    "notes": "地狱火"
+  },
+  "earthshaker_fissure": {
+    "stunDuration": "0.8 1.0 1.2 1.4",
+    "stunType": "stun",
+    "notes": "沟壑",
+    "customParams": null
+  },
+  "sand_king_burrowstrike": {
+    "stunDuration": "1.1 1.3 1.5 1.7",
+    "stunType": "stun",
+    "notes": "地穴突袭"
+  },
+  "tiny_avalanche": {
+    "stunDuration": "0.3",
+    "stunType": "stun",
+    "notes": "山崩"
+  },
+  "centaur_hoof_stomp": {
+    "stunDuration": "1.6 1.8 2.0 2.2",
+    "stunType": "stun",
+    "notes": "马蹄践踏"
+  },
+  "slardar_slithereen_crush": {
+    "stunDuration": "0.8",
+    "stunType": "stun",
+    "notes": "深海重击"
+  },
+  "tidehunter_ravage": {
+    "stunDuration": "2.0 2.2 2.4",
+    "stunType": "stun",
+    "notes": "大招毁灭"
+  },
+  "beastmaster_primal_roar": {
+    "stunDuration": "3 3.5 4",
+    "stunType": "stun",
+    "notes": "野性咆哮",
+    "customParams": null
+  },
+  "dragon_knight_dragon_tail": {
+    "stunDuration": "1.8 2.0 2.2 2.4",
+    "stunType": "stun",
+    "notes": "神龙摆尾"
+  },
+  "chaos_knight_chaos_bolt": {
+    "stunDuration": "1.5 1.75 2 2.5",
+    "stunType": "stun",
+    "notes": "混沌之箭，随机眩晕时间",
+    "customParams": null
+  },
+  "faceless_void_chronosphere": {
+    "stunDuration": "3.75 4.25 4.75",
+    "stunType": "time_stop",
+    "notes": "时间结界"
+  },
+  "enigma_black_hole": {
+    "stunDuration": "4.0",
+    "stunType": "channel_stun",
+    "notes": "黑洞"
+  },
+  "magnataur_reverse_polarity": {
+    "stunDuration": "2.5 3.0 3.5",
+    "stunType": "stun",
+    "notes": "极性转换"
+  },
+  "treant_overgrowth": {
+    "stunDuration": "3 4 5",
+    "stunType": "root",
+    "notes": "疯狂生长，缠绕"
+  },
+  "puck_dream_coil": {
+    "stunDuration": "0.5",
+    "stunType": "stun",
+    "notes": "梦境缠绕，断线眩晕"
+  },
+  "nyx_assassin_impale": {
+    "stunDuration": "1.1 1.4 1.7 2.0",
+    "stunType": "stun",
+    "notes": "穿刺"
+  },
+  "rubick_telekinesis": {
+    "stunDuration": "0.9 1.1 1.3 1.5",
+    "stunType": "stun",
+    "notes": "隔空取物"
+  },
+  "lina_light_strike_array": {
+    "stunDuration": "1.2 1.6 2.0 2.4",
+    "stunType": "stun",
+    "notes": "光击阵"
+  },
+  "warlock_rain_of_chaos": {
+    "stunDuration": "0.8",
+    "stunType": "stun",
+    "notes": "混沌降临"
+  },
+  "bane_fiends_grip": {
+    "stunDuration": "4.75 5.25 5.75",
+    "stunType": "channel_stun",
+    "notes": "噩梦缠绕"
+  },
+  "witch_doctor_paralyzing_cask": {
+    "stunDuration": "0.8",
+    "stunType": "stun",
+    "notes": "麻痹药剂，弹射眩晕"
+  },
+  "axe_berserkers_call": {
+    "stunDuration": "2.1 2.4 2.7 3.0",
+    "stunType": "taunt",
+    "notes": "狂战士之吼，嘲讽",
+    "customParams": null
+  },
+  "batrider_flaming_lasso": {
+    "stunDuration": "2.25 2.75 3.25",
+    "stunType": "stun",
+    "notes": "燃烧枷锁"
+  },
+  "winter_wyvern_winters_curse": {
+    "stunDuration": "2",
+    "stunType": "stun",
+    "notes": "寒冬诅咒"
+  },
+  "alchemist_unstable_concoction": {
+    "stunDuration": "1.75 2.5 3.25 4.0",
+    "stunType": "stun",
+    "notes": "不稳定化合物"
+  },
+  "clockwerk_hookshot": {
+    "stunDuration": "1.5 1.75 2.0",
+    "stunType": "stun",
+    "notes": "钩索"
+  },
+  "clockwerk_power_cogs": {
+    "stunDuration": "0.85",
+    "stunType": "mini_stun",
+    "notes": "能量齿轮"
+  },
+  "spirit_breaker_charge_of_darkness": {
+    "stunDuration": "1.3 1.6 1.9 2.2",
+    "stunType": "stun",
+    "notes": "暗影冲刺",
+    "customParams": null
+  },
+  "spirit_breaker_nether_strike": {
+    "stunDuration": "0.9 1.1 1.3 1.5",
+    "stunType": "stun",
+    "notes": "幽冥一击",
+    "customParams": null
+  },
+  "tusk_walrus_punch": {
+    "stunDuration": "1.0",
+    "stunType": "stun",
+    "notes": "海象神拳"
+  },
+  "ogre_magi_fireblast": {
+    "stunDuration": "1.2",
+    "stunType": "stun",
+    "notes": "火焰爆轰"
+  },
+  "jakiro_ice_path": {
+    "stunDuration": "1.25 1.50 1.75 2.0",
+    "stunType": "stun",
+    "notes": "冰封路径"
+  },
+  "kunkka_torrent": {
+    "stunDuration": "1.4",
+    "stunType": "stun",
+    "notes": "洪流",
+    "customParams": null
+  },
+  "kunkka_ghostship": {
+    "stunDuration": "1.2",
+    "stunType": "stun",
+    "notes": "幽灵船"
+  },
+  "mirana_arrow": {
+    "stunDuration": "0.5 2.0 3.5 5.0",
+    "stunType": "stun",
+    "notes": "圣箭，最远5秒眩晕"
+  },
+  "shadow_shaman_shackles": {
+    "stunDuration": "2.4 3.0 3.6 4.2",
+    "stunType": "channel_stun",
+    "notes": "枷锁，持续施法"
+  },
+  "shadow_shaman_voodoo": {
+    "stunDuration": "2.0 2.3 2.6 2.9",
+    "stunType": "hex",
+    "notes": "变羊"
+  },
+  "lion_impale": {
+    "stunDuration": "1.3 1.6 1.9 2.2",
+    "stunType": "stun",
+    "notes": "穿刺"
+  },
+  "lion_voodoo": {
+    "stunDuration": "2 2.4 2.8 3.2",
+    "stunType": "hex",
+    "notes": "变羊"
+  },
+  "abyssal_underlord_pit_of_malice": {
+    "stunDuration": "1.5 1.6 1.7 1.8",
+    "stunType": "root",
+    "notes": "怨念深渊，缠绕",
+    "customParams": null
+  },
+  "earth_spirit_rolling_boulder": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "0.3 0.5 0.7 0.9",
+    "stunType": "stun"
+  },
+  "tusk_snowball": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "0.6 0.8 1.0 1.2",
+    "stunType": "stun"
+  },
+  "phoenix_supernova": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.6 2 2.4",
+    "stunType": "stun"
+  },
+  "mars_spear": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.3 1.6 1.9 2.2",
+    "stunType": "stun"
+  },
+  "gyrocopter_homing_missile": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.3 1.7 2.1 2.5",
+    "stunType": "stun"
+  },
+  "monkey_king_boundless_strike": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "0.7 0.9 1.1 1.3",
+    "stunType": "stun"
+  },
+  "ringmaster_wheel": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "4",
+    "stunType": "stun"
+  },
+  "snapfire_firesnap_cookie": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.0 1.4 1.8 2.2",
+    "stunType": "stun"
+  },
+  "windrunner_shackleshot": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "0.6",
+    "stunType": "stun"
+  },
+  "techies_suicide": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "0.8 1 1.2 1.4",
+    "stunType": "stun"
+  },
+  "enigma_malefice": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "0.3 0.5 0.7 0.9",
+    "stunType": "stun"
+  },
+  "pangolier_gyroshell": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "0.8 1.0 1.2",
+    "stunType": "stun"
+  },
+  "nyx_assassin_spiked_carapace": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "0.7 1.0 1.3 1.6",
+    "stunType": "stun"
+  },
+  "rattletrap_hookshot": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.2 1.4 1.6",
+    "stunType": "stun"
+  },
+  "legion_commander_duel": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "4.0 4.5 5.0",
+    "stunType": "stun"
+  },
+  "dawnbreaker_solar_guardian": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.4 1.6 1.8",
+    "stunType": "stun"
+  },
+  "primal_beast_pulverize": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "2.3",
+    "stunType": "stun"
+  },
+  "tiny_toss": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.25",
+    "stunType": "stun"
+  },
+  "ember_spirit_searing_chains": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.5 2.0 2.5 3.0",
+    "stunType": "stun"
+  },
+  "hoodwink_bushwhack": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.5 1.7 1.9 2.1",
+    "stunType": "stun"
+  },
+  "shadow_shaman_voodoo_hands": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.0",
+    "stunType": "stun"
+  },
+  "leshrac_split_earth": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.7",
+    "stunType": "stun"
+  },
+  "necrolyte_reapers_scythe": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.5 1.5 1.5",
+    "stunType": "stun"
+  },
+  "lich_sinister_gaze": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.10 1.4 1.7 2.0",
+    "stunType": "stun"
+  },
+  "marci_companion_run": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "0.8 1.1 1.4 1.7",
+    "stunType": "stun"
+  },
+  "void_spirit_aether_remnant": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.0 1.2 1.4 1.6",
+    "stunType": "stun"
+  },
+  "earthshaker_enchant_totem": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "0.8",
+    "stunType": "stun"
+  },
+  "earthshaker_echo_slam": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1 1.1 1.2 1.3",
+    "stunType": "stun"
+  },
+  "pudge_dismember": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "持续施法3秒",
+    "stunDuration": "3",
+    "stunType": "channel_stun"
+  },
+  "medusa_stone_gaze": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": "石化凝视，面朝美杜莎2.4秒后石化",
+    "stunDuration": "2 2.2 2.4",
+    "stunType": "stun"
+  },
+  "medusa_gorgon_grasp": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "0.8 1.2 1.6 2.0",
+    "stunType": "stun"
+  },
+  "naga_siren_ensnare": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "2.75 3.5 4.25 5.0",
+    "stunType": "stun"
+  },
+  "storm_spirit_electric_vortex": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.1 1.4 1.7 2.0",
+    "stunType": "stun"
+  },
+  "crystal_maiden_frostbite": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.5 2 2.5 3",
+    "stunType": "stun"
+  },
+  "grimstroke_spirit_walk": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.6 2.0 2.4 2.8",
+    "stunType": "stun"
+  },
+  "ancient_apparition_cold_feet": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.8 2.2 2.6 3.0",
+    "stunType": "stun"
+  },
+  "sandking_burrowstrike": {
+    "formulaExpected": "damage",
+    "formulaMin": null,
+    "formulaMax": null,
+    "customParams": null,
+    "notes": null,
+    "stunDuration": "1.2 1.4 1.6 1.8",
+    "stunType": "stun"
+  }
+}

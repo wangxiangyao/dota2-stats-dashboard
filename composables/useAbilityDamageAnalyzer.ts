@@ -22,6 +22,7 @@ export interface AbilityDamageInfo {
     isBurst: boolean  // 是否为瞬间伤害
     damageType: string | null
     cooldown: number
+    cooldownAllLevels: number[]  // 各等级冷却时间
     damage: number  // 满级期望伤害
     damageAllLevels: number[]  // 各等级伤害
     damageTime: number | null  // 持续时间（仅DoT有效）
@@ -157,18 +158,25 @@ export const useAbilityDamageAnalyzer = () => {
                 }
             }
 
-            // 提取CD（取满级CD值）
+            // 提取CD（保存所有等级的CD值）
             let cooldown = isUltimate ? 80 : 10
+            let cooldownAllLevels: number[] = []
             if (ability) {
                 const cd = (ability as any).cooldown
                 if (cd && typeof cd === 'string') {
                     const cdValues = cd.split(/\s+/).map(Number).filter(v => !isNaN(v) && v > 0)
                     if (cdValues.length > 0) {
+                        cooldownAllLevels = cdValues
                         cooldown = cdValues[cdValues.length - 1] // 满级 CD
                     }
                 } else if (typeof cd === 'number') {
                     cooldown = cd
+                    cooldownAllLevels = [cd]
                 }
+            }
+            // 如果没有提取到各等级CD，用满级值填充
+            if (cooldownAllLevels.length === 0) {
+                cooldownAllLevels = [cooldown]
             }
 
             // 提取显示名称（abilityNames 格式是 { zh, en }）
@@ -233,6 +241,7 @@ export const useAbilityDamageAnalyzer = () => {
                 isBurst: traitData.isBurst !== false,  // 默认为瞬间伤害
                 damageType: (ability as any)?.damageType || 'MAGICAL',
                 cooldown,
+                cooldownAllLevels,
                 damage: Math.round(maxLevelDamage),
                 damageAllLevels,
                 damageTime,
